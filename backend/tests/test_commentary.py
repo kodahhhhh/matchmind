@@ -114,6 +114,33 @@ def test_prompt_focus_keeps_a_goal_and_its_build_up() -> None:
     assert prompt_facts({"actions": actions})["actions"] == actions[-4:]
 
 
+def test_query_embedding_dimension_mismatch_degrades_before_sql(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from types import SimpleNamespace
+
+    from matchmind.analyst import client
+
+    monkeypatch.setattr(
+        client,
+        "get_settings",
+        lambda: SimpleNamespace(embed_deployment="test", embed_dim=3),
+    )
+    monkeypatch.setattr(
+        client,
+        "sync_client",
+        lambda: SimpleNamespace(
+            embeddings=SimpleNamespace(
+                create=lambda **kwargs: SimpleNamespace(
+                    data=[SimpleNamespace(embedding=[1.0, 0.0])]
+                )
+            )
+        ),
+    )
+    with pytest.raises(RuntimeError, match="wrong dimension"):
+        client.embed_query("dimension mismatch probe W8")
+
+
 def test_commentary_windows_and_sequence_consistency() -> None:
     with TestClient(app) as client:
         response = client.get(f"/api/matches/{FINAL}/commentary")
