@@ -1,0 +1,19 @@
+{
+  "Albania": "ALB", "Argentina": "ARG", "Augsburg": "FCA", "Australia": "AUS", "Austria": "AUT",
+  "Bayer Leverkusen": "B04", "Bayern Munich": "FCB", "Belgium": "BEL", "Bochum": "BOC", "Bolivia": "BOL",
+  "Borussia Dortmund": "BVB", "Borussia Mönchengladbach": "BMG", "Brazil": "BRA", "Cameroon": "CMR", "Canada": "CAN",
+  "Charlotte": "CLT", "Chile": "CHI", "Cincinnati": "CIN", "Colombia": "COL", "Costa Rica": "CRC",
+  "Croatia": "CRO", "Czech Republic": "CZE", "Darmstadt 98": "D98", "Denmark": "DEN", "Ecuador": "ECU",
+  "Eintracht Frankfurt": "SGE", "England": "ENG", "FC Heidenheim": "HDH", "FC Köln": "KOE", "FSV Mainz 05": "M05",
+  "France": "FRA", "Freiburg": "SCF", "Georgia": "GEO", "Germany": "GER", "Ghana": "GHA",
+  "Hamburger SV": "HSV", "Hannover 96": "H96", "Hertha Berlin": "BSC", "Hoffenheim": "TSG", "Hungary": "HUN",
+  "Ingolstadt": "FCI", "Inter Miami": "MIA", "Iran": "IRN", "Italy": "ITA", "Jamaica": "JAM",
+  "Japan": "JPN", "LAFC": "LAF", "Mexico": "MEX", "Morocco": "MAR", "Nashville SC": "NSH",
+  "Netherlands": "NED", "New York Red Bulls": "RBNY", "Panama": "PAN", "Paraguay": "PAR", "Peru": "PER",
+  "Poland": "POL", "Portugal": "POR", "Qatar": "QAT", "RB Leipzig": "RBL", "Romania": "ROU",
+  "Saudi Arabia": "KSA", "Schalke 04": "S04", "Scotland": "SCO", "Senegal": "SEN", "Serbia": "SRB",
+  "Slovakia": "SVK", "Slovenia": "SVN", "South Korea": "KOR", "Spain": "ESP", "Switzerland": "SUI",
+  "Toronto FC": "TOR", "Tunisia": "TUN", "Turkey": "TUR", "Ukraine": "UKR", "Union Berlin": "FCU",
+  "United States": "USA", "Uruguay": "URU", "Venezuela": "VEN", "VfB Stuttgart": "VFB", "Wales": "WAL",
+  "Werder Bremen": "SVW", "Wolfsburg": "WOB"
+}

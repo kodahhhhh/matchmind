@@ -194,29 +194,68 @@ function Moments({ ids }: { ids: string[] }) {
   );
 }
 
-/** Renders [[ev:id]] / [[seq:id]] as inline chips; hides a half-streamed trailing token. */
+/** Minimal markdown (paragraphs, bullet/numbered lists, **bold**, *italic*) with [[ev:id]] / [[seq:id]] citation chips.
+ *  A half-streamed trailing token is hidden until it completes. */
 function RichText({ text }: { text: string }) {
+  const clean = text.replace(/\[\[[^\]]*$/, "").replace(/\*\*?$/, "");
+  const blocks: { kind: "p" | "ul" | "ol"; lines: string[] }[] = [];
+  for (const raw of clean.split("\n")) {
+    const line = raw.trimEnd();
+    const bullet = /^\s*[-*•]\s+(.*)$/.exec(line);
+    const num = /^\s*\d+[.)]\s+(.*)$/.exec(line);
+    const last = blocks[blocks.length - 1];
+    if (bullet || num) {
+      const kind = bullet ? "ul" : "ol";
+      const content = (bullet ?? num)![1];
+      if (last?.kind === kind) last.lines.push(content);
+      else blocks.push({ kind, lines: [content] });
+    } else if (!line.trim()) {
+      blocks.push({ kind: "p", lines: [] });
+    } else if (last?.kind === "p" && last.lines.length) {
+      last.lines.push(line);
+    } else {
+      blocks.push({ kind: "p", lines: [line] });
+    }
+  }
+  const visible = blocks.filter((b) => b.lines.length);
+  return (
+    <div className="space-y-3">
+      {visible.map((b, i) =>
+        b.kind === "p" ? <p key={i}><Inline text={b.lines.join(" ")} /></p>
+        : b.kind === "ul" ? <ul key={i} className="space-y-1.5">{b.lines.map((l, j) => (
+            <li key={j} className="flex gap-2.5"><span className="mt-[10px] h-1 w-1 shrink-0 rounded-full bg-ink-3" /><span><Inline text={l} /></span></li>
+          ))}</ul>
+        : <ol key={i} className="space-y-1.5">{b.lines.map((l, j) => (
+            <li key={j} className="flex gap-2.5"><span className="display mt-[1px] w-4 shrink-0 text-ink-3">{j + 1}</span><span><Inline text={l} /></span></li>
+          ))}</ol>,
+      )}
+    </div>
+  );
+}
+
+function Inline({ text }: { text: string }) {
   const data = useMatch((s) => s.data);
   const focusEvent = useMatch((s) => s.focusEvent);
   const focusSequence = useMatch((s) => s.focusSequence);
-  const clean = text.replace(/\[\[[^\]]*$/, "");
   const parts: ReactNode[] = [];
-  const re = /\[\[(ev|seq):([^\]]+)\]\]/g;
+  const re = /\[\[(ev|seq):([^\]]+)\]\]|\*\*([^*]+)\*\*|\*([^*\s][^*]*)\*/g;
   let last = 0;
   let mm: RegExpExecArray | null;
-  while ((mm = re.exec(clean))) {
-    parts.push(clean.slice(last, mm.index));
-    const [, kind, id] = mm;
-    if (kind === "ev") {
+  while ((mm = re.exec(text))) {
+    parts.push(text.slice(last, mm.index));
+    const [, kind, id, bold, italic] = mm;
+    if (bold) parts.push(<strong key={mm.index} className="font-semibold text-ink">{bold}</strong>);
+    else if (italic) parts.push(<em key={mm.index} className="text-ink-2">{italic}</em>);
+    else if (kind === "ev") {
       const e = data?.eventById.get(id);
       parts.push(<Chip key={mm.index} side={e?.team} onClick={() => focusEvent(id)}>{e ? describe(e) : "event"}</Chip>);
     } else {
       const s = data?.sequences.find((x) => x.id === id);
-      parts.push(<Chip key={mm.index} side={s?.team} onClick={() => focusSequence(id)}>{s ? `${s.start.label} sequence` : "sequence"}</Chip>);
+      parts.push(<Chip key={mm.index} side={s?.team} onClick={() => s && focusSequence(id)}>{s ? `${s.start.label} sequence` : "sequence"}</Chip>);
     }
     last = mm.index + mm[0].length;
   }
-  parts.push(clean.slice(last));
+  parts.push(text.slice(last));
   return <>{parts}</>;
 }
 

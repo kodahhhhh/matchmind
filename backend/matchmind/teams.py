@@ -1,6 +1,9 @@
 """Fixture team palette and perceptual kit separation, ported from make_fixtures."""
 
+import json
 import math
+from functools import lru_cache
+from pathlib import Path
 
 COLORS = {
     "_default": ["#9AA7B0", "#D9A441"],
@@ -129,5 +132,12 @@ def short_name(nick: str | None, full: str) -> str:
     return parts[-1] if parts else base
 
 
+@lru_cache(maxsize=1)
+def _team_codes() -> dict[str, str]:
+    path = Path(__file__).resolve().parents[2] / "shared" / "team_codes.json"
+    return json.loads(path.read_text()) if path.exists() else {}
+
+
 def team_short(name: str) -> str:
-    return name.replace(" ", "")[:3].upper()
+    """Broadcast abbreviation from shared/team_codes.json, else first 3 letters."""
+    return _team_codes().get(name) or name.replace(" ", "")[:3].upper()
