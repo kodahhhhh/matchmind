@@ -6,6 +6,7 @@ requires-python = ">=3.12,<3.13"
 dependencies = ["psycopg[binary]>=3.2,<4", "pydantic-settings>=2.7,<3"]
 
 [dependency-groups]
+models = ["socceraction==1.5.3", "lightgbm>=4.6,<5", "scikit-learn>=1.6,<2", "pandas>=2.2,<3", "pyarrow>=19", "multimethod<2", "joblib>=1.4"]
 dev = ["pytest>=8,<10", "ruff>=0.11,<1"]
 
 [build-system]
