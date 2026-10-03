@@ -4,7 +4,7 @@ Measured training run: 2026-10-03T22:52:31.690662+00:00. CPU only. StatsBomb ope
 
 ## Data, reproducibility and validation
 
-2,924 men’s matches; 5,962,767 SPADL actions; 0 conversion failures. The 493 demo matches are a subset of training, but every displayed xG, VAEP and xT is held out by match. Synthetic SPADL dribbles have no raw UUID and are excluded from the DB join. Split interception/pass actions are summed back to one raw UUID. Stored SPADL has home attacking +x; spatial training rotates each acting team to +x. DB raw coordinates are unchanged.
+2,924 men’s matches; 5,962,767 SPADL actions; 0 conversion failures. The 493 demo matches are a subset of training, and all corpus xG, VAEP and xT outputs are held out by match. Synthetic SPADL dribbles have no raw UUID and are excluded from the DB join. Split interception/pass actions are summed back to one raw UUID. Stored SPADL has home attacking +x; spatial training rotates each acting team to +x. DB raw coordinates are unchanged.
 
 Five deterministic shuffled match folds (seed 2026) are shared across models. No action-level random split. Shootouts receive held-out xG/VAEP predictions for event completeness, but are excluded from training, evaluation, rankings, windows and timeline sums. Finals below exclude shootouts. All artifacts remain gitignored. Final models fit all eligible training matches; match artifacts use held-out models.
 
@@ -20,8 +20,10 @@ uv run --group models python -m matchmind.models.vaep
 uv run --group models python -m matchmind.models.xt
 uv run --group models python -m matchmind.models.sanity
 uv run --group models python -m matchmind.models.backfill
+uv run --group models python -m matchmind.models.backfill --match-id sb:3869685
 uv run --group models python -m matchmind.db.load refresh
 uv run --group models python -m matchmind.models.gamestate_train
+uv run --group models python -m matchmind.models.verify
 uv run --group models python -m matchmind.models.modelcard
 ```
 
