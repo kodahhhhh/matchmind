@@ -1,0 +1,41 @@
+/* MatchMind design tokens: broadcast dark. Components use these via Tailwind theme names or var(). */
+:root {
+  color-scheme: dark;
+
+  /* surfaces */
+  --bg: #050a08;
+  --surface-1: #09100d;
+  --surface-2: #0e1612;
+  --surface-3: #141e19;
+  --border: rgba(255, 255, 255, 0.07);
+  --border-strong: rgba(255, 255, 255, 0.13);
+
+  /* ink */
+  --ink: #eef3f0;
+  --ink-2: #a9b6b0;
+  --ink-3: #74827b;
+  --ink-4: #4a5752;
+
+  /* pitch */
+  --pitch: #0a1611;
+  --pitch-stripe: #0c1a14;
+  --pitch-line: rgba(214, 255, 232, 0.17);
+  --pitch-glow: rgba(214, 255, 232, 0.05);
+
+  /* chart chrome */
+  --grid: #16201c;
+  --axis: #26322d;
+
+  /* AI accent: used sparingly, only for analyst-generated things */
+  --ai: #b8a6ff;
+  --ai-soft: rgba(184, 166, 255, 0.12);
+  --ai-line: rgba(184, 166, 255, 0.35);
+
+  /* the only saturated colours on screen are team colours, set per match */
+  --home: #7cb9e8;
+  --away: #e5484d;
+
+  --radius: 14px;
+  --font-sans: "Inter Variable", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Barlow Condensed", "Inter Variable", system-ui, sans-serif;
+}
