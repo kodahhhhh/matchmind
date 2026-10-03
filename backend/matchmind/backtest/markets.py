@@ -1,6 +1,7 @@
 """Resolution audit, historical price windows, and conservative clock alignment."""
 
 import json
+import re
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
@@ -114,10 +115,14 @@ def outcome(market: dict, match: dict) -> str | None:
     if "draw" in question and "match" in question:
         return "draw"
     for side in ("home", "away"):
+        names = ALIASES.get(match[side]["name"], [match[side]["name"]])
         if any(
-            normalize(n) in question
-            for n in ALIASES.get(match[side]["name"], [match[side]["name"]])
-        ) and ("win" in question or "beat" in question):
+            re.match(
+                r"^will (?:the )?" + re.escape(normalize(name)) + r"\s+(win|beat)\b",
+                question,
+            )
+            for name in names
+        ):
             return side
     return None
 
@@ -216,6 +221,8 @@ def histories(client: CachedClient) -> None:
             )
             if reason:
                 continue
+            if side in markets:
+                raise ValueError(f"Duplicate outcome mapping: {event['id']} {side}")
             tokens = array(m["clobTokenIds"])
             prices = {}
             for binary, token in zip(["YES", "NO"], tokens, strict=True):

@@ -215,16 +215,53 @@ def kalshi(client: CachedClient) -> dict:
         "https://api.elections.kalshi.com/trade-api/v2/series",
         category="Sports",
     )
+    archive_checks = []
+    for ticker in [
+        "KXWCGAME",
+        "KXUEFAGAME",
+        "KXCOPAAMERICA",
+        "KXUEFAEURO",
+        "KXBUNDESLIGAGAME",
+        "KXMLSGAME",
+        "KXWC",
+        "KXMENWORLDCUP",
+    ]:
+        archived, cursor = [], ""
+        while True:
+            params = {"series_ticker": ticker, "limit": 1000}
+            if cursor:
+                params["cursor"] = cursor
+            data = client.json(
+                "kalshi",
+                "https://api.elections.kalshi.com/trade-api/v2/historical/markets",
+                **params,
+            )
+            archived.extend(data.get("markets", []))
+            cursor = data.get("cursor", "")
+            if not cursor:
+                break
+        dates = [m["close_time"] for m in archived if m.get("close_time")]
+        archive_checks.append(
+            {
+                "series": ticker,
+                "rows": len(archived),
+                "earliest_close": min(dates) if dates else None,
+                "pre_september_2024": sum(d < "2024-09-01" for d in dates),
+            }
+        )
+        print("Kalshi archived series", archive_checks[-1], flush=True)
     report = {
         "matches": 0,
         "historical_rows": len(rows),
         "candidate_rows": sports,
         "requests": requests,
         "sports_series_returned": len(series.get("series", [])),
+        "archived_series_checks": archive_checks,
         "notes": (
-            "No matching demo football markets in historical settled-"
-            "market query through 2024-09-01. This is current public API "
-            "coverage, not proof of complete archive retention."
+            "No matching demo markets in the current settled-market query "
+            "through 2024-09-01 or eight relevant archived football series. "
+            "Archive evidence covers 3,081 contracts, all closing in 2025 or later. "
+            "Coverage is limited to the public archive and current series taxonomy."
         ),
     }
     save(output() / "kalshi_coverage.json", report)

@@ -132,6 +132,17 @@ def test_market_outcome_mapping_rejects_qualification_and_player_props() -> None
     assert outcome({"question": "Will Benzema play for France?"}, match) is None
 
 
+def test_market_subject_not_opponent_defines_binary_outcome() -> None:
+    match = {"home": {"name": "Germany"}, "away": {"name": "Scotland"}}
+    assert outcome({"question": "Will Scotland Win vs. Germany?"}, match) == "away"
+    assert outcome({"question": "Will Germany Win vs. Scotland?"}, match) == "home"
+
+
+def test_outcome_subject_accepts_the_netherlands() -> None:
+    match = {"home": {"name": "Austria"}, "away": {"name": "Netherlands"}}
+    assert outcome({"question": "Will the Netherlands win?"}, match) == "away"
+
+
 def test_alignment_fails_closed_without_goals(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr("matchmind.backtest.markets.match_goals", lambda m: ([], 2800))
     result = align({"match": {"match_id": "sb:1"}, "kickoff": 1000, "markets": {}})
@@ -213,3 +224,21 @@ def test_saved_model_partitions_are_disjoint() -> None:
     )
     sets.append(upstream)
     assert sum(map(len, sets)) == len(set.union(*sets))
+
+
+@pytest.mark.parametrize("name", ["backtest", "market"])
+def test_golden_contracts_match_real_precomputed_route(name: str) -> None:
+    golden = Path(__file__).with_name("golden") / f"{name}_example.json"
+    if not golden.exists() or not (output() / "backtest.json").exists():
+        pytest.skip("Generate W10 artifacts and golden responses first")
+    expected = json.loads(golden.read_text())
+    endpoint = (
+        "/api/backtest"
+        if name == "backtest"
+        else f"/api/matches/{expected['match_id']}/market"
+    )
+    with TestClient(routes.app) as client:
+        response = client.get(endpoint)
+    assert response.status_code == 200
+    assert response.json() == expected
+    (Backtest if name == "backtest" else Market).model_validate(response.json())

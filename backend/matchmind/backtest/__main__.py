@@ -93,7 +93,8 @@ def run() -> None:
             (
                 "Backward as-of prices must be less than 90 seconds old; no "
                 "forward interpolation. Model inputs strictly precede the "
-                "match-clock minute; no new entries after minute 85."
+                "match-clock minute, with an additional three-minute information "
+                "lag; no new entries after minute 85."
             ),
             (
                 "Polymarket sample is small and selected by "
