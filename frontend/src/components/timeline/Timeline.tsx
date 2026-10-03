@@ -131,10 +131,11 @@ export function Timeline() {
               );
             })}
 
-            {tp && (
-              <rect x={geo.x(tp.start.index) - 3} y={geo.waveTop - 6} width={geo.x(tp.end.index) - geo.x(tp.start.index) + geo.step + 6}
-                height={selH} rx={8} fill="var(--ai-soft)" />
-            )}
+            {tp && data.turningPoints.map((t) => (
+              <rect key={t.id} x={geo.x(t.start.index) - 3} y={geo.waveTop - 6} width={geo.x(t.end.index) - geo.x(t.start.index) + geo.step + 6}
+                height={selH} rx={8} fill="var(--ai-soft)" opacity={t.id === tp.id ? 1 : 0.55}
+                stroke={t.id === tp.id ? "none" : "var(--ai-line)"} strokeDasharray="3 3" />
+            ))}
 
             <g fontSize={10.5} fill="var(--ink-4)" className="tabular" textAnchor="middle">
               {geo.tl.filter((m) => [15, 30, 60, 75, 105].includes(m.minute + 1) && !m.label.includes("+")).map((m) => (

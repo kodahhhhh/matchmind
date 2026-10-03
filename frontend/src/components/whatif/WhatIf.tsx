@@ -85,35 +85,41 @@ function Result({ r }: { r: Counterfactual }) {
   const teams = useMatch((s) => s.data!.match.teams);
   return (
     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mt-4 space-y-4">
+      {r.model && (
+        <div className="flex items-center gap-2.5 rounded-xl bg-ai-soft px-3 py-2 text-[12px] text-ink-2 ring-1 ring-[var(--ai-line)]">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="var(--ai)" strokeWidth="1.3" /><path d="M4 7.5 6 9.5l4-5" stroke="var(--ai)" strokeWidth="1.4" strokeLinecap="round" /></svg>
+          <span>{r.method === "trained_model" ? "Trained model" : "Similar-match estimate"} · {r.model.trained_matches.toLocaleString()} matches · real outcome inside the range {Math.round(r.model.coverage_p10_p90.xg * 100)}% of the time</span>
+        </div>
+      )}
       {(["home", "away"] as Side[]).map((s) => (
         <div key={s} className="rounded-2xl bg-surface-2 p-4 ring-1 ring-line">
           <div className="mb-3 flex items-center justify-between">
             <span className="flex items-center gap-2 text-[13px] font-semibold text-ink"><span className="h-2.5 w-2.5 rounded-full" style={{ background: `var(--${s})` }} />{teams[s].name}</span>
-            <span className="text-[11.5px] text-ink-3">next {r.horizon_minutes} minutes</span>
+            <span className="text-[11.5px] text-ink-3">xG over the next {r.horizon_minutes} minutes</span>
           </div>
           <div className="flex items-end gap-5">
-            <div><div className="text-[11.5px] text-ink-3">Actual xG</div><div className="display text-[30px] leading-none text-ink">{xg(r.actual[s].xg)}</div></div>
+            <div><div className="text-[11.5px] text-ink-3">What happened</div><div className="display text-[30px] leading-none text-ink">{xg(r.actual[s].xg)}</div></div>
             <div><div className="text-[11.5px] text-ai">Modelled range</div><div className="display text-[30px] leading-none text-ink">{xg(r.modelled[s].xg.p10)}<span className="text-ink-4">–</span>{xg(r.modelled[s].xg.p90)}</div></div>
             <div className="ml-auto text-right text-[11.5px] leading-snug text-ink-3">Possession<br /><span className="text-ink-2">{pct(r.actual[s].possession)}</span> vs <span className="text-ink-2">{pct(r.modelled[s].possession.p10)}–{pct(r.modelled[s].possession.p90)}</span></div>
           </div>
-          <BandChart r={r} side={s} />
+          <RangeChart r={r} side={s} />
         </div>
       ))}
 
       <div>
         <div className="mb-2 flex items-baseline justify-between">
-          <span className="eyebrow">Comparable real situations</span>
-          <span className="text-[11.5px] text-ink-4">{r.analogs.length} of {r.n_analogs}</span>
+          <span className="eyebrow">Most similar real situations</span>
+          <span className="text-[11.5px] text-ink-4">top {r.analogs.length} of {r.n_analogs}</span>
         </div>
         <ul className="overflow-hidden rounded-2xl bg-surface-2 ring-1 ring-line">
           {r.analogs.map((a, i) => (
-            <li key={a.match_id + a.minute} className={`flex items-center gap-3 px-3.5 py-2.5 ${i ? "border-t border-line" : ""}`}>
+            <li key={a.match_id + a.minute + i} className={`flex items-center gap-3 px-3.5 py-2.5 ${i ? "border-t border-line" : ""}`}>
               <span className="w-10 text-[12px] font-semibold tabular text-ai">{Math.round(a.similarity * 100)}%</span>
               <div className="min-w-0 flex-1">
                 <div className="truncate text-[13px] font-medium text-ink">{a.home} v {a.away}</div>
-                <div className="text-[11.5px] text-ink-3">{a.competition} {a.season} · {a.minute}' · {a.score_state}</div>
+                <div className="text-[11.5px] text-ink-3">{a.competition} {a.season} · {a.minute}' · score {a.score_state}</div>
               </div>
-              <span className="text-[12px] tabular text-ink-2">{xg(a.next15.xg_for)}<span className="text-ink-4"> / </span>{xg(a.next15.xg_against)}</span>
+              <span className="text-right text-[11px] leading-tight text-ink-3">next 15'<br /><span className="text-[12px] tabular text-ink-2">{xg(a.next15.xg_for)} / {xg(a.next15.xg_against)} xG</span></span>
             </li>
           ))}
         </ul>
@@ -123,27 +129,39 @@ function Result({ r }: { r: Counterfactual }) {
   );
 }
 
-function BandChart({ r, side }: { r: Counterfactual; side: Side }) {
-  const W = 380, H = 96, P = { l: 2, r: 2, t: 8, b: 16 };
-  const max = Math.max(...r.series.map((d) => Math.max(d.modelled[side].p90, d.actual[side])), 0.2);
+/** Actual cumulative xG over the horizon, ending in two range bars: trained model and similar matches. */
+function RangeChart({ r, side }: { r: Counterfactual; side: Side }) {
+  const W = 380, H = 112, P = { l: 4, r: 96, t: 10, b: 18 };
+  const m = r.modelled[side].xg;
+  const a = r.analog_summary?.[side].xg;
+  const max = Math.max(m.p90, a?.p90 ?? 0, ...r.series.map((d) => d.actual[side]), 0.2);
   const x = scaleLinear().domain([0, r.horizon_minutes]).range([P.l, W - P.r]);
   const y = scaleLinear().domain([0, max]).nice().range([H - P.b, P.t]);
   type D = (typeof r.series)[number];
-  const band = area<D>().x((d) => x(d.offset_min)).y0((d) => y(d.modelled[side].p10)).y1((d) => y(d.modelled[side].p90));
-  const mid = line<D>().x((d) => x(d.offset_min)).y((d) => y(d.modelled[side].p50));
   const act = line<D>().x((d) => x(d.offset_min)).y((d) => y(d.actual[side]));
+  const legacy = r.series.every((d) => d.modelled)
+    ? area<D>().x((d) => x(d.offset_min)).y0((d) => y(d.modelled![side].p10)).y1((d) => y(d.modelled![side].p90))(r.series)
+    : null;
+  const bar = (bx: number, b: { p10: number; p50: number; p90: number }, color: string, label: string) => (
+    <g>
+      <rect x={bx - 7} y={y(b.p90)} width={14} height={Math.max(y(b.p10) - y(b.p90), 2)} rx={7} fill={color} opacity={0.28} />
+      <line x1={bx - 9} x2={bx + 9} y1={y(b.p50)} y2={y(b.p50)} stroke={color} strokeWidth={2.4} strokeLinecap="round" />
+      <text x={bx} y={H - 3} textAnchor="middle" fontSize={9.5} fill="var(--ink-3)">{label}</text>
+    </g>
+  );
+  const last = r.series[r.series.length - 1];
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} className="mt-3 w-full" role="img" aria-label="Cumulative xG: actual vs modelled range">
-      <line x1={P.l} x2={W - P.r} y1={y(0)} y2={y(0)} stroke="var(--axis)" />
-      <path d={band(r.series) ?? ""} fill="var(--ai)" opacity={0.16} />
-      <path d={mid(r.series) ?? ""} fill="none" stroke="var(--ai)" strokeWidth={1.5} strokeDasharray="4 3" />
+    <svg viewBox={`0 0 ${W} ${H}`} className="mt-3 w-full" role="img" aria-label="Actual cumulative xG with modelled and similar-match ranges">
+      <line x1={P.l} x2={W - 4} y1={y(0)} y2={y(0)} stroke="var(--axis)" />
+      {legacy && <path d={legacy} fill="var(--ai)" opacity={0.14} />}
       <path d={act(r.series) ?? ""} fill="none" stroke={`var(--${side})`} strokeWidth={2.2} strokeLinecap="round" />
-      <text x={P.l} y={H - 2} fontSize={10} fill="var(--ink-4)">{r.anchor.label}</text>
-      <text x={W - P.r} y={H - 2} fontSize={10} fill="var(--ink-4)" textAnchor="end">+{r.horizon_minutes}'</text>
-      <g fontSize={10} fill="var(--ink-3)">
-        <line x1={W - 150} x2={W - 136} y1={P.t} y2={P.t} stroke={`var(--${side})`} strokeWidth={2} /><text x={W - 132} y={P.t + 3.5}>actual</text>
-        <rect x={W - 90} y={P.t - 4} width={14} height={8} fill="var(--ai)" opacity={0.3} /><text x={W - 72} y={P.t + 3.5}>modelled</text>
-      </g>
+      {last && <circle cx={x(last.offset_min)} cy={y(last.actual[side])} r={3.5} fill={`var(--${side})`} stroke="var(--surface-2)" strokeWidth={2} />}
+      <line x1={W - P.r + 14} x2={W - P.r + 14} y1={P.t} y2={H - P.b} stroke="var(--border-strong)" strokeDasharray="2 3" />
+      {bar(W - P.r + 42, m, "var(--ai)", "model")}
+      {a && bar(W - P.r + 76, a, "var(--ink-2)", "similar")}
+      <text x={P.l} y={H - 3} fontSize={9.5} fill="var(--ink-4)">{r.anchor.label}</text>
+      <text x={W - P.r} y={H - 3} fontSize={9.5} fill="var(--ink-4)" textAnchor="end">+{r.horizon_minutes}'</text>
+      <text x={P.l} y={P.t + 2} fontSize={9.5} fill="var(--ink-3)">what happened</text>
     </svg>
   );
 }

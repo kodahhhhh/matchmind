@@ -206,10 +206,13 @@ export interface Counterfactual {
   change: "remove_goal" | "no_sub" | "remove_red_card";
   label: string;
   horizon_minutes: number;
+  method?: "trained_model" | "analogs";
+  model?: { name: string; trained_matches: number; coverage_p10_p90: { xg: number; possession: number } };
+  analog_summary?: { n: number; home: { xg: Band }; away: { xg: Band } };
   anchor: ClockRef & { label: string };
   actual: Record<Side, { xg: number; possession: number; goals: number }>;
   modelled: Record<Side, { xg: Band; possession: Band }>;
-  series: { offset_min: number; actual: Record<Side, number>; modelled: Record<Side, Band> }[];
+  series: { offset_min: number; actual: Record<Side, number>; modelled: Record<Side, Band> | null }[];
   analogs: {
     match_id: string;
     competition: string;
@@ -233,6 +236,16 @@ export interface SearchResult {
   team: Side;
   text: string;
   score: number;
+  match?: { home: string; away: string; competition: string; season: string; home_color: string; away_color: string };
+}
+
+export interface CommentaryLine {
+  sequence_id: string;
+  team: Side;
+  start: ClockRef & { t: number; label: string };
+  text: string;
+  danger: number;
+  outcome: "goal" | "shot" | "lost";
 }
 
 export type AskChunk =

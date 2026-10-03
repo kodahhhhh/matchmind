@@ -1,6 +1,6 @@
 // The only place the frontend talks to the backend. VITE_USE_FIXTURES=1 serves fixtures/ instead.
 import type {
-  AskChunk, Competition, Counterfactual, MatchCard, MatchDetail, MatchEvent,
+  AskChunk, CommentaryLine, Competition, Counterfactual, MatchCard, MatchDetail, MatchEvent,
   PlayerRow, SearchResult, Sequence, TimelineMinute, TurningPoint,
 } from "./types";
 
@@ -49,6 +49,9 @@ export const api = {
     if (!res.ok) throw new Error(`${res.status}: counterfactual`);
     return res.json();
   },
+
+  commentary: (id: string) =>
+    get<{ lines: CommentaryLine[] }>(`/matches/${enc(id)}/commentary`, `${fixtureDir(id)}/commentary.json`).then((r) => r.lines),
 
   search: (q: string, matchId?: string) =>
     get<{ results: SearchResult[] }>(

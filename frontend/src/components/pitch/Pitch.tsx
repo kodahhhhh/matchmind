@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import type { MatchEvent, Side } from "../../api/types";
-import { bucketKey, useMatch } from "../../store/match";
+import { bucketKey, resolveSequence, useMatch } from "../../store/match";
 import { clock, describe, isDefensive, isMove, isShot, xg } from "../../lib/format";
 import { PitchMarkings } from "./PitchMarkings";
 import { PITCH, sy } from "./geometry";
@@ -22,7 +22,7 @@ export function usePitchEvents() {
   const focus = useMatch((s) => s.focus);
   const replay = useMatch((s) => s.replay);
   const seqId = replay?.sequenceId ?? (focus?.kind === "sequence" ? focus.id : undefined);
-  const seq = seqId ? data?.sequences.find((s) => s.id === seqId) : undefined;
+  const seq = seqId ? resolveSequence(data, seqId) : undefined;
   return useMemo(() => {
     if (!data) return { events: [] as MatchEvent[], mode: "overview" as PitchMode, seq };
     if (seq) {

@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { motion } from "motion/react";
+import { CommentaryFeed } from "./CommentaryFeed";
 import type { MatchEvent, Sequence } from "../../api/types";
 import { useMatch } from "../../store/match";
 import { xg } from "../../lib/format";
@@ -11,13 +13,23 @@ export function Sequences() {
   const replay = useMatch((s) => s.replay);
   const focusSequence = useMatch((s) => s.focusSequence);
   const startReplay = useMatch((s) => s.startReplay);
+  const [view, setView] = useState<"top" | "feed">("top");
   if (!data) return null;
 
   return (
-    <div className="scroll-thin h-full overflow-y-auto px-4 pb-4">
-      <div className="px-1 pb-3 pt-1">
-        <div className="text-[15px] font-semibold text-ink">The most dangerous moves</div>
-        <p className="mt-0.5 text-[13px] leading-relaxed text-ink-3">Ranked by how much threat each sequence created. Click to draw it, ▶ to replay.</p>
+    <div className="scroll-thin h-full overflow-y-auto">
+      <div className="sticky top-0 z-10 bg-surface-1 px-4 pb-3">
+        <div className="flex rounded-xl bg-surface-2 p-1">
+          {([["top", "Most dangerous"], ["feed", "Live commentary"]] as const).map(([v, label]) => (
+            <button key={v} onClick={() => setView(v)}
+              className={`flex-1 rounded-lg py-1.5 text-[12.5px] font-medium transition ${view === v ? "bg-surface-4 text-ink shadow" : "text-ink-3 hover:text-ink-2"}`}>{label}</button>
+          ))}
+        </div>
+      </div>
+      {view === "feed" ? <CommentaryFeed /> : (
+      <div className="px-4 pb-4">
+      <div className="px-1 pb-3">
+        <p className="text-[13px] leading-relaxed text-ink-3">Ranked by how much threat each move created (VAEP). Click to draw it, ▶ to replay.</p>
       </div>
       <ol className="space-y-2.5">
         {data.sequences.map((s, i) => {
@@ -51,6 +63,8 @@ export function Sequences() {
           );
         })}
       </ol>
+      </div>
+      )}
     </div>
   );
 }

@@ -12,7 +12,9 @@ export function PitchOverlays() {
   const setWindow = useMatch((s) => s.setWindow);
   const setFocus = useMatch((s) => s.setFocus);
   const stopReplay = useMatch((s) => s.stopReplay);
+  const focusTurningPoint = useMatch((s) => s.focusTurningPoint);
   const { mode, events, seq } = usePitchEvents();
+  const caption = useMatch((st) => (seq ? st.commentaryBySeq.get(seq.id) : undefined));
 
   const stats = useMemo(() => {
     if (!data) return null;
@@ -53,6 +55,21 @@ export function PitchOverlays() {
             </button>
           )}
         </div>
+        {turning && data.turningPoints.length > 1 && (
+          <div className="glass pointer-events-auto flex items-center gap-1 rounded-2xl p-1.5">
+            <span className="px-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-ink-3">Shifts</span>
+            {data.turningPoints.map((tp) => {
+              const on = focus?.kind === "turning" && focus.id === tp.id;
+              return (
+                <button key={tp.id} onClick={() => focusTurningPoint(tp.id)}
+                  className={`flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 text-[12px] font-semibold transition ${on ? "bg-ai text-bg" : "text-ink-2 hover:bg-white/10"}`}>
+                  <span className="h-2 w-2 rounded-full" style={{ background: `var(--${tp.team_gaining})` }} />
+                  {tp.start.label}
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       <div className={`glass pointer-events-none absolute bottom-4 right-4 flex items-center gap-4 rounded-2xl px-4 py-2.5 transition-opacity ${mode === "sequence" ? "opacity-0" : ""}`}>
@@ -77,7 +94,23 @@ export function PitchOverlays() {
         })}
       </div>
 
-      <div className="glass pointer-events-none absolute bottom-4 left-4 flex items-center gap-3 rounded-xl px-3 py-2 text-[11px] text-white/75">
+      {mode === "sequence" && caption && (
+        <div className="pointer-events-none absolute inset-x-0 bottom-4 flex justify-center px-4">
+          <div className="glass flex max-w-[720px] items-stretch overflow-hidden rounded-2xl">
+            <span className="w-1.5 shrink-0" style={{ background: `var(--${caption.team})` }} />
+            <div className="px-4 py-2.5">
+              <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-ink-3">
+                <span className="display text-[14px] tracking-normal text-ink">{caption.start.label}</span>
+                {data.match.teams[caption.team].name}
+                <span className="ml-1 flex items-center gap-1 normal-case tracking-normal text-ink-4"><span className="h-1 w-1 rounded-full bg-ai" />Luna</span>
+              </div>
+              <div className="mt-0.5 text-[14.5px] font-medium leading-snug text-ink">{caption.text}</div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className={`glass pointer-events-none absolute bottom-4 left-4 flex items-center gap-3 rounded-xl px-3 py-2 text-[11px] text-white/75 ${mode === "sequence" && caption ? "hidden" : ""}`}>
         <span className="flex items-center gap-1.5"><svg width="12" height="12"><circle cx="6" cy="6" r="4.5" fill="rgba(255,255,255,0.25)" stroke="#fff" strokeWidth="1" /></svg>shot · size = xG</span>
         <span className="flex items-center gap-1.5"><svg width="12" height="12"><circle cx="6" cy="6" r="5" fill="#fff" /><circle cx="6" cy="6" r="1.8" fill="#1a4a30" /></svg>goal</span>
         {mode !== "overview" && <span className="flex items-center gap-1.5"><svg width="18" height="8"><line x1="1" y1="4" x2="17" y2="4" stroke="#fff" strokeWidth="1.5" /></svg>pass</span>}

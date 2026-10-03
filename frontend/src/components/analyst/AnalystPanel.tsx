@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { useMatch, type ChatMessage } from "../../store/match";
+import { resolveSequence, useMatch, type ChatMessage } from "../../store/match";
 import { clock, describe, isShot, xg } from "../../lib/format";
 
 const SUGGESTIONS: { q: string; sub: string; icon: ReactNode }[] = [
@@ -250,8 +250,8 @@ function Inline({ text }: { text: string }) {
       const e = data?.eventById.get(id);
       parts.push(<Chip key={mm.index} side={e?.team} onClick={() => focusEvent(id)}>{e ? describe(e) : "event"}</Chip>);
     } else {
-      const s = data?.sequences.find((x) => x.id === id);
-      parts.push(<Chip key={mm.index} side={s?.team} onClick={() => s && focusSequence(id)}>{s ? `${s.start.label} sequence` : "sequence"}</Chip>);
+      const s = resolveSequence(data, id);
+      parts.push(<Chip key={mm.index} side={s?.team} onClick={() => s && focusSequence(id)}>{s ? `${s.start.label} ${s.players[0] ?? ""} move`.replace(/\s+/g, " ") : "move"}</Chip>);
     }
     last = mm.index + mm[0].length;
   }

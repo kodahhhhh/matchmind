@@ -4,6 +4,7 @@ import { motion } from "motion/react";
 import { api } from "../../api/client";
 import type { Competition, MatchCard, MatchEvent } from "../../api/types";
 import { Logo } from "../ui/Logo";
+import { SearchButton } from "../search/SearchPalette";
 import { PitchMarkings } from "../pitch/PitchMarkings";
 import { PITCH, sy } from "../pitch/geometry";
 
@@ -37,9 +38,12 @@ export function MatchBrowser() {
     <div className="scroll-thin h-full overflow-y-auto">
       <header className="mx-auto flex max-w-[1280px] items-center justify-between px-8 py-6">
         <Logo />
-        <div className="flex items-center gap-2 text-[12.5px] text-ink-3">
-          <span className="h-1.5 w-1.5 rounded-full bg-[#3ccf8e]" />
-          {matches.length} matches · {comps.length} competitions
+        <div className="flex items-center gap-4">
+          <span className="flex items-center gap-2 text-[12.5px] text-ink-3">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#3ccf8e]" />
+            {matches.length} matches · {comps.length} competitions
+          </span>
+          <SearchButton />
         </div>
       </header>
 

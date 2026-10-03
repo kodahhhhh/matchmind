@@ -11,6 +11,7 @@ import { WhatIf } from "../whatif/WhatIf";
 import { Scoreboard } from "./Scoreboard";
 import { PitchOverlays } from "./WindowBar";
 import { Logo } from "../ui/Logo";
+import { SearchButton } from "../search/SearchPalette";
 
 const TABS: [RightTab, string][] = [["analyst", "Analyst"], ["sequences", "Moments"], ["players", "Players"], ["whatif", "What if"]];
 
@@ -42,7 +43,8 @@ export function MatchView() {
           </div>
         </div>
         <div className="flex flex-1 justify-center pt-1"><Scoreboard match={match} /></div>
-        <div className="flex w-[300px] justify-end">
+        <div className="flex w-[300px] items-center justify-end gap-2.5">
+          <SearchButton compact />
           <button onClick={findTurningPoint}
             className="ai-button flex items-center gap-2.5 rounded-2xl px-5 py-3 text-sm font-semibold text-white transition">
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M1.5 12.5 6 8l3.2 3.2L16.5 4" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /><circle cx="9.2" cy="11.2" r="2" fill="#fff" /></svg>

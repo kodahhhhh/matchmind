@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router";
 import { MatchBrowser } from "./components/browser/MatchBrowser";
 import { MatchView } from "./components/match/MatchView";
+import { SearchPalette } from "./components/search/SearchPalette";
 
 export default function App() {
   return (
@@ -9,6 +10,7 @@ export default function App() {
         <Route path="/" element={<MatchBrowser />} />
         <Route path="/match/:id" element={<MatchView />} />
       </Routes>
+      <SearchPalette />
     </BrowserRouter>
   );
 }
