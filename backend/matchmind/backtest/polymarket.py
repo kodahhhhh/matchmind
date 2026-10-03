@@ -16,6 +16,15 @@ EMBARGO_SECONDS = 180
 INFORMATION_LAG_MINUTES = 3
 
 
+def entry_allowed(period: int, minute: int, goals: list[dict]) -> bool:
+    """Only already-observed goals can embargo an entry; future goals cannot."""
+    recent_goal = any(
+        g["period"] == period and 0 < minute * 60 - g["seconds"] <= EMBARGO_SECONDS
+        for g in goals
+    )
+    return 1 <= minute <= 85 and not recent_goal
+
+
 def run() -> tuple[list[dict], dict]:
     from matchmind.api.repository import bundle
 
@@ -145,14 +154,7 @@ def run() -> tuple[list[dict], dict]:
                                 "market": [prices[s] for s in OUTCOMES],
                             }
                         )
-                # Exclude goal neighborhoods when retrospective timestamp QA could
-                # matter.
-                near_goal = any(
-                    g["period"] == period
-                    and abs(g["seconds"] - minute * 60) <= EMBARGO_SECONDS
-                    for g in audit["goals"]
-                )
-                if minute < 1 or minute > 85 or near_goal:
+                if not entry_allowed(period, minute, audit["goals"]):
                     continue
                 for side, m in item["markets"].items():
                     if side in positions:
@@ -166,10 +168,10 @@ def run() -> tuple[list[dict], dict]:
                         if price is None or not 0.02 <= price <= 0.98:
                             continue
                         paid = price + slippage
-                        if paid >= 1 or probability - paid <= EDGE:
+                        if paid >= 1 or probability - price <= EDGE:
                             continue
                         choices.append(
-                            (probability - paid, binary, paid, probability, price)
+                            (probability - price, binary, paid, probability, price)
                         )
                     if not choices:
                         continue

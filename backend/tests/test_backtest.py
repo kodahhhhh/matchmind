@@ -242,3 +242,32 @@ def test_golden_contracts_match_real_precomputed_route(name: str) -> None:
     assert response.status_code == 200
     assert response.json() == expected
     (Backtest if name == "backtest" else Market).model_validate(response.json())
+
+
+def test_future_goals_cannot_change_entry_decisions() -> None:
+    from matchmind.backtest.polymarket import entry_allowed
+
+    future = [{"period": 2, "seconds": 3601, "side": "home"}]
+    assert entry_allowed(2, 60, [])
+    assert entry_allowed(2, 60, future)
+    assert not entry_allowed(2, 61, future)
+    assert entry_allowed(2, 64, future)
+    assert not entry_allowed(2, 86, [])
+
+
+def test_slippage_sensitivity_reprices_identical_entries() -> None:
+    path = output() / "backtest.json"
+    if not path.exists():
+        pytest.skip("Run the historical pipeline first")
+    report = json.loads(path.read_text())
+    scenarios = [s for s in report["strategies"] if s["market"] == "polymarket"]
+    base = scenarios[0]["bets"]
+    for cents, scenario in enumerate(scenarios):
+        assert len(scenario["bets"]) == len(base)
+        for original, bet in zip(base, scenario["bets"], strict=True):
+            for key in ("match_id", "outcome", "side", "minute", "stake", "model_prob"):
+                assert bet[key] == original[key]
+            assert bet["price_or_odds"] == pytest.approx(
+                original["price_or_odds"] + cents / 100
+            )
+            assert bet["pnl"] <= original["pnl"]

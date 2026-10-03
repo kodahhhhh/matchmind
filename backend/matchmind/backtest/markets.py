@@ -378,7 +378,7 @@ def align(item: dict) -> dict:
     evidence["offset_seconds"] = evidence["period_offsets"]["1"]
     evidence["reason"] = (
         "Both halves have score-direction goal jumps; <=120s within-"
-        "half dispersion; goal neighborhoods excluded."
+        "half dispersion; post-goal entries suppressed."
     )
     return evidence
 

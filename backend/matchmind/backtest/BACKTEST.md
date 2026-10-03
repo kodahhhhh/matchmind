@@ -43,8 +43,8 @@ The main API registration and frontend belong to the orchestrator.
 - Polymarket protocol: fixed 10 percentage-point probability edge, actual YES
   or actual NO token history, $100 cash per bet, one position per outcome market,
   hold to resolution, no entries after 85 minutes, no fees assumed. Run costs
-  of 0, +1 and +2 cents with the same fixed threshold. Slippage may change which
-  first signal qualifies. Historical prices are trades, not executable asks.
+  of 0, +1 and +2 cents on identical quoted-price signals, entry minutes and
+  fixed cash stakes. These isolate cost without changing entry selection. Historical prices are trades, not executable asks.
 - Match by teams and date; read each market's resolution description. Exclude
   qualification, trophy, extra-time and ambiguous knockout contracts. Group
   matches cannot go to extra time. Check the source's resolved outcome against
@@ -56,8 +56,9 @@ The main API registration and frontend belong to the orchestrator.
   halftime separately, permitting at most 120 seconds' dispersion between goal
   offsets within each half. Missing/ambiguous alignment drops the whole match.
   Goal-based alignment is retrospective data QA, never optimization of profits.
-  Use the latest corroborating jump offset and exclude entries within three
-  minutes of every regulation goal. Goal-free halves fail this strict audit.
+  Use the latest corroborating jump offset and exclude entries for three
+  minutes after an already-observed regulation goal. Future goals never
+  suppress an entry. Goal-free halves fail this strict audit.
 - Use model information deliberately lagged three match-clock minutes to absorb
   minute-sampling and alignment uncertainty; no entries in the first three
   minutes of either half. This conservative rule is fixed before P&L evaluation.
@@ -102,7 +103,7 @@ to avoid editing the shared schemas module during parallel work.
 
 ## Measured results
 
-Generated: `2026-10-03T23:40:39.963391+00:00`.
+Generated: `2026-10-03T23:50:05.765019+00:00`.
 
 **No reliable evidence that MatchMind beats these markets.** The primary Pinnacle closing-odds test loses money and has worse probability scores than the market. Polymarket paper P&L is positive, but all ROI intervals include zero, the cohort is selected, and historical fills are not proven.
 
@@ -141,9 +142,9 @@ Pinnacle units and Polymarket dollars are separate. ROI = P&L / total staked, no
 | pinnacle-closing-kelly | 153 | 203 | 2959.43 | -401.03 | -13.55% | [-38.98%, 17.21%] | 26.11% | 604.71 | 598.97 |
 | pinnacle-opening-flat | 153 | 203 | 203.00 | -10.77 | -5.31% | [-31.66%, 25.89%] | 26.11% | 31.54 | 989.23 |
 | pinnacle-opening-kelly | 153 | 179 | 3282.70 | -271.61 | -8.27% | [-35.04%, 22.74%] | 26.26% | 638.93 | 728.39 |
-| polymarket-0c | 14 | 42 | 4200.00 | +2370.28 | 56.44% | [-5.09%, 117.76%] | 54.76% | 146.15 | 12370.28 |
-| polymarket-1c | 14 | 42 | 4200.00 | +2190.85 | 52.16% | [-7.00%, 110.78%] | 54.76% | 148.48 | 12190.85 |
-| polymarket-2c | 14 | 42 | 4200.00 | +2163.04 | 51.50% | [-4.02%, 106.49%] | 57.14% | 150.75 | 12163.04 |
+| polymarket-0c | 14 | 42 | 4200.00 | +2552.65 | 60.78% | [-1.98%, 122.99%] | 54.76% | 146.15 | 12552.65 |
+| polymarket-1c | 14 | 42 | 4200.00 | +2305.58 | 54.89% | [-4.89%, 113.58%] | 54.76% | 148.48 | 12305.58 |
+| polymarket-2c | 14 | 42 | 4200.00 | +2080.04 | 49.52% | [-8.01%, 105.64%] | 54.76% | 150.75 | 12080.04 |
 
 **Opening rows are payout sensitivities, not executable backtests.** They use the closing-selected cohort. Opening Kelly stakes additionally drop selected outcomes with nonpositive opening edge; that does not turn them into a valid opening-time strategy.
 
@@ -197,16 +198,16 @@ Offsets are seconds added to `kickoff_utc + displayed_minute*60`. The second-hal
 | Slovenia – Denmark (sb:3930162) | 6584.93 | +86 | +996 | 3 | -100.00 | -103.92 | -107.69 |
 | Croatia – Albania (sb:3930167) | 53477.20 | +47 | +1159 | 3 | +707.12 | +652.85 | +604.57 |
 | Germany – Hungary (sb:3930168) | 184065.10 | +19 | +1183 | 3 | -300.00 | -300.00 | -300.00 |
-| Slovakia – Ukraine (sb:3938640) | 164795.60 | +187 | +1195 | 3 | -130.51 | -133.33 | -136.07 |
+| Slovakia – Ukraine (sb:3938640) | 164795.60 | +187 | +1195 | 3 | -101.98 | -105.83 | -109.52 |
 | Georgia – Czech Republic (sb:3938642) | 12733.05 | +222 | +1375 | 3 | +542.39 | +501.00 | +463.89 |
-| Belgium – Romania (sb:3930175) | 301828.33 | -11 | +1081 | 3 | -100.00 | -103.92 | +84.62 |
+| Belgium – Romania (sb:3930175) | 301828.33 | -11 | +1081 | 3 | -100.00 | -103.92 | -107.69 |
 | Switzerland – Germany (sb:3930176) | 75729.00 | +71 | +1316 | 3 | +854.77 | +789.61 | +731.59 |
-| Netherlands – Austria (sb:3930180) | 128255.56 | +133 | +1171 | 3 | +306.30 | +293.21 | +280.71 |
-| Georgia – Portugal (sb:3938644) | 100072.58 | -87 | +1249 | 3 | +248.02 | +294.17 | +282.63 |
+| Netherlands – Austria (sb:3930180) | 128255.56 | +133 | +1171 | 3 | +460.15 | +440.20 | +421.31 |
+| Georgia – Portugal (sb:3938644) | 100072.58 | -87 | +1249 | 3 | +248.02 | +237.93 | +228.21 |
 | Switzerland – Italy (sb:3940878) | 13917.96 | +102 | +1295 | 3 | +439.69 | +420.84 | +402.98 |
 | England – Slovakia (sb:3941017) | 58461.89 | +99 | +1349 | 3 | +22.58 | +12.50 | +3.03 |
 | Romania – Netherlands (sb:3941021) | 26951.30 | +175 | +1239 | 3 | -300.00 | -300.00 | -300.00 |
-| Austria – Turkey (sb:3941022) | 149466.85 | -56 | +1151 | 3 | +326.07 | +316.33 | +303.53 |
+| Austria – Turkey (sb:3941022) | 149466.85 | -56 | +1151 | 3 | +326.07 | +312.81 | +300.11 |
 | Netherlands – England (sb:3942819) | 51153.29 | +148 | +1202 | 3 | -146.15 | -148.48 | -150.75 |
 
 Every aligned match here is from Euro 2024. None of the 19 eligible Copa events passes both-half alignment. World Cup matches are excluded before price execution because usable UTC clocks or compatible regulation-only contracts are absent.
@@ -243,7 +244,7 @@ No shared API source or running port-8000 service is changed. The orchestrator m
 
 - `uv run ruff check .`: passed.
 - `uv run ruff format --check .`: passed (71 Python files).
-- `uv run pytest`: 63 passed, 1 failed; all 16 W10 tests pass.
+- `uv run pytest`: 65 passed, 1 failed; all 18 W10 tests pass.
 - Sole failure: `tests/test_contract.py::test_counterfactual_contract_and_quantiles`. The existing response adds horizon/anchor/series fields absent from its fixture. The counterfactual source, test and fixture have zero diff from base commit `66ea23c`; W10 does not edit another agent's files.
 - Live :8030: both golden responses exactly match; 80 market responses validate; unknown match returns 404.
 - 1154 series points across 14 aligned matches match the shared :8000 timeline index, period, minute and label.

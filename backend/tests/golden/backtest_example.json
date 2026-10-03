@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-03T23:40:39.963391+00:00",
+  "generated_at": "2026-10-03T23:50:05.765019+00:00",
   "sources": [
     {
       "name": "Pinnacle / football-data.co.uk",
@@ -9943,11 +9943,11 @@
       "n_matches": 14,
       "n_bets": 42,
       "staked": 4200.0,
-      "pnl": 2370.2776723443553,
-      "roi": 0.564351826748656,
+      "pnl": 2552.6521027469785,
+      "roi": 0.607774310177852,
       "roi_ci95": [
-        -0.05092287844797305,
-        1.1775522313280813
+        -0.019783393808862983,
+        1.2298898384841854
       ],
       "hit_rate": 0.5476190476190477,
       "max_drawdown": 146.15384615384573,
@@ -9970,47 +9970,47 @@
         {
           "i": 3,
           "label": "2024-06-21",
-          "bankroll": 10176.607015297841
+          "bankroll": 10205.135291854309
         },
         {
           "i": 4,
           "label": "2024-06-22",
-          "bankroll": 10618.998319645667
+          "bankroll": 10647.526596202135
         },
         {
           "i": 5,
           "label": "2024-06-23",
-          "bankroll": 11473.769771129228
+          "bankroll": 11502.298047685696
         },
         {
           "i": 6,
           "label": "2024-06-25",
-          "bankroll": 11780.07262345541
+          "bankroll": 11962.447053858032
         },
         {
           "i": 7,
           "label": "2024-06-26",
-          "bankroll": 12028.096028621672
+          "bankroll": 12210.470459024295
         },
         {
           "i": 8,
           "label": "2024-06-29",
-          "bankroll": 12467.782497268538
+          "bankroll": 12650.15692767116
         },
         {
           "i": 9,
           "label": "2024-06-30",
-          "bankroll": 12490.363142429827
+          "bankroll": 12672.73757283245
         },
         {
           "i": 10,
           "label": "2024-07-02",
-          "bankroll": 12516.431518498204
+          "bankroll": 12698.805948900826
         },
         {
           "i": 11,
           "label": "2024-07-10",
-          "bankroll": 12370.277672344359
+          "bankroll": 12552.65210274698
         }
       ],
       "bets": [
@@ -10151,12 +10151,12 @@
           "label": "Slovakia \u2013 Ukraine",
           "outcome": "draw",
           "side": "NO",
-          "price_or_odds": 0.59,
-          "model_prob": 0.7971621683018892,
-          "market_prob": 0.59,
+          "price_or_odds": 0.505,
+          "model_prob": 0.7389735292270367,
+          "market_prob": 0.505,
           "stake": 100.0,
-          "pnl": 69.49152542372883,
-          "minute": 20
+          "pnl": 98.01980198019803,
+          "minute": 15
         },
         {
           "match_id": "sb:3938642",
@@ -10271,12 +10271,12 @@
           "label": "Netherlands \u2013 Austria",
           "outcome": "home",
           "side": "NO",
-          "price_or_odds": 0.65,
-          "model_prob": 0.7899119012642001,
-          "market_prob": 0.65,
+          "price_or_odds": 0.325,
+          "model_prob": 0.5610484517065317,
+          "market_prob": 0.325,
           "stake": 100.0,
-          "pnl": 53.84615384615383,
-          "minute": 9
+          "pnl": 207.69230769230768,
+          "minute": 3
         },
         {
           "match_id": "sb:3930180",
@@ -10531,11 +10531,11 @@
       "n_matches": 14,
       "n_bets": 42,
       "staked": 4200.0,
-      "pnl": 2190.8488530731042,
-      "roi": 0.52163067930312,
+      "pnl": 2305.581923885841,
+      "roi": 0.5489480771156765,
       "roi_ci95": [
-        -0.07004669593415049,
-        1.10782586415195
+        -0.04893850519534382,
+        1.1357799301188414
       ],
       "hit_rate": 0.5476190476190477,
       "max_drawdown": 148.48484848484804,
@@ -10558,47 +10558,47 @@
         {
           "i": 3,
           "label": "2024-06-21",
-          "bankroll": 10115.598696054103
+          "bankroll": 10143.10678666899
         },
         {
           "i": 4,
           "label": "2024-06-22",
-          "bankroll": 10512.678378991108
+          "bankroll": 10540.186469605995
         },
         {
           "i": 5,
           "label": "2024-06-23",
-          "bankroll": 11302.284113758133
+          "bankroll": 11329.79220437302
         },
         {
           "i": 6,
           "label": "2024-06-25",
-          "bankroll": 11595.489406118355
+          "bankroll": 11769.989807904658
         },
         {
           "i": 7,
           "label": "2024-06-26",
-          "bankroll": 11889.664163399908
+          "bankroll": 12007.920842387417
         },
         {
           "i": 8,
           "label": "2024-06-29",
-          "bankroll": 12310.501198495813
+          "bankroll": 12428.757877483322
         },
         {
           "i": 9,
           "label": "2024-06-30",
-          "bankroll": 12323.001198495813
+          "bankroll": 12441.257877483322
         },
         {
           "i": 10,
           "label": "2024-07-02",
-          "bankroll": 12339.333701557951
+          "bankroll": 12454.06677237069
         },
         {
           "i": 11,
           "label": "2024-07-10",
-          "bankroll": 12190.848853073103
+          "bankroll": 12305.581923885842
         }
       ],
       "bets": [
@@ -10704,11 +10704,11 @@
           "outcome": "draw",
           "side": "YES",
           "price_or_odds": 0.16,
-          "model_prob": 0.2605868922069773,
+          "model_prob": 0.25136421184550845,
           "market_prob": 0.15,
           "stake": 100.0,
           "pnl": -100.0,
-          "minute": 18
+          "minute": 15
         },
         {
           "match_id": "sb:3938640",
@@ -10739,12 +10739,12 @@
           "label": "Slovakia \u2013 Ukraine",
           "outcome": "draw",
           "side": "NO",
-          "price_or_odds": 0.6,
-          "model_prob": 0.7971621683018892,
-          "market_prob": 0.59,
+          "price_or_odds": 0.515,
+          "model_prob": 0.7389735292270367,
+          "market_prob": 0.505,
           "stake": 100.0,
-          "pnl": 66.66666666666667,
-          "minute": 20
+          "pnl": 94.1747572815534,
+          "minute": 15
         },
         {
           "match_id": "sb:3938642",
@@ -10859,12 +10859,12 @@
           "label": "Netherlands \u2013 Austria",
           "outcome": "home",
           "side": "NO",
-          "price_or_odds": 0.66,
-          "model_prob": 0.7899119012642001,
-          "market_prob": 0.65,
+          "price_or_odds": 0.335,
+          "model_prob": 0.5610484517065317,
+          "market_prob": 0.325,
           "stake": 100.0,
-          "pnl": 51.515151515151516,
-          "minute": 9
+          "pnl": 198.50746268656712,
+          "minute": 3
         },
         {
           "match_id": "sb:3930180",
@@ -10919,12 +10919,12 @@
           "label": "Georgia \u2013 Portugal",
           "outcome": "draw",
           "side": "NO",
-          "price_or_odds": 0.515,
-          "model_prob": 0.8980570873988875,
-          "market_prob": 0.505,
+          "price_or_odds": 0.725,
+          "model_prob": 0.8153229957868522,
+          "market_prob": 0.715,
           "stake": 100.0,
-          "pnl": 94.1747572815534,
-          "minute": 67
+          "pnl": 37.93103448275863,
+          "minute": 39
         },
         {
           "match_id": "sb:3940878",
@@ -10992,11 +10992,11 @@
           "outcome": "draw",
           "side": "NO",
           "price_or_odds": 0.7,
-          "model_prob": 0.8197905366000104,
+          "model_prob": 0.7906126567910405,
           "market_prob": 0.69,
           "stake": 100.0,
           "pnl": -100.0,
-          "minute": 33
+          "minute": 31
         },
         {
           "match_id": "sb:3941021",
@@ -11063,12 +11063,12 @@
           "label": "Austria \u2013 Turkey",
           "outcome": "home",
           "side": "NO",
-          "price_or_odds": 0.645,
-          "model_prob": 0.7524209707060345,
-          "market_prob": 0.635,
+          "price_or_odds": 0.66,
+          "model_prob": 0.7503624721369542,
+          "market_prob": 0.65,
           "stake": 100.0,
-          "pnl": 55.038759689922465,
-          "minute": 19
+          "pnl": 51.515151515151516,
+          "minute": 13
         },
         {
           "match_id": "sb:3942819",
@@ -11119,13 +11119,13 @@
       "n_matches": 14,
       "n_bets": 42,
       "staked": 4200.0,
-      "pnl": 2163.0398601248125,
-      "roi": 0.5150094905059077,
+      "pnl": 2080.035480094897,
+      "roi": 0.4952465428797374,
       "roi_ci95": [
-        -0.040210143712671974,
-        1.0649091475674886
+        -0.0801096692483233,
+        1.0564076100730828
       ],
-      "hit_rate": 0.5714285714285714,
+      "hit_rate": 0.5476190476190477,
       "max_drawdown": 150.74626865671598,
       "equity": [
         {
@@ -11146,47 +11146,47 @@
         {
           "i": 3,
           "label": "2024-06-21",
-          "bankroll": 10060.810187284374
+          "bankroll": 10087.351951531056
         },
         {
           "i": 4,
           "label": "2024-06-22",
-          "bankroll": 10609.314460788648
+          "bankroll": 10443.548532727638
         },
         {
           "i": 5,
           "label": "2024-06-23",
-          "bankroll": 11340.906981742872
+          "bankroll": 11175.141053681862
         },
         {
           "i": 6,
           "label": "2024-06-25",
-          "bankroll": 11621.61363078651
+          "bankroll": 11596.449043845985
         },
         {
           "i": 7,
           "label": "2024-06-26",
-          "bankroll": 11904.2466840078
+          "bankroll": 11824.66032835979
         },
         {
           "i": 8,
           "label": "2024-06-29",
-          "bankroll": 12307.22287448399
+          "bankroll": 12227.636518835981
         },
         {
           "i": 9,
           "label": "2024-06-30",
-          "bankroll": 12310.253177514294
+          "bankroll": 12230.666821866285
         },
         {
           "i": 10,
           "label": "2024-07-02",
-          "bankroll": 12313.786128781532
+          "bankroll": 12230.781748751615
         },
         {
           "i": 11,
           "label": "2024-07-10",
-          "bankroll": 12163.039860124816
+          "bankroll": 12080.035480094899
         }
       ],
       "bets": [
@@ -11291,12 +11291,12 @@
           "label": "Germany \u2013 Hungary",
           "outcome": "draw",
           "side": "YES",
-          "price_or_odds": 0.09000000000000001,
-          "model_prob": 0.20871245395865176,
-          "market_prob": 0.07,
+          "price_or_odds": 0.16999999999999998,
+          "model_prob": 0.25136421184550845,
+          "market_prob": 0.15,
           "stake": 100.0,
           "pnl": -100.0,
-          "minute": 36
+          "minute": 15
         },
         {
           "match_id": "sb:3938640",
@@ -11327,12 +11327,12 @@
           "label": "Slovakia \u2013 Ukraine",
           "outcome": "draw",
           "side": "NO",
-          "price_or_odds": 0.61,
-          "model_prob": 0.7971621683018892,
-          "market_prob": 0.59,
+          "price_or_odds": 0.525,
+          "model_prob": 0.7389735292270367,
+          "market_prob": 0.505,
           "stake": 100.0,
-          "pnl": 63.934426229508205,
-          "minute": 20
+          "pnl": 90.47619047619047,
+          "minute": 15
         },
         {
           "match_id": "sb:3938642",
@@ -11398,13 +11398,13 @@
           "match_id": "sb:3930175",
           "label": "Belgium \u2013 Romania",
           "outcome": "away",
-          "side": "NO",
-          "price_or_odds": 0.52,
-          "model_prob": 0.899086590185245,
-          "market_prob": 0.5,
+          "side": "YES",
+          "price_or_odds": 0.07,
+          "model_prob": 0.16485066138947083,
+          "market_prob": 0.05,
           "stake": 100.0,
-          "pnl": 92.30769230769229,
-          "minute": 17
+          "pnl": -100.0,
+          "minute": 14
         },
         {
           "match_id": "sb:3930176",
@@ -11447,12 +11447,12 @@
           "label": "Netherlands \u2013 Austria",
           "outcome": "home",
           "side": "NO",
-          "price_or_odds": 0.67,
-          "model_prob": 0.7899119012642001,
-          "market_prob": 0.65,
+          "price_or_odds": 0.34500000000000003,
+          "model_prob": 0.5610484517065317,
+          "market_prob": 0.325,
           "stake": 100.0,
-          "pnl": 49.25373134328357,
-          "minute": 9
+          "pnl": 189.85507246376807,
+          "minute": 3
         },
         {
           "match_id": "sb:3930180",
@@ -11507,12 +11507,12 @@
           "label": "Georgia \u2013 Portugal",
           "outcome": "draw",
           "side": "NO",
-          "price_or_odds": 0.525,
-          "model_prob": 0.8980570873988875,
-          "market_prob": 0.505,
+          "price_or_odds": 0.735,
+          "model_prob": 0.8153229957868522,
+          "market_prob": 0.715,
           "stake": 100.0,
-          "pnl": 90.47619047619047,
-          "minute": 67
+          "pnl": 36.05442176870748,
+          "minute": 39
         },
         {
           "match_id": "sb:3940878",
@@ -11580,11 +11580,11 @@
           "outcome": "draw",
           "side": "NO",
           "price_or_odds": 0.71,
-          "model_prob": 0.8197905366000104,
+          "model_prob": 0.7906126567910405,
           "market_prob": 0.69,
           "stake": 100.0,
           "pnl": -100.0,
-          "minute": 33
+          "minute": 31
         },
         {
           "match_id": "sb:3941021",
@@ -11616,11 +11616,11 @@
           "outcome": "draw",
           "side": "YES",
           "price_or_odds": 0.15,
-          "model_prob": 0.2539338580208557,
+          "model_prob": 0.24415725957792977,
           "market_prob": 0.13,
           "stake": 100.0,
           "pnl": -100.0,
-          "minute": 25
+          "minute": 24
         },
         {
           "match_id": "sb:3941022",
@@ -11651,12 +11651,12 @@
           "label": "Austria \u2013 Turkey",
           "outcome": "home",
           "side": "NO",
-          "price_or_odds": 0.655,
-          "model_prob": 0.7688428465676446,
-          "market_prob": 0.635,
+          "price_or_odds": 0.67,
+          "model_prob": 0.7503624721369542,
+          "market_prob": 0.65,
           "stake": 100.0,
-          "pnl": 52.67175572519083,
-          "minute": 20
+          "pnl": 49.25373134328357,
+          "minute": 13
         },
         {
           "match_id": "sb:3942819",
@@ -11673,6 +11673,18 @@
         {
           "match_id": "sb:3942819",
           "label": "Netherlands \u2013 England",
+          "outcome": "away",
+          "side": "NO",
+          "price_or_odds": 0.62,
+          "model_prob": 0.7111418584267303,
+          "market_prob": 0.6,
+          "stake": 100.0,
+          "pnl": -100.0,
+          "minute": 3
+        },
+        {
+          "match_id": "sb:3942819",
+          "label": "Netherlands \u2013 England",
           "outcome": "draw",
           "side": "NO",
           "price_or_odds": 0.67,
@@ -11681,18 +11693,6 @@
           "stake": 100.0,
           "pnl": 49.25373134328357,
           "minute": 10
-        },
-        {
-          "match_id": "sb:3942819",
-          "label": "Netherlands \u2013 England",
-          "outcome": "away",
-          "side": "NO",
-          "price_or_odds": 0.385,
-          "model_prob": 0.5503105505612562,
-          "market_prob": 0.365,
-          "stake": 100.0,
-          "pnl": -100.0,
-          "minute": 21
         }
       ],
       "brier_model": 0.5863311884374625,
@@ -11708,7 +11708,7 @@
     "In-play result model excludes every World Cup 2022, Euro 2024 and Copa Am\u00e9rica 2024 match. Base feature models, result training, calibration and validation are disjoint chronological partitions.",
     "The World Cup final market includes extra time and penalties. A regulation model cannot value it, so it is excluded.",
     "Minute-level trade histories are not order books or guaranteed executable asks. Both YES and NO histories are fetched; no synthetic NO fill. No historical trading fees assumed for these markets; +1\u00a2 and +2\u00a2 cost sensitivities are shown.",
-    "Clock alignment is retrospective data QA, using goal-direction jumps only, never profits. Both halves must be verified; goal-free or uncertain matches are excluded. No entries within three match-clock minutes of a goal.",
+    "Clock alignment is retrospective data QA, using goal-direction jumps only, never profits. Both halves must be verified; goal-free or uncertain matches are excluded. No entries during the three match-clock minutes after an observed goal; future goals never suppress an entry.",
     "Backward as-of prices must be less than 90 seconds old; no forward interpolation. Model inputs strictly precede the match-clock minute, with an additional three-minute information lag; no new entries after minute 85.",
     "Polymarket sample is small and selected by market/data/alignment availability. Match-cluster bootstrap 95% intervals are descriptive, not proof of future edge; they do not correct selection bias or execution uncertainty.",
     "Brier is the sum of squared errors across three outcomes (0\u20132). Polymarket three-way prices are normalized only for probability scoring; execution uses each actual binary price.",

@@ -88,7 +88,8 @@ def run() -> None:
                 "Clock alignment is retrospective data QA, using goal-"
                 "direction jumps only, never profits. Both halves must be "
                 "verified; goal-free or uncertain matches are excluded. No "
-                "entries within three match-clock minutes of a goal."
+                "entries during the three match-clock minutes after an observed "
+                "goal; future goals never suppress an entry."
             ),
             (
                 "Backward as-of prices must be less than 90 seconds old; no "

@@ -272,7 +272,7 @@ def generate() -> None:
             "",
             "- `uv run ruff check .`: passed.",
             "- `uv run ruff format --check .`: passed (71 Python files).",
-            "- `uv run pytest`: 63 passed, 1 failed; all 16 W10 tests pass.",
+            "- `uv run pytest`: 65 passed, 1 failed; all 18 W10 tests pass.",
             "- Sole failure: `tests/test_contract.py::"
             "test_counterfactual_contract_and_quantiles`. The existing response "
             "adds horizon/anchor/series fields absent from its fixture. "
