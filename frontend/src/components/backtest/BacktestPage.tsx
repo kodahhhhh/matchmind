@@ -14,6 +14,8 @@ const money = (s: BacktestStrategy, v: number, signed = false) => {
   const abs = Math.abs(v);
   return s.market === "polymarket" ? `${sign}$${abs.toLocaleString(undefined, { maximumFractionDigits: 0 })}` : `${sign}${abs.toFixed(1)}u`;
 };
+const axisMoney = (s: BacktestStrategy, v: number) =>
+  s.market === "polymarket" ? `$${Math.round(v).toLocaleString()}` : `${Math.round(v).toLocaleString()}u`;
 const pctS = (v: number, signed = true) => `${signed && v > 0 ? "+" : v < 0 ? "−" : ""}${Math.abs(v * 100).toFixed(1)}%`;
 
 export function BacktestPage() {
@@ -48,20 +50,21 @@ export function BacktestPage() {
       {bt && (
         <>
           <section className="mx-auto grid max-w-[1280px] grid-cols-1 gap-4 px-8 lg:grid-cols-2">
-            {bt.strategies.map((s, i) => <StrategyCard key={s.id} s={s} i={i} />)}
+            {headline(bt).map((s, i) => <StrategyCard key={s.id} s={s} i={i} />)}
           </section>
+          <Sensitivity bt={bt} />
 
           <section className="mx-auto max-w-[1280px] px-8 pt-10">
             <div className="mb-4 flex items-center justify-between">
               <h2 className="display text-[28px] text-ink">Every bet</h2>
               <div className="flex rounded-xl bg-surface-2 p-1">
-                {bt.strategies.map((s, i) => (
+                {headline(bt).map((s, i) => (
                   <button key={s.id} onClick={() => setTab(i)}
                     className={`rounded-lg px-3.5 py-1.5 text-[12.5px] font-medium transition ${tab === i ? "bg-surface-4 text-ink shadow" : "text-ink-3 hover:text-ink-2"}`}>{s.name}</button>
                 ))}
               </div>
             </div>
-            {bt.strategies[tab] && <BetsTable s={bt.strategies[tab]} />}
+            {headline(bt)[tab] && <BetsTable s={headline(bt)[tab]} />}
           </section>
 
           <section className="mx-auto grid max-w-[1280px] grid-cols-1 gap-4 px-8 pb-20 pt-10 lg:grid-cols-2">
@@ -93,6 +96,41 @@ export function BacktestPage() {
         </>
       )}
     </div>
+  );
+}
+
+/** One headline strategy per market: Pinnacle at closing odds with flat stakes, Polymarket with 1¢ slippage. */
+function headline(bt: Backtest): BacktestStrategy[] {
+  const pick = (market: string, pref: (s: BacktestStrategy) => boolean) => {
+    const xs = bt.strategies.filter((s) => s.market === market);
+    return xs.find(pref) ?? xs[0];
+  };
+  return [
+    pick("pinnacle", (s) => /closing/i.test(s.name) && /1 unit|flat/i.test(s.name)),
+    pick("polymarket", (s) => /1¢|1c|\+1/i.test(s.name)),
+  ].filter((s): s is BacktestStrategy => !!s);
+}
+
+function Sensitivity({ bt }: { bt: Backtest }) {
+  const head = new Set(headline(bt).map((s) => s.id));
+  const rest = bt.strategies.filter((s) => !head.has(s.id));
+  if (!rest.length) return null;
+  return (
+    <section className="mx-auto max-w-[1280px] px-8 pt-6">
+      <div className="eyebrow mb-2">Sensitivity checks</div>
+      <div className="overflow-hidden rounded-[var(--radius)] bg-surface-1 ring-1 ring-line">
+        {rest.map((s, i) => (
+          <div key={s.id} className={`grid grid-cols-[2fr_0.6fr_0.8fr_0.8fr_0.7fr_1.2fr] items-center gap-3 px-5 py-2.5 text-[13px] ${i ? "border-t border-line" : ""}`}>
+            <span className="font-medium text-ink">{s.name}</span>
+            <span className="tabular text-ink-3">{s.n_bets} bets</span>
+            <span className="tabular text-ink-3">{money(s, s.staked)} staked</span>
+            <span className={`font-semibold tabular ${s.pnl >= 0 ? "text-[#3ccf8e]" : "text-[#ff6b6b]"}`}>{money(s, s.pnl, true)}</span>
+            <span className="tabular text-ink">{pctS(s.roi)}</span>
+            <span className="tabular text-ink-3">95% CI {pctS(s.roi_ci95[0])} to {pctS(s.roi_ci95[1])}</span>
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }
 
@@ -188,10 +226,13 @@ function EquityChart({ s }: { s: BacktestStrategy }) {
   const geo = useMemo(() => {
     if (!width || pts.length < 2) return null;
     const vals = pts.map((p) => p.bankroll);
-    const lo = Math.min(0, ...vals), hi = Math.max(0, ...vals);
+    // the curve starts from its pre-bet bankroll (0 for cumulative P&L, the bankroll for Kelly)
+    const ref = /^start$/i.test(pts[0].label) ? vals[0] : 0;
+    const lo = Math.min(ref, ...vals), hi = Math.max(ref, ...vals);
+    const pad = (hi - lo) * 0.08 || 1;
     const x = scaleLinear().domain([0, pts.length - 1]).range([P.l, width - P.r]);
-    const y = scaleLinear().domain([lo, hi]).nice(4).range([H - P.b, P.t]);
-    return { x, y };
+    const y = scaleLinear().domain([lo - pad, hi + pad]).nice(4).range([H - P.b, P.t]);
+    return { x, y, ref };
   }, [width, pts, P.l, P.r, P.t, P.b]);
   const up = s.pnl >= 0;
   const stroke = up ? "#3ccf8e" : "#ff6b6b";
@@ -203,15 +244,17 @@ function EquityChart({ s }: { s: BacktestStrategy }) {
           onPointerLeave={() => setHover(null)}>
           {geo.y.ticks(4).map((t) => (
             <g key={t}>
-              <line x1={P.l} x2={width - P.r} y1={geo.y(t)} y2={geo.y(t)} stroke={t === 0 ? "var(--ink-4)" : "var(--grid)"} />
-              <text x={P.l - 8} y={geo.y(t) + 3.5} fontSize={10} fill="var(--ink-4)" textAnchor="end" className="tabular">{money(s, t)}</text>
+              <line x1={P.l} x2={width - P.r} y1={geo.y(t)} y2={geo.y(t)} stroke="var(--grid)" />
+              <text x={P.l - 8} y={geo.y(t) + 3.5} fontSize={10} fill="var(--ink-4)" textAnchor="end" className="tabular">{axisMoney(s, t)}</text>
             </g>
           ))}
-          <path d={area<(typeof pts)[number]>().x((_, i) => geo.x(i)).y0(geo.y(0)).y1((p) => geo.y(p.bankroll))(pts) ?? ""} fill={stroke} opacity={0.1} />
+          <line x1={P.l} x2={width - P.r} y1={geo.y(geo.ref)} y2={geo.y(geo.ref)} stroke="var(--ink-4)" />
+          <text x={width - P.r} y={geo.y(geo.ref) - 4} fontSize={9.5} fill="var(--ink-4)" textAnchor="end">start</text>
+          <path d={area<(typeof pts)[number]>().x((_, i) => geo.x(i)).y0(geo.y(geo.ref)).y1((p) => geo.y(p.bankroll))(pts) ?? ""} fill={stroke} opacity={0.1} />
           <path d={line<(typeof pts)[number]>().x((_, i) => geo.x(i)).y((p) => geo.y(p.bankroll))(pts) ?? ""} fill="none" stroke={stroke} strokeWidth={2} strokeLinejoin="round" />
           <circle cx={geo.x(pts.length - 1)} cy={geo.y(pts[pts.length - 1].bankroll)} r={4} fill={stroke} stroke="var(--surface-1)" strokeWidth={2} />
-          <text x={P.l} y={H - 4} fontSize={10} fill="var(--ink-4)">bet 1</text>
-          <text x={width - P.r} y={H - 4} fontSize={10} fill="var(--ink-4)" textAnchor="end">bet {pts.length}</text>
+          <text x={P.l} y={H - 4} fontSize={10} fill="var(--ink-4)">{pts[0].label}</text>
+          <text x={width - P.r} y={H - 4} fontSize={10} fill="var(--ink-4)" textAnchor="end">{pts[pts.length - 1].label}</text>
           {hover != null && (
             <g pointerEvents="none">
               <line x1={geo.x(hover)} x2={geo.x(hover)} y1={P.t} y2={H - P.b} stroke="var(--ink)" strokeOpacity={0.4} />
@@ -224,7 +267,7 @@ function EquityChart({ s }: { s: BacktestStrategy }) {
         <div className="glass pointer-events-none absolute top-0 rounded-xl px-3 py-2 text-xs shadow-xl"
           style={{ left: Math.min(geo.x(hover) + 10, width - 200) }}>
           <div className="font-semibold tabular text-ink">{money(s, pts[hover].bankroll, true)}</div>
-          <div className="max-w-[180px] truncate text-ink-3">after bet {hover + 1} · {pts[hover].label}</div>
+          <div className="max-w-[180px] truncate text-ink-3">{pts[hover].label}</div>
         </div>
       )}
     </div>
