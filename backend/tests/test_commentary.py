@@ -97,6 +97,24 @@ def test_zone_and_format_validation() -> None:
     f["actions"] = [{"recipient": "Messi", "to": "central midfield"}]
     assert line_errors("De Paul finds Messi on the right wing.", f)
     assert not line_errors("De Paul finds Messi in central midfield.", f)
+    f["actions"] = [{"player": "St. Clair"}]
+    assert not line_errors("St. Clair sends a long ball.", f)
+    f["score_after"] = {"home": 1, "away": 3}
+    f["start"] = {"second": 0}
+    assert "Unsupported score" in line_errors("Werder lead 1–0.", f)
+    f["team"] = "home"
+    f["actions"] = [
+        {"player": "Aké", "team": "home", "action": "clearance"},
+        {"player": "Güler", "team": "away", "action": "shot"},
+    ]
+    assert "Own half attributed to an opponent player" in line_errors(
+        "Güler shoots from his own half after Aké clears.", f
+    )
+    f["actions"] = [{"player": "Shaw", "recipient": "Stones", "outcome": "Unknown"}]
+    assert "Unknown pass cannot be described as completed" in line_errors(
+        "Shaw's corner finds Stones.", f
+    )
+    assert not line_errors("Shaw attempts a corner toward Stones.", f)
 
 
 def test_responses_message_concatenation_keeps_complete_keyed_output() -> None:

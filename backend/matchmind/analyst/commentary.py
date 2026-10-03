@@ -65,6 +65,10 @@ Sequence start_zone/end_zone/progression are aggregate context, not attributes o
 any named player's move. Own half ALWAYS means the possessing team's half. Do
 not substitute a team name for own half. Prefer leaving out location over guessing.
 Own goals must explicitly be called own goals, credited to the beneficiary.
+Any score quoted must match score_before or score_after, never a guessed score.
+When every selected action is by the opponent of team, omit half descriptions:
+own half is the possession owner's half, not those opponent players' own half.
+An Unknown pass outcome is unconfirmed: describe an attempt, never a completion.
 """
 
 
@@ -337,7 +341,13 @@ def line_errors(text: str, facts: dict) -> list[str]:
     errors = []
     if not text.strip() or len(text.split()) > 28 or "\n" in text:
         errors.append("Line must be one sentence of at most 28 words")
-    if len(re.findall(r"[.!?](?:\s|$)", text)) > 1:
+    sentence_text = text
+    for a in facts.get("actions", []):
+        for key in ("player", "recipient", "saved_by", "blocked_by", "fouled_player"):
+            name = a.get(key)
+            if name and "." in name:
+                sentence_text = sentence_text.replace(name, name.replace(".", ""))
+    if len(re.findall(r"[.!?](?:\s|$)", sentence_text)) > 1:
         errors.append("More than one sentence")
     tokens = set(
         re.findall(
@@ -349,10 +359,64 @@ def line_errors(text: str, facts: dict) -> list[str]:
     )
     if any(t not in tokens for t in re.findall(r"\d+(?:\.\d+)?", text)):
         errors.append("Unsupported number")
+    scores = set()
+    for key in ("score_before", "score_after"):
+        if score := facts.get(key):
+            scores.update(
+                ((score["home"], score["away"]), (score["away"], score["home"]))
+            )
+    if scores and any(
+        tuple(map(int, pair)) not in scores
+        for pair in re.findall(r"(\d+)\s*[–-]\s*(\d+)", text)
+    ):
+        errors.append("Unsupported score")
+    actions = facts.get("actions", [])
+    if (
+        "own half" in text.lower()
+        and actions
+        and facts.get("team")
+        and all(a.get("team") != facts["team"] for a in actions)
+    ):
+        errors.append("Own half cannot be attributed to opponent-only actions")
+    if facts.get("team"):
+        name_teams = defaultdict(set)
+        for a in actions:
+            for key in ("player", "recipient"):
+                if a.get(key) and a.get("team"):
+                    name_teams[a[key]].add(a["team"])
+        for phrase in re.finditer("own half", text, re.IGNORECASE):
+            prefix = text[: phrase.start()]
+            preceding = [
+                (m.start(), name)
+                for name in name_teams
+                for m in re.finditer(re.escape(name), prefix, re.IGNORECASE)
+            ]
+            if preceding:
+                _, name = max(preceding)
+                if facts["team"] not in name_teams[name]:
+                    errors.append("Own half attributed to an opponent player")
     for a in facts.get("actions", []):
         recipient = a.get("recipient")
         if not recipient:
             continue
+        if (
+            a.get("outcome") == "Unknown"
+            and a.get("player")
+            and not any(
+                other.get("player") == a["player"]
+                and other.get("recipient") == recipient
+                and other.get("outcome") == "Complete"
+                for other in actions
+            )
+            and re.search(
+                re.escape(a["player"])
+                + r".{0,25}\b(?:finds|feeds|picks out)\s+"
+                + re.escape(recipient),
+                text,
+                re.IGNORECASE,
+            )
+        ):
+            errors.append("Unknown pass cannot be described as completed")
         match = re.search(
             r"(?:finds|feeds|picks out)\s+"
             + re.escape(recipient)
