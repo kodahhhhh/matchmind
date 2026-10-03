@@ -1,0 +1,581 @@
+{
+  "match_id": "sb:3869685",
+  "question": "Who was actually progressing the ball?",
+  "tools": [
+    {
+      "name": "get_player_rankings",
+      "args": {
+        "sort": "progression",
+        "limit": 6
+      },
+      "result": {
+        "players": [
+          {
+            "player_id": 5503,
+            "name": "Lionel Messi",
+            "short_name": "Messi",
+            "jersey": 10,
+            "team": "home",
+            "position": "Right Wing",
+            "starter": true,
+            "minutes": 141,
+            "vaep": 2.216,
+            "vaep_off": 2.6003,
+            "vaep_def": 0.1,
+            "vaep_per90": 1.4103,
+            "passes": 51,
+            "pass_pct": 0.882,
+            "progression": {
+              "passes": 25,
+              "carries": 8,
+              "distance": 567.1
+            },
+            "defending": {
+              "tackle": 2,
+              "interception": 0,
+              "clearance": 1,
+              "recovery": 7,
+              "block": 1
+            },
+            "shots": 5,
+            "xg": 1.455,
+            "event_ids": [
+              "sb:3869685:3425",
+              "sb:3869685:88",
+              "sb:3869685:4351"
+            ]
+          },
+          {
+            "player_id": 3009,
+            "name": "Kylian Mbappé",
+            "short_name": "Mbappé",
+            "jersey": 10,
+            "team": "away",
+            "position": "Left Wing",
+            "starter": true,
+            "minutes": 141,
+            "vaep": 2.1981,
+            "vaep_off": 2.4144,
+            "vaep_def": 0.08,
+            "vaep_per90": 1.3989,
+            "passes": 24,
+            "pass_pct": 0.708,
+            "progression": {
+              "passes": 7,
+              "carries": 9,
+              "distance": 249.2
+            },
+            "defending": {
+              "tackle": 0,
+              "interception": 0,
+              "clearance": 0,
+              "recovery": 7,
+              "block": 1
+            },
+            "shots": 6,
+            "xg": 1.782,
+            "event_ids": [
+              "sb:3869685:3315",
+              "sb:3869685:2583",
+              "sb:3869685:2922"
+            ]
+          },
+          {
+            "player_id": 4445,
+            "name": "Jules Koundé",
+            "short_name": "Koundé",
+            "jersey": 5,
+            "team": "away",
+            "position": "Right Back",
+            "starter": true,
+            "minutes": 138,
+            "vaep": 0.0761,
+            "vaep_off": 0.348,
+            "vaep_def": 0.14,
+            "vaep_per90": 0.0497,
+            "passes": 61,
+            "pass_pct": 0.77,
+            "progression": {
+              "passes": 7,
+              "carries": 2,
+              "distance": 191.2
+            },
+            "defending": {
+              "tackle": 4,
+              "interception": 1,
+              "clearance": 4,
+              "recovery": 3,
+              "block": 3
+            },
+            "shots": 0,
+            "xg": 0.0,
+            "event_ids": [
+              "sb:3869685:2148",
+              "sb:3869685:4184",
+              "sb:3869685:1497"
+            ]
+          },
+          {
+            "player_id": 10481,
+            "name": "Aurélien Tchouaméni",
+            "short_name": "Tchouaméni",
+            "jersey": 8,
+            "team": "away",
+            "position": "Right Defensive Midfield",
+            "starter": true,
+            "minutes": 141,
+            "vaep": 0.0041,
+            "vaep_off": 0.3099,
+            "vaep_def": 0.18,
+            "vaep_per90": 0.0026,
+            "passes": 62,
+            "pass_pct": 0.79,
+            "progression": {
+              "passes": 7,
+              "carries": 2,
+              "distance": 184.6
+            },
+            "defending": {
+              "tackle": 1,
+              "interception": 5,
+              "clearance": 1,
+              "recovery": 10,
+              "block": 1
+            },
+            "shots": 0,
+            "xg": 0.0,
+            "event_ids": [
+              "sb:3869685:4369",
+              "sb:3869685:2349",
+              "sb:3869685:3771"
+            ]
+          },
+          {
+            "player_id": 5485,
+            "name": "Raphaël Varane",
+            "short_name": "Varane",
+            "jersey": 4,
+            "team": "away",
+            "position": "Right Center Back",
+            "starter": true,
+            "minutes": 130,
+            "vaep": 0.0637,
+            "vaep_off": 0.2059,
+            "vaep_def": 0.11,
+            "vaep_per90": 0.0442,
+            "passes": 58,
+            "pass_pct": 0.897,
+            "progression": {
+              "passes": 4,
+              "carries": 5,
+              "distance": 182.3
+            },
+            "defending": {
+              "tackle": 0,
+              "interception": 2,
+              "clearance": 3,
+              "recovery": 4,
+              "block": 2
+            },
+            "shots": 0,
+            "xg": 0.0,
+            "event_ids": [
+              "sb:3869685:4087",
+              "sb:3869685:615",
+              "sb:3869685:2806"
+            ]
+          },
+          {
+            "player_id": 3099,
+            "name": "Hugo Lloris",
+            "short_name": "Lloris",
+            "jersey": 1,
+            "team": "away",
+            "position": "Goalkeeper",
+            "starter": true,
+            "minutes": 141,
+            "vaep": 0.0061,
+            "vaep_off": 0.1861,
+            "vaep_def": 0.02,
+            "vaep_per90": 0.0039,
+            "passes": 22,
+            "pass_pct": 0.727,
+            "progression": {
+              "passes": 3,
+              "carries": 0,
+              "distance": 154.6
+            },
+            "defending": {
+              "tackle": 0,
+              "interception": 0,
+              "clearance": 0,
+              "recovery": 2,
+              "block": 0
+            },
+            "shots": 0,
+            "xg": 0.0,
+            "event_ids": [
+              "sb:3869685:3574",
+              "sb:3869685:3103",
+              "sb:3869685:3368"
+            ]
+          }
+        ],
+        "ranking": "progression",
+        "count": 6,
+        "evidence_labels": {
+          "ev:sb:3869685:3425": "90+9' Messi pass",
+          "ev:sb:3869685:4351": "120+3' Messi pass",
+          "ev:sb:3869685:4184": "115' Koundé pass",
+          "ev:sb:3869685:3574": "94' Lloris pass",
+          "ev:sb:3869685:4087": "111' Varane pass",
+          "ev:sb:3869685:3315": "90+6' Mbappé carry",
+          "ev:sb:3869685:88": "3' Messi pass",
+          "ev:sb:3869685:2349": "64' Tchouaméni pass",
+          "ev:sb:3869685:4369": "120+4' Tchouaméni pass",
+          "ev:sb:3869685:3103": "86' Lloris pass",
+          "ev:sb:3869685:2583": "69' Mbappé pass",
+          "ev:sb:3869685:2922": "79' Mbappé pass",
+          "ev:sb:3869685:2806": "75' Varane carry",
+          "ev:sb:3869685:615": "18' Varane pass",
+          "ev:sb:3869685:2148": "57' Koundé carry",
+          "ev:sb:3869685:3771": "99' Tchouaméni pass",
+          "ev:sb:3869685:1497": "45' Koundé carry",
+          "ev:sb:3869685:3368": "90+7' Lloris pass"
+        },
+        "match": {
+          "teams": {
+            "home": "Argentina",
+            "away": "France"
+          },
+          "score": {
+            "home": 3,
+            "away": 3,
+            "penalties": {
+              "home": 4,
+              "away": 2
+            }
+          },
+          "season": "2022"
+        },
+        "metric_notes": {
+          "possession": "Pass-share proxy",
+          "xg": "Model xG when populated; sb_xg fallback",
+          "vaep": "Model VAEP when populated; threat-gain proxy fallback"
+        },
+        "display_numbers": [
+          "0",
+          "0%",
+          "0.0",
+          "0.0%",
+          "0.00",
+          "0.000",
+          "0.0000",
+          "0.0026",
+          "0.003",
+          "0.0039",
+          "0.004",
+          "0.0041",
+          "0.006",
+          "0.0061",
+          "0.01",
+          "0.02",
+          "0.020",
+          "0.0200",
+          "0.04",
+          "0.044",
+          "0.0442",
+          "0.0497",
+          "0.05",
+          "0.050",
+          "0.06",
+          "0.0637",
+          "0.064",
+          "0.076",
+          "0.0761",
+          "0.08",
+          "0.080",
+          "0.0800",
+          "0.1",
+          "0.10",
+          "0.100",
+          "0.1000",
+          "0.11",
+          "0.110",
+          "0.1100",
+          "0.14",
+          "0.140",
+          "0.1400",
+          "0.18",
+          "0.180",
+          "0.1800",
+          "0.186",
+          "0.1861",
+          "0.19",
+          "0.2",
+          "0.2059",
+          "0.206",
+          "0.21",
+          "0.3",
+          "0.3%",
+          "0.3099",
+          "0.31",
+          "0.310",
+          "0.348",
+          "0.3480",
+          "0.35",
+          "0.4%",
+          "0.6%",
+          "0.7",
+          "0.708",
+          "0.7080",
+          "0.71",
+          "0.727",
+          "0.7270",
+          "0.73",
+          "0.77",
+          "0.770",
+          "0.7700",
+          "0.79",
+          "0.790",
+          "0.7900",
+          "0.8",
+          "0.88",
+          "0.882",
+          "0.8820",
+          "0.897",
+          "0.8970",
+          "0.9",
+          "0.90",
+          "1",
+          "1%",
+          "1.3989",
+          "1.399",
+          "1.4",
+          "1.40",
+          "1.41",
+          "1.410",
+          "1.4103",
+          "1.455",
+          "1.4550",
+          "1.46",
+          "1.5",
+          "1.78",
+          "1.782",
+          "1.7820",
+          "1.8",
+          "10",
+          "10%",
+          "10.0%",
+          "11%",
+          "11.0%",
+          "130",
+          "138",
+          "14%",
+          "14.0%",
+          "141",
+          "154.6",
+          "154.60",
+          "154.600",
+          "154.6000",
+          "155",
+          "18%",
+          "18.0%",
+          "18.6%",
+          "182",
+          "182.3",
+          "182.30",
+          "182.300",
+          "182.3000",
+          "184.6",
+          "184.60",
+          "184.600",
+          "184.6000",
+          "185",
+          "19%",
+          "191",
+          "191.2",
+          "191.20",
+          "191.200",
+          "191.2000",
+          "2",
+          "2%",
+          "2.0%",
+          "2.198",
+          "2.1981",
+          "2.2",
+          "2.20",
+          "2.216",
+          "2.2160",
+          "2.22",
+          "2.4",
+          "2.41",
+          "2.414",
+          "2.4144",
+          "2.6",
+          "2.60",
+          "2.600",
+          "2.6003",
+          "20.6%",
+          "21%",
+          "22",
+          "24",
+          "249",
+          "249.2",
+          "249.20",
+          "249.200",
+          "249.2000",
+          "25",
+          "3",
+          "31%",
+          "31.0%",
+          "34.8%",
+          "35%",
+          "4",
+          "4%",
+          "4.4%",
+          "5",
+          "5%",
+          "5.0%",
+          "51",
+          "567",
+          "567.1",
+          "567.10",
+          "567.100",
+          "567.1000",
+          "58",
+          "6",
+          "6%",
+          "6.4%",
+          "61",
+          "62",
+          "7",
+          "7.6%",
+          "70.8%",
+          "71%",
+          "72.7%",
+          "73%",
+          "77%",
+          "77.0%",
+          "79%",
+          "79.0%",
+          "8",
+          "8%",
+          "8.0%",
+          "88%",
+          "88.2%",
+          "89.7%",
+          "9",
+          "90%"
+        ]
+      }
+    }
+  ],
+  "text": "**Messi was the clear progression leader**: 567.1 in recorded progressive distance, with 25 progressive passes and 8 carries. His contribution was mainly passing-led—not just finishing or final-ball creation. [[ev:sb:3869685:88]] [[ev:sb:3869685:3425]]\n\n**Mbappé led France**, with 249.2 progressive distance, 7 progressive passes and 9 carries—a more carry-driven profile. [[ev:sb:3869685:3315]] Behind him, Koundé recorded 191.2 and Tchouaméni 184.6, providing supporting progression rather than matching Messi’s volume. [[ev:sb:3869685:4184]] [[ev:sb:3869685:2349]]",
+  "rejections": [],
+  "chunks": [
+    {
+      "type": "tool",
+      "name": "get_player_rankings",
+      "args": {
+        "sort": "progression",
+        "limit": 6
+      }
+    },
+    {
+      "type": "text",
+      "delta": "**Messi was the clear progression leader**: 567."
+    },
+    {
+      "type": "text",
+      "delta": "1 in recorded progressive distance, with 25 prog"
+    },
+    {
+      "type": "text",
+      "delta": "ressive passes and 8 carries. "
+    },
+    {
+      "type": "text",
+      "delta": "His contribution was mainly passing-led—not just"
+    },
+    {
+      "type": "text",
+      "delta": " finishing or final-ball creation. "
+    },
+    {
+      "type": "text",
+      "delta": "[[ev:sb:3869685:88]] [[ev:sb:3869685:3425]]\n"
+    },
+    {
+      "type": "text",
+      "delta": "\n"
+    },
+    {
+      "type": "text",
+      "delta": "**Mbappé led France**, with 249.2 progressive di"
+    },
+    {
+      "type": "text",
+      "delta": "stance, 7 progressive passes and 9 carries—a mor"
+    },
+    {
+      "type": "text",
+      "delta": "e carry-driven profile. "
+    },
+    {
+      "type": "text",
+      "delta": "[[ev:sb:3869685:3315]] Behind him, Koundé record"
+    },
+    {
+      "type": "text",
+      "delta": "ed 191.2 and Tchouaméni 184.6, providing support"
+    },
+    {
+      "type": "text",
+      "delta": "ing progression rather than matching Messi’s vol"
+    },
+    {
+      "type": "text",
+      "delta": "ume. "
+    },
+    {
+      "type": "text",
+      "delta": "[[ev:sb:3869685:4184]] [[ev:sb:3869685:2349]]"
+    },
+    {
+      "type": "citation",
+      "ref": "ev:sb:3869685:88",
+      "label": "3' Messi pass"
+    },
+    {
+      "type": "citation",
+      "ref": "ev:sb:3869685:3425",
+      "label": "90+9' Messi pass"
+    },
+    {
+      "type": "citation",
+      "ref": "ev:sb:3869685:3315",
+      "label": "90+6' Mbappé carry"
+    },
+    {
+      "type": "citation",
+      "ref": "ev:sb:3869685:4184",
+      "label": "115' Koundé pass"
+    },
+    {
+      "type": "citation",
+      "ref": "ev:sb:3869685:2349",
+      "label": "64' Tchouaméni pass"
+    },
+    {
+      "type": "done"
+    }
+  ],
+  "first_text_seconds": 2.988,
+  "total_seconds": 4.633,
+  "grounding": {
+    "unsupported_numbers": [],
+    "unsupported_citations": []
+  },
+  "all_citations_exist": true
+}

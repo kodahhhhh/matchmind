@@ -1,0 +1,436 @@
+{
+  "match_id": "sb:3869685",
+  "question": "Show me the three most dangerous sequences",
+  "tools": [
+    {
+      "name": "get_top_sequences",
+      "args": {
+        "limit": 3
+      },
+      "result": {
+        "sequences": [
+          {
+            "id": "sb:3869685:s228",
+            "team": "home",
+            "start": {
+              "t": 7503.0,
+              "period": 4,
+              "minute": 107,
+              "second": 45,
+              "label": "108'"
+            },
+            "end": {
+              "t": 7516.0,
+              "period": 4,
+              "minute": 107,
+              "second": 58
+            },
+            "duration": 13.0,
+            "n_events": 16,
+            "event_ids": [
+              "sb:3869685:4051",
+              "sb:3869685:4052",
+              "sb:3869685:4053",
+              "sb:3869685:4055",
+              "sb:3869685:4056",
+              "sb:3869685:4058",
+              "sb:3869685:4060",
+              "sb:3869685:4061",
+              "sb:3869685:4063",
+              "sb:3869685:4064",
+              "sb:3869685:4066",
+              "sb:3869685:4067",
+              "sb:3869685:4068",
+              "sb:3869685:4069",
+              "sb:3869685:4070",
+              "sb:3869685:4071"
+            ],
+            "danger": 0.7155,
+            "xg": 0.593,
+            "outcome": "goal",
+            "players": [
+              "Paredes",
+              "Montiel",
+              "Martínez",
+              "Messi",
+              "Fernandez",
+              "Martínez",
+              "Messi"
+            ]
+          },
+          {
+            "id": "sb:3869685:s52",
+            "team": "home",
+            "start": {
+              "t": 2112.0,
+              "period": 1,
+              "minute": 35,
+              "second": 12,
+              "label": "36'"
+            },
+            "end": {
+              "t": 2123.0,
+              "period": 1,
+              "minute": 35,
+              "second": 23
+            },
+            "duration": 11.0,
+            "n_events": 9,
+            "event_ids": [
+              "sb:3869685:1166",
+              "sb:3869685:1168",
+              "sb:3869685:1170",
+              "sb:3869685:1171",
+              "sb:3869685:1173",
+              "sb:3869685:1174",
+              "sb:3869685:1176",
+              "sb:3869685:1178",
+              "sb:3869685:1179"
+            ],
+            "danger": 0.4752,
+            "xg": 0.303,
+            "outcome": "goal",
+            "players": [
+              "Molina",
+              "MacAllister",
+              "Messi",
+              "Álvarez",
+              "MacAllister",
+              "Di María"
+            ]
+          },
+          {
+            "id": "sb:3869685:s218",
+            "team": "home",
+            "start": {
+              "t": 7218.0,
+              "period": 3,
+              "minute": 104,
+              "second": 5,
+              "label": "105'"
+            },
+            "end": {
+              "t": 7244.0,
+              "period": 3,
+              "minute": 104,
+              "second": 31
+            },
+            "duration": 26.0,
+            "n_events": 26,
+            "event_ids": [
+              "sb:3869685:3898",
+              "sb:3869685:3900",
+              "sb:3869685:3902",
+              "sb:3869685:3904",
+              "sb:3869685:3905",
+              "sb:3869685:3907",
+              "sb:3869685:3908",
+              "sb:3869685:3910",
+              "sb:3869685:3912",
+              "sb:3869685:3913",
+              "sb:3869685:3915",
+              "sb:3869685:3916",
+              "sb:3869685:3919",
+              "sb:3869685:3920",
+              "sb:3869685:3922",
+              "sb:3869685:3923",
+              "sb:3869685:3926",
+              "sb:3869685:3927",
+              "sb:3869685:3929",
+              "sb:3869685:3930",
+              "sb:3869685:3931",
+              "sb:3869685:3932",
+              "sb:3869685:3933",
+              "sb:3869685:3934",
+              "sb:3869685:3935",
+              "sb:3869685:3936"
+            ],
+            "danger": 0.3329,
+            "xg": 0.253,
+            "outcome": "shot",
+            "players": [
+              "MacAllister",
+              "Martínez",
+              "Fernandez",
+              "MacAllister",
+              "Acuña",
+              "Tagliafico",
+              "MacAllister",
+              "Messi"
+            ]
+          }
+        ],
+        "count": 3,
+        "evidence_labels": {
+          "ev:sb:3869685:3908": "105' MacAllister pass",
+          "ev:sb:3869685:4061": "108' Messi pass",
+          "ev:sb:3869685:4067": "108' Martínez shot",
+          "ev:sb:3869685:1178": "36' Di María goal",
+          "ev:sb:3869685:3922": "105' MacAllister carry",
+          "ev:sb:3869685:3929": "105' Martínez carry",
+          "ev:sb:3869685:4060": "108' Messi carry",
+          "ev:sb:3869685:3910": "105' Acuña pass",
+          "ev:sb:3869685:3933": "105' Montiel recovery",
+          "ev:sb:3869685:1176": "36' MacAllister pass",
+          "ev:sb:3869685:1168": "36' MacAllister pass",
+          "ev:sb:3869685:3900": "105' Martínez carry",
+          "ev:sb:3869685:1171": "36' Messi pass",
+          "ev:sb:3869685:3907": "105' MacAllister carry",
+          "ev:sb:3869685:3926": "105' Messi carry",
+          "ev:sb:3869685:4069": "108' Messi recovery",
+          "ev:sb:3869685:4063": "108' Fernandez carry",
+          "ev:sb:3869685:3913": "105' Tagliafico pass",
+          "ev:sb:3869685:3920": "105' Messi pass",
+          "ev:sb:3869685:3931": "105' Upamecano block",
+          "ev:sb:3869685:1166": "36' Molina pass",
+          "ev:sb:3869685:4066": "108' Martínez carry",
+          "ev:sb:3869685:3916": "105' MacAllister pass",
+          "ev:sb:3869685:4053": "108' Paredes pass",
+          "ev:sb:3869685:3904": "105' Fernandez carry",
+          "seq:sb:3869685:s228": "108' Argentina sequence",
+          "ev:sb:3869685:4051": "108' Paredes recovery",
+          "ev:sb:3869685:4056": "108' Montiel pass",
+          "ev:sb:3869685:4058": "108' Martínez pass",
+          "ev:sb:3869685:4071": "108' Lloris keeper action",
+          "ev:sb:3869685:1170": "36' Messi carry",
+          "ev:sb:3869685:3905": "105' Fernandez pass",
+          "ev:sb:3869685:4070": "108' Messi goal",
+          "ev:sb:3869685:3927": "105' Messi pass",
+          "ev:sb:3869685:3934": "105' Montiel shot",
+          "ev:sb:3869685:3923": "105' MacAllister pass",
+          "ev:sb:3869685:3898": "105' MacAllister pass",
+          "ev:sb:3869685:1179": "36' Lloris keeper action",
+          "ev:sb:3869685:3919": "105' Messi carry",
+          "ev:sb:3869685:3912": "105' Tagliafico carry",
+          "ev:sb:3869685:3932": "105' Lloris keeper action",
+          "ev:sb:3869685:4052": "108' Paredes carry",
+          "ev:sb:3869685:4064": "108' Fernandez pass",
+          "ev:sb:3869685:1173": "36' Álvarez carry",
+          "ev:sb:3869685:3930": "105' Martínez shot",
+          "ev:sb:3869685:3915": "105' MacAllister carry",
+          "ev:sb:3869685:4068": "108' Lloris keeper action",
+          "ev:sb:3869685:4055": "108' Montiel carry",
+          "ev:sb:3869685:1174": "36' Álvarez pass",
+          "seq:sb:3869685:s218": "105' Argentina sequence",
+          "ev:sb:3869685:3936": "105' Lloris keeper action",
+          "seq:sb:3869685:s52": "36' Argentina sequence",
+          "ev:sb:3869685:3902": "105' Martínez pass",
+          "ev:sb:3869685:3935": "105' Varane block"
+        },
+        "match": {
+          "teams": {
+            "home": "Argentina",
+            "away": "France"
+          },
+          "score": {
+            "home": 3,
+            "away": 3,
+            "penalties": {
+              "home": 4,
+              "away": 2
+            }
+          },
+          "season": "2022"
+        },
+        "metric_notes": {
+          "possession": "Pass-share proxy",
+          "xg": "Model xG when populated; sb_xg fallback",
+          "vaep": "Model VAEP when populated; threat-gain proxy fallback"
+        },
+        "display_numbers": [
+          "0",
+          "0.25",
+          "0.253",
+          "0.2530",
+          "0.3",
+          "0.30",
+          "0.303",
+          "0.3030",
+          "0.33",
+          "0.3329",
+          "0.333",
+          "0.475",
+          "0.4752",
+          "0.48",
+          "0.5",
+          "0.59",
+          "0.593",
+          "0.5930",
+          "0.6",
+          "0.7",
+          "0.7155",
+          "0.716",
+          "0.72",
+          "1",
+          "104",
+          "107",
+          "11",
+          "11.0",
+          "11.00",
+          "11.000",
+          "11.0000",
+          "12",
+          "13",
+          "13.0",
+          "13.00",
+          "13.000",
+          "13.0000",
+          "16",
+          "2",
+          "2112",
+          "2112.0",
+          "2112.00",
+          "2112.000",
+          "2112.0000",
+          "2123",
+          "2123.0",
+          "2123.00",
+          "2123.000",
+          "2123.0000",
+          "23",
+          "25%",
+          "25.3%",
+          "26",
+          "26.0",
+          "26.00",
+          "26.000",
+          "26.0000",
+          "3",
+          "30%",
+          "30.3%",
+          "31",
+          "33%",
+          "33.3%",
+          "35",
+          "4",
+          "45",
+          "47.5%",
+          "48%",
+          "5",
+          "58",
+          "59%",
+          "59.3%",
+          "71.5%",
+          "72%",
+          "7218",
+          "7218.0",
+          "7218.00",
+          "7218.000",
+          "7218.0000",
+          "7244",
+          "7244.0",
+          "7244.00",
+          "7244.000",
+          "7244.0000",
+          "7503",
+          "7503.0",
+          "7503.00",
+          "7503.000",
+          "7503.0000",
+          "7516",
+          "7516.0",
+          "7516.00",
+          "7516.000",
+          "7516.0000",
+          "9"
+        ]
+      }
+    }
+  ],
+  "text": "**Most dangerous sequences**, ranked by threat-gain proxy—all Argentina:\n\n- **108' — Danger 0.72; xG 0.593.** Martínez’s shot was followed by Messi’s recovery and goal. [[seq:sb:3869685:s228]]\n- **36' — Danger 0.48; xG 0.303.** Messi and Álvarez helped link the attack before MacAllister supplied Di María’s finish. [[seq:sb:3869685:s52]]\n- **105' — Danger 0.33; xG 0.253.** Sustained pressure produced Martínez’s shot, blocked by Upamecano, then a Montiel follow-up blocked by Varane. [[seq:sb:3869685:s218]]",
+  "rejections": [],
+  "chunks": [
+    {
+      "type": "tool",
+      "name": "get_top_sequences",
+      "args": {
+        "limit": 3
+      }
+    },
+    {
+      "type": "text",
+      "delta": "**Most dangerous sequences**, ranked by threat-g"
+    },
+    {
+      "type": "text",
+      "delta": "ain proxy—all Argentina:\n"
+    },
+    {
+      "type": "text",
+      "delta": "\n"
+    },
+    {
+      "type": "text",
+      "delta": "- **108' — Danger 0.72; xG 0.593.** Martínez’s s"
+    },
+    {
+      "type": "text",
+      "delta": "hot was followed by Messi’s recovery and goal. "
+    },
+    {
+      "type": "text",
+      "delta": "[[seq:sb:3869685:s228]]\n"
+    },
+    {
+      "type": "text",
+      "delta": "- **36' — Danger 0.48; xG 0.303.** Messi and Álv"
+    },
+    {
+      "type": "text",
+      "delta": "arez helped link the attack before MacAllister s"
+    },
+    {
+      "type": "text",
+      "delta": "upplied Di María’s finish. "
+    },
+    {
+      "type": "text",
+      "delta": "[[seq:sb:3869685:s52]]\n"
+    },
+    {
+      "type": "text",
+      "delta": "- **105' — Danger 0.33; xG 0.253.** Sustained pr"
+    },
+    {
+      "type": "text",
+      "delta": "essure produced Martínez’s shot, blocked by Upam"
+    },
+    {
+      "type": "text",
+      "delta": "ecano, then a Montiel follow-up blocked by Varan"
+    },
+    {
+      "type": "text",
+      "delta": "e. "
+    },
+    {
+      "type": "text",
+      "delta": "[[seq:sb:3869685:s218]]"
+    },
+    {
+      "type": "citation",
+      "ref": "seq:sb:3869685:s228",
+      "label": "108' Argentina sequence"
+    },
+    {
+      "type": "citation",
+      "ref": "seq:sb:3869685:s52",
+      "label": "36' Argentina sequence"
+    },
+    {
+      "type": "citation",
+      "ref": "seq:sb:3869685:s218",
+      "label": "105' Argentina sequence"
+    },
+    {
+      "type": "done"
+    }
+  ],
+  "first_text_seconds": 2.614,
+  "total_seconds": 4.512,
+  "grounding": {
+    "unsupported_numbers": [],
+    "unsupported_citations": []
+  },
+  "all_citations_exist": true
+}
