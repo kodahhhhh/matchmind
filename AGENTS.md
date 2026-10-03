@@ -23,7 +23,7 @@ Guidance for coding agents (Claude subagents, Codex) working on MatchMind.
 * **The LLM never produces numbers.** Every stat in an analyst answer must come from a tool result. Tools return IDs; answers cite them as `[[ev:<event_id>]]` or `[[seq:<sequence_id>]]`.
 * **Never commit secrets.** Azure keys live in `backend/.env` (gitignored). Read config via `matchmind.config`, never `os.environ` scattered through the code.
 * **Never commit data,** except `data/catalogue/` (the match list) and `data/manifest.json` (StatsBomb source commit). Everything else in `data/` is gitignored.
-* **No scraping.** No task makes requests to WhoScored or any other third-party data site.
+* **No scraping.** No task makes requests to WhoScored or other third-party data sites. Exception (W10 backtest only): Polymarket's public Gamma/CLOB APIs, Kalshi's public market-data API and football-data.co.uk CSVs, with polite rate limits and cached raw responses under `data/raw/markets/`.
 * **No network calls in `metrics/` or `models/`.** They are pure functions over DataFrames and saved model files.
 * **Counterfactual output is always labelled as modelled.** Never phrase it as what "would have" happened.
 * Don't leave long-running processes behind (dev servers, scrapers, training jobs) unless your task says to.
