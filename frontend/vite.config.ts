@@ -7,6 +7,7 @@ export default defineConfig({
   server: {
     host: true,
     port: 5173,
+    allowedHosts: [".ts.net"], // Tailscale MagicDNS
     proxy: { "/api": "http://localhost:8000" },
   },
 });
