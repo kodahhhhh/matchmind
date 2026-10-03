@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { api } from "../api/client";
 import type {
-  CommentaryLine, MatchDetail, MatchEvent, PlayerRow, Sequence, TimelineMinute, TurningPoint,
+  CommentaryLine, MarketSeries, MatchDetail, MatchEvent, PlayerRow, Sequence, TimelineMinute, TurningPoint,
 } from "../api/types";
 import { clock, isShot } from "../lib/format";
 
@@ -88,6 +88,7 @@ interface State {
   commentary: CommentaryLine[];
   commentaryBySeq: Map<string, CommentaryLine>;
   pendingFocus: { seq?: string; ev?: string } | null;
+  market: MarketSeries | null;
 
   load: (id: string) => Promise<void>;
   setWindow: (w: Window | null) => void;
@@ -122,11 +123,12 @@ export const useMatch = create<State>((set, get) => ({
   commentary: [],
   commentaryBySeq: new Map(),
   pendingFocus: null,
+  market: null,
 
   async load(id) {
     if (get().matchId === id && get().status !== "error") return;
     askAbort?.abort();
-    set({ matchId: id, status: "loading", error: null, data: null, window: null, focus: null, replay: null, chat: [], commentary: [], commentaryBySeq: new Map() });
+    set({ matchId: id, status: "loading", error: null, data: null, window: null, focus: null, replay: null, chat: [], commentary: [], commentaryBySeq: new Map(), market: null });
     try {
       const [match, events, timeline, sequences, players, turningPoints] = await Promise.all([
         api.match(id), api.events(id), api.timeline(id), api.sequences(id), api.players(id), api.turningPoints(id),
@@ -145,6 +147,7 @@ export const useMatch = create<State>((set, get) => ({
       if (pf?.seq) get().focusSequence(pf.seq);
       else if (pf?.ev) get().focusEvent(pf.ev);
       set({ pendingFocus: null });
+      api.market(id).then((m) => { if (get().matchId === id && m?.series.length) set({ market: m }); });
       // commentary is optional: load in the background, ignore failures
       api.commentary(id).then((lines) => {
         if (get().matchId === id) set({ commentary: lines, commentaryBySeq: new Map(lines.map((l) => [l.sequence_id, l])) });

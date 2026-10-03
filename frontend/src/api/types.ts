@@ -253,3 +253,57 @@ export type AskChunk =
   | { type: "text"; delta: string }
   | { type: "citation"; ref: string; label: string }
   | { type: "done" };
+
+export interface BacktestBet {
+  match_id: string;
+  label: string;
+  outcome: "home" | "draw" | "away" | string;
+  side: string;
+  price_or_odds: number;
+  model_prob: number;
+  market_prob: number;
+  stake: number;
+  pnl: number;
+  minute?: number;
+}
+
+export interface BacktestStrategy {
+  id: string;
+  name: string;
+  market: "pinnacle" | "polymarket" | string;
+  description: string;
+  eval_period: string;
+  n_matches: number;
+  n_bets: number;
+  staked: number;
+  pnl: number;
+  roi: number;
+  roi_ci95: [number, number];
+  hit_rate: number;
+  max_drawdown: number;
+  clv?: number | null;
+  brier_model: number;
+  brier_market: number;
+  equity: { i: number; label: string; bankroll: number }[];
+  bets: BacktestBet[];
+}
+
+export interface Backtest {
+  generated_at: string;
+  sources: { name: string; matches: number; notes: string }[];
+  strategies: BacktestStrategy[];
+  caveats: string[];
+}
+
+export interface Probs { home: number; draw: number; away: number }
+
+export interface MarketSeries {
+  match_id: string;
+  source: string;
+  market_url?: string | null;
+  volume?: number | null;
+  aligned: boolean;
+  offset_seconds?: number | null;
+  series: { index: number; label: string; minute: number; period: number; market: Probs; model: Probs }[];
+  bets: BacktestBet[];
+}

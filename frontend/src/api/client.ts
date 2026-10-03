@@ -1,6 +1,6 @@
 // The only place the frontend talks to the backend. VITE_USE_FIXTURES=1 serves fixtures/ instead.
 import type {
-  AskChunk, CommentaryLine, Competition, Counterfactual, MatchCard, MatchDetail, MatchEvent,
+  AskChunk, Backtest, CommentaryLine, Competition, MarketSeries, Counterfactual, MatchCard, MatchDetail, MatchEvent,
   PlayerRow, SearchResult, Sequence, TimelineMinute, TurningPoint,
 } from "./types";
 
@@ -49,6 +49,14 @@ export const api = {
     if (!res.ok) throw new Error(`${res.status}: counterfactual`);
     return res.json();
   },
+
+  backtest: () => get<Backtest>("/backtest", "/fixtures/backtest.json"),
+
+  /** Model vs market win probability for matches with Polymarket data; null when there's none. */
+  market: (id: string) =>
+    fetch(USE_FIXTURES ? `${fixtureDir(id)}/market.json` : `/api/matches/${enc(id)}/market`)
+      .then((r) => (r.ok ? (r.json() as Promise<MarketSeries>) : null))
+      .catch(() => null),
 
   commentary: (id: string) =>
     get<{ lines: CommentaryLine[] }>(`/matches/${enc(id)}/commentary`, `${fixtureDir(id)}/commentary.json`).then((r) => r.lines),
