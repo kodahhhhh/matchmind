@@ -1,0 +1,315 @@
+{
+  "matches": 493,
+  "get_requests": 3451,
+  "failures": [],
+  "smoke_matches": [
+    {
+      "match_id": "sb:3869685",
+      "failures": [],
+      "times": {
+        "/match": 580.6736660306342,
+        "/events": 47.150678001344204,
+        "/timeline": 5.26569300564006,
+        "/sequences?sort=danger&limit=5": 2.5810159859247506,
+        "/players": 3.0550380470231175,
+        "/turning-points": 2.1240069763734937,
+        "/search": 19.545477989595383
+      }
+    },
+    {
+      "match_id": "sb:3943043",
+      "failures": [],
+      "times": {
+        "/match": 221.11410601064563,
+        "/events": 32.18942100647837,
+        "/timeline": 4.296716011594981,
+        "/sequences?sort=danger&limit=5": 2.4123109760694206,
+        "/players": 2.414469956420362,
+        "/turning-points": 2.13507900480181,
+        "/search": 22.581740049645305
+      }
+    },
+    {
+      "match_id": "sb:3890259",
+      "failures": [],
+      "times": {
+        "/match": 392.2250109608285,
+        "/events": 44.462566962465644,
+        "/timeline": 3.5703840549103916,
+        "/sequences?sort=danger&limit=5": 1.8203939544036984,
+        "/players": 2.103645005263388,
+        "/turning-points": 1.4894409687258303,
+        "/search": 20.436330989468843
+      }
+    },
+    {
+      "match_id": "sb:3877060",
+      "failures": [],
+      "times": {
+        "/match": 239.7509069996886,
+        "/events": 25.81664000172168,
+        "/timeline": 3.642551018856466,
+        "/sequences?sort=danger&limit=5": 1.7358239856548607,
+        "/players": 1.8464730237610638,
+        "/turning-points": 1.4851579908281565,
+        "/search": 20.51092399051413
+      }
+    },
+    {
+      "match_id": "sb:3877072",
+      "failures": [],
+      "times": {
+        "/match": 230.87922303238884,
+        "/events": 28.328010987024754,
+        "/timeline": 4.607737006153911,
+        "/sequences?sort=danger&limit=5": 2.566070994362235,
+        "/players": 3.180866944603622,
+        "/turning-points": 2.1611489937640727,
+        "/search": 24.982043949421495
+      }
+    },
+    {
+      "match_id": "sb:3877090",
+      "failures": [],
+      "times": {
+        "/match": 358.5159459616989,
+        "/events": 52.993900957517326,
+        "/timeline": 7.032737950794399,
+        "/sequences?sort=danger&limit=5": 7.1242270059883595,
+        "/players": 5.1456069923006,
+        "/turning-points": 4.758764000143856,
+        "/search": 25.142851984128356
+      }
+    },
+    {
+      "match_id": "sb:3877115",
+      "failures": [],
+      "times": {
+        "/match": 290.0419770157896,
+        "/events": 40.83188402000815,
+        "/timeline": 4.471599997486919,
+        "/sequences?sort=danger&limit=5": 2.397176984231919,
+        "/players": 2.570480981376022,
+        "/turning-points": 2.049889008048922,
+        "/search": 22.638518013991416
+      }
+    },
+    {
+      "match_id": "sb:3877170",
+      "failures": [],
+      "times": {
+        "/match": 387.9613919998519,
+        "/events": 66.23090500943363,
+        "/timeline": 7.199942017905414,
+        "/sequences?sort=danger&limit=5": 5.886994011234492,
+        "/players": 6.2932620057836175,
+        "/turning-points": 2.3193740053102374,
+        "/search": 30.879567028023303
+      }
+    },
+    {
+      "match_id": "sb:3877194",
+      "failures": [],
+      "times": {
+        "/match": 238.8252639793791,
+        "/events": 55.77232700306922,
+        "/timeline": 7.766113965772092,
+        "/sequences?sort=danger&limit=5": 4.5098899863660336,
+        "/players": 5.522208986803889,
+        "/turning-points": 4.925543034914881,
+        "/search": 25.332001969218254
+      }
+    },
+    {
+      "match_id": "sb:3890300",
+      "failures": [],
+      "times": {
+        "/match": 245.39737805025652,
+        "/events": 20.673551014624536,
+        "/timeline": 3.3921460271812975,
+        "/sequences?sort=danger&limit=5": 1.6939019551500678,
+        "/players": 1.8367950106039643,
+        "/turning-points": 1.4407829730771482,
+        "/search": 18.173126969486475
+      }
+    }
+  ],
+  "red_card_match": {
+    "match_id": "sb:3890300",
+    "event_id": "sb:3890300:2872"
+  },
+  "warm_latency": {
+    "/match": {
+      "median_ms": 2.18,
+      "p95_ms": 2.63,
+      "max_ms": 2.77
+    },
+    "/events": {
+      "median_ms": 15.91,
+      "p95_ms": 16.88,
+      "max_ms": 21.28
+    },
+    "/timeline": {
+      "median_ms": 2.96,
+      "p95_ms": 3.44,
+      "max_ms": 4.8
+    },
+    "/sequences?sort=danger&limit=5": {
+      "median_ms": 2.15,
+      "p95_ms": 2.54,
+      "max_ms": 2.54
+    },
+    "/players": {
+      "median_ms": 2.45,
+      "p95_ms": 2.62,
+      "max_ms": 2.66
+    },
+    "/turning-points": {
+      "median_ms": 2.24,
+      "p95_ms": 2.56,
+      "max_ms": 2.65
+    },
+    "/competitions": {
+      "median_ms": 2.33,
+      "p95_ms": 2.97,
+      "max_ms": 2.98
+    },
+    "/matches": {
+      "median_ms": 9.83,
+      "p95_ms": 10.35,
+      "max_ms": 11.06
+    },
+    "/search": {
+      "median_ms": 11.07,
+      "p95_ms": 13.57,
+      "max_ms": 15.43
+    },
+    "/health": {
+      "median_ms": 9.62,
+      "p95_ms": 12.61,
+      "max_ms": 12.64
+    }
+  },
+  "ask_first_text_seconds": 3.385,
+  "ask_http_chunks": [
+    {
+      "type": "tool",
+      "name": "find_turning_points",
+      "args": {}
+    },
+    {
+      "type": "text",
+      "delta": "**The clearest narrative turning point was Mbapp"
+    },
+    {
+      "type": "text",
+      "delta": "é’s burst at 80'–81':** his penalty and immediat"
+    },
+    {
+      "type": "text",
+      "delta": "e equaliser transformed France’s threat. "
+    },
+    {
+      "type": "text",
+      "delta": "Across the detected before/after windows, France"
+    },
+    {
+      "type": "text",
+      "delta": " went from 0 shots and 0.0 xG to 2 shots and 0.8"
+    },
+    {
+      "type": "text",
+      "delta": "85 xG; their field tilt rose from 37.7% to 69.4%"
+    },
+    {
+      "type": "text",
+      "delta": ". "
+    },
+    {
+      "type": "text",
+      "delta": "[[ev:sb:3869685:2928]] [[ev:sb:3869685:2987]]\n"
+    },
+    {
+      "type": "text",
+      "delta": "\n"
+    },
+    {
+      "type": "text",
+      "delta": "**The detector’s largest momentum swing came lat"
+    },
+    {
+      "type": "text",
+      "delta": "er**, around Mbappé’s 118' penalty. "
+    },
+    {
+      "type": "text",
+      "delta": "Before that late window, Argentina produced 3 sh"
+    },
+    {
+      "type": "text",
+      "delta": "ots and 0.617 xG while France had 0 shots; after"
+    },
+    {
+      "type": "text",
+      "delta": "ward, France generated 2 shots and 0.814 xG whil"
+    },
+    {
+      "type": "text",
+      "delta": "e Argentina had 0 shots—another decisive reversa"
+    },
+    {
+      "type": "text",
+      "delta": "l toward France. "
+    },
+    {
+      "type": "text",
+      "delta": "[[ev:sb:3869685:4199]] [[ev:sb:3869685:4203]]"
+    },
+    {
+      "type": "citation",
+      "ref": "ev:sb:3869685:2928",
+      "label": "80' Mbappé penalty goal"
+    },
+    {
+      "type": "citation",
+      "ref": "ev:sb:3869685:2987",
+      "label": "81' Mbappé goal"
+    },
+    {
+      "type": "citation",
+      "ref": "ev:sb:3869685:4199",
+      "label": "116' Mbappé shot"
+    },
+    {
+      "type": "citation",
+      "ref": "ev:sb:3869685:4203",
+      "label": "118' Mbappé penalty goal"
+    },
+    {
+      "type": "done"
+    }
+  ],
+  "sweep_seconds": 182.7,
+  "final_checks": {
+    "ruff_check": "passed",
+    "ruff_format_check": "passed",
+    "pytest_passed": 37,
+    "pytest_seconds": 27.9
+  },
+  "analog_corpus": {
+    "matches": 493,
+    "windows": 15582,
+    "version": "analog:v1"
+  },
+  "turning_point_final": {
+    "start_label": "80'",
+    "end_label": "88'",
+    "rank": 3,
+    "key_goals": [
+      "sb:3869685:2928",
+      "sb:3869685:2987"
+    ]
+  },
+  "semantic_embedding_status": "DeploymentNotFound for the Coline code default; real vector/FTS query tested with transaction-scoped rows; commentary is empty",
+  "model_seam": "quantile_bands receives the intervention-adjusted state; live HTTP remove_goal shape validated after API restart"
+}

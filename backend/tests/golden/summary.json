@@ -1,0 +1,55 @@
+[
+  {
+    "question": "Find the turning point",
+    "tools": [
+      "find_turning_points"
+    ],
+    "first_text_seconds": 4.514,
+    "grounding": {
+      "unsupported_numbers": [],
+      "unsupported_citations": []
+    },
+    "all_citations_exist": true
+  },
+  {
+    "question": "Who was actually progressing the ball?",
+    "tools": [
+      "get_player_rankings"
+    ],
+    "first_text_seconds": 2.988,
+    "grounding": {
+      "unsupported_numbers": [],
+      "unsupported_citations": []
+    },
+    "all_citations_exist": true
+  },
+  {
+    "question": "Show me the three most dangerous sequences",
+    "tools": [
+      "get_top_sequences"
+    ],
+    "first_text_seconds": 2.614,
+    "grounding": {
+      "unsupported_numbers": [],
+      "unsupported_citations": []
+    },
+    "all_citations_exist": true
+  },
+  {
+    "question": "What changed after the substitutions?",
+    "tools": [
+      "get_events",
+      "get_window_stats",
+      "get_window_stats",
+      "get_window_stats",
+      "get_window_stats",
+      "get_window_stats"
+    ],
+    "first_text_seconds": 6.298,
+    "grounding": {
+      "unsupported_numbers": [],
+      "unsupported_citations": []
+    },
+    "all_citations_exist": true
+  }
+]
