@@ -20,6 +20,9 @@ features, alongside W5's cosine index. Requests exclude the anchor match and
 use 40 neighbours. The first five real windows are returned as analogs. Outcome
 bands and cumulative series are empirical quantiles of observed neighbour
 outcomes; `models.gamestate.quantile_bands` is the replacement seam for W6.
+The seam receives the intervention-adjusted state as `state`, plus focus-relative
+side, horizon offset and metric. A trained predictor can consume that state while
+the API continues retrieving and displaying historical analogs unchanged.
 
 After W3 backfills `events.xg`, `vaep`, `vaep_off`, `vaep_def`, `xt`, rebuild the
 windows with this command and restart the API (or invoke

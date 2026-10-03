@@ -243,8 +243,14 @@ def standardized_vector(features: dict, scaling: dict) -> list[float]:
     ]
 
 
-def quantile_bands(neighbours: list[dict], side: str, offset: int, metric: str) -> dict:
-    """Replacement seam: trained quantile regressors may implement this interface."""
+def quantile_bands(
+    neighbours: list[dict],
+    side: str,
+    offset: int,
+    metric: str,
+    state: dict | None = None,
+) -> dict:
+    """Empirical bands; W6 can predict from the changed `state` at this seam."""
     values = [r["outcome"]["series"][offset][side][metric] for r in neighbours]
     return {
         key: round(float(v), 4)
@@ -255,14 +261,19 @@ def quantile_bands(neighbours: list[dict], side: str, offset: int, metric: str) 
 
 
 def counterfactual_response(
-    match: dict, marker: dict, change: str, actual: list[dict], neighbours: list[dict]
+    match: dict,
+    marker: dict,
+    change: str,
+    actual: list[dict],
+    neighbours: list[dict],
+    state: dict | None = None,
 ) -> dict:
     """Serialize real neighbours and empirical bands into the fixed UI contract."""
     focus = marker["team"]
 
     def band(side: str, offset: int, metric: str) -> dict:
         return quantile_bands(
-            neighbours, "for" if side == focus else "against", offset, metric
+            neighbours, "for" if side == focus else "against", offset, metric, state
         )
 
     analogs = []

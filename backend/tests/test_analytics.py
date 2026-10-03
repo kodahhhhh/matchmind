@@ -181,3 +181,21 @@ def test_ask_provider_error_finishes_cleanly() -> None:
     assert chunks[-1] == {"type": "done"}
     assert any(c["type"] == "text" for c in chunks)
     assert "private provider payload" not in str(chunks)
+
+
+def test_counterfactual_model_seam_receives_intervention_state() -> None:
+    from matchmind.api.counterfactual import run_counterfactual
+    from matchmind.models.gamestate import quantile_bands
+
+    observed = []
+
+    def inspect(
+        neighbours: list, side: str, offset: int, metric: str, state: dict
+    ) -> dict:
+        observed.append(state)
+        return quantile_bands(neighbours, side, offset, metric, state)
+
+    with patch("matchmind.models.gamestate.quantile_bands", side_effect=inspect):
+        result = run_counterfactual("sb:3869685", "sb:3869685:2928", "remove_goal")
+    assert result["label"] == "Modelled hypothetical"
+    assert observed and all(state["score_diff"] == -2 for state in observed)

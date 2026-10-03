@@ -56,4 +56,4 @@ def run_counterfactual(match_id: str, event_id: str, change: str) -> dict:
     if not rows:
         raise HTTPException(503, "No empirical analogs available")
     actual = outcome_series(events, b["match"]["markers"], marker["t"])
-    return counterfactual_response(b["match"], marker, change, actual, rows)
+    return counterfactual_response(b["match"], marker, change, actual, rows, changed)

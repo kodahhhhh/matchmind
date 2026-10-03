@@ -289,5 +289,27 @@
       "type": "done"
     }
   ],
-  "sweep_seconds": 182.7
+  "sweep_seconds": 182.7,
+  "final_checks": {
+    "ruff_check": "passed",
+    "ruff_format_check": "passed",
+    "pytest_passed": 37,
+    "pytest_seconds": 27.9
+  },
+  "analog_corpus": {
+    "matches": 493,
+    "windows": 15582,
+    "version": "analog:v1"
+  },
+  "turning_point_final": {
+    "start_label": "80'",
+    "end_label": "88'",
+    "rank": 3,
+    "key_goals": [
+      "sb:3869685:2928",
+      "sb:3869685:2987"
+    ]
+  },
+  "semantic_embedding_status": "DeploymentNotFound for the Coline code default; real vector/FTS query tested with transaction-scoped rows; commentary is empty",
+  "model_seam": "quantile_bands receives the intervention-adjusted state; live HTTP remove_goal shape validated after API restart"
 }
