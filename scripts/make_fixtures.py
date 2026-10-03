@@ -444,15 +444,17 @@ def build_llm_fixtures(d: Path, mid: str, match: dict, events: list, minutes: li
     cf = {
         "match_id": mid, "event_id": target["event_id"], "change": "remove_goal",
         "label": "Modelled hypothetical", "horizon_minutes": 15,
+        "method": "trained_model",
+        "model": {"name": "Game-state quantile model (LightGBM)", "trained_matches": 2924, "coverage_p10_p90": {"xg": 0.88, "possession": 0.79}},
         "anchor": {"period": target["period"], "minute": target["minute"], "label": clock_label(target["period"], target["minute"])},
         "actual": {s: {"xg": tp["after"][s]["xg"], "possession": tp["after"][s]["possession"], "goals": sum(1 for m in in_tp if m["team"] == s)} for s in ("home", "away")},
         "modelled": {
             "home": {"xg": {"p10": 0.12, "p50": 0.41, "p90": 0.93}, "possession": {"p10": 0.44, "p50": 0.53, "p90": 0.61}},
             "away": {"xg": {"p10": 0.05, "p50": 0.27, "p90": 0.71}, "possession": {"p10": 0.39, "p50": 0.47, "p90": 0.56}},
         },
-        "series": [{"offset_min": k, "actual": {"home": r(0.03 * k, 3), "away": r(0.06 * k, 3)},
-                    "modelled": {"home": {"p10": r(0.008 * k, 3), "p50": r(0.027 * k, 3), "p90": r(0.062 * k, 3)},
-                                 "away": {"p10": r(0.003 * k, 3), "p50": r(0.018 * k, 3), "p90": r(0.047 * k, 3)}}} for k in range(0, 16)],
+        # the trained model forecasts 15-minute totals only, so per-minute modelled values are null
+        "series": [{"offset_min": k, "actual": {"home": r(0.03 * k, 3), "away": r(0.06 * k, 3)}, "modelled": None} for k in range(0, 16)],
+        "analog_summary": {"n": 40, "home": {"xg": {"p10": 0.05, "p50": 0.3, "p90": 0.81}}, "away": {"xg": {"p10": 0.02, "p50": 0.22, "p90": 0.64}}},
         "analogs": [{"match_id": a["match_id"], "competition": a["competition"], "season": a["season"], "home": a["home"]["name"], "away": a["away"]["name"],
                      "minute": 70 + i * 3, "score_state": "+1", "similarity": r(0.94 - i * 0.04, 2),
                      "next15": {"xg_for": r(0.22 + 0.1 * i, 2), "xg_against": r(0.35 - 0.05 * i, 2), "goals_for": i % 2, "goals_against": int(i == 1)}} for i, a in enumerate(analog_src)],
@@ -467,8 +469,15 @@ def build_llm_fixtures(d: Path, mid: str, match: dict, events: list, minutes: li
         end = {"goal": "and it ends in a goal", "shot": f"ending in a shot ({s['xg']:.2f} xG)", "lost": "before possession is lost"}[s["outcome"]]
         return f"{s['start']['label']} {tname[s['team']]} move the ball through {who}, {end}."
     dump(d / "search.json", {"query": "dangerous attacks down the left", "results": [
-        {"sequence_id": s["id"], "match_id": mid, "minute": s["start"]["minute"], "label": s["start"]["label"], "team": s["team"], "text": seq_line(s), "score": r(0.91 - 0.07 * i, 2)}
+        {"sequence_id": s["id"], "match_id": mid, "minute": s["start"]["minute"], "label": s["start"]["label"], "team": s["team"], "text": seq_line(s), "score": r(0.91 - 0.07 * i, 2),
+         "match": {"home": tname["home"], "away": tname["away"], "competition": match["competition"], "season": match["season"],
+                   "home_color": match["teams"]["home"]["color"], "away_color": match["teams"]["away"]["color"]}}
         for i, s in enumerate(seqs[:5])]})
+
+    # commentary: one broadcast line per sequence (Luna in production; template text here), in match order
+    dump(d / "commentary.json", {"match_id": mid, "lines": [
+        {"sequence_id": s["id"], "team": s["team"], "start": s["start"], "text": seq_line(s), "danger": s["danger"], "outcome": s["outcome"]}
+        for s in sorted(seqs, key=lambda s: s["start"]["t"])]})
 
     # ask: an SSE transcript for "Find the turning point" built from computed numbers
     b, a = tp["before"], tp["after"]
