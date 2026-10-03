@@ -3,7 +3,17 @@ name = "matchmind"
 version = "0.1.0"
 description = "MatchMind football analytics backend"
 requires-python = ">=3.12,<3.13"
-dependencies = ["psycopg[binary]>=3.2,<4", "pydantic-settings>=2.7,<3"]
+dependencies = [
+    "fastapi>=0.142.2",
+    "httpx>=0.28.1",
+    "numpy>=2.5.3",
+    "openai>=3.24.0",
+    "pandas>=3.0.6",
+    "psycopg[binary]>=3.2,<4",
+    "pydantic-settings>=2.7,<3",
+    "ruptures>=1.1.10",
+    "uvicorn>=0.54.0",
+]
 
 [dependency-groups]
 dev = ["pytest>=8,<10", "ruff>=0.11,<1"]
