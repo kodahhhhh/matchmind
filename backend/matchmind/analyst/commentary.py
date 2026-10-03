@@ -64,6 +64,7 @@ right wing. A later carry by Messi to the right wing does not support that claim
 Sequence start_zone/end_zone/progression are aggregate context, not attributes of
 any named player's move. Own half ALWAYS means the possessing team's half. Do
 not substitute a team name for own half. Prefer leaving out location over guessing.
+Own goals must explicitly be called own goals, credited to the beneficiary.
 """
 
 
@@ -239,6 +240,14 @@ def build_facts(rows: list[dict], meta: dict, sequences: list[dict]) -> list[dic
                 )
             elif row.get("result"):
                 action["outcome"] = row["result"]
+            if ev["type"]["name"] in ("Own Goal For", "Own Goal Against"):
+                action["outcome"] = "Goal"
+                action["goal_kind"] = "Own Goal"
+                action["beneficiary"] = (
+                    row["team"]
+                    if ev["type"]["name"] == "Own Goal For"
+                    else ("away" if row["team"] == "home" else "home")
+                )
             for uuid in ev.get("related_events", []):
                 linked = related.get(uuid)
                 if linked is None:
