@@ -13,11 +13,29 @@ from matchmind.backtest.statistics import OUTCOMES, scores, summary
 EDGE = 0.10
 STAKE = 100.0
 EMBARGO_SECONDS = 180
+INFORMATION_LAG_MINUTES = 3
 
 
 def run() -> tuple[list[dict], dict]:
     from matchmind.api.repository import bundle
 
+    discovered = json.loads((output() / "polymarket_discovery.json").read_text())
+    # Excluded contract types still expose market availability, with no false curve.
+    for item in sorted(discovered, key=lambda d: float(d["event"].get("volume", 0))):
+        mid, event = item["match"]["match_id"], item["event"]
+        save(
+            output() / f"market_{mid.replace(':', '_')}.json",
+            {
+                "match_id": mid,
+                "source": "polymarket",
+                "market_url": f"https://polymarket.com/event/{event['slug']}",
+                "volume": float(event.get("volume", 0)),
+                "aligned": False,
+                "offset_seconds": None,
+                "series": [],
+                "bets": [],
+            },
+        )
     histories = json.loads((output() / "polymarket_histories.json").read_text())
     predictions = pd.read_parquet(output() / "inplay_predictions.parquet")
     audits, accepted = [], []
@@ -62,6 +80,7 @@ def run() -> tuple[list[dict], dict]:
             "threshold": EDGE,
             "stake": STAKE,
             "embargo_seconds": EMBARGO_SECONDS,
+            "information_lag_minutes": INFORMATION_LAG_MINUTES,
             "aligned_matches": len(accepted),
             "calibration": {},
             "per_match_pnl": {},
@@ -81,6 +100,9 @@ def run() -> tuple[list[dict], dict]:
             rows = predictions[predictions.match_id == mid].sort_values(
                 ["period", "minute"]
             )
+            feature_rows = {
+                (r["period"], r["minute"]): r for r in rows.to_dict("records")
+            }
             positions, series = set(), []
             label = f"{item['match']['home']['name']} – {item['match']['away']['name']}"
             for row in rows.to_dict("records"):
@@ -92,7 +114,10 @@ def run() -> tuple[list[dict], dict]:
                     side: last_price(m["prices"]["YES"], timestamp)
                     for side, m in item["markets"].items()
                 }
-                probs = {s: float(row[f"p_{s}"]) for s in OUTCOMES}
+                delayed = feature_rows.get((period, minute - INFORMATION_LAG_MINUTES))
+                if delayed is None:
+                    continue
+                probs = {s: float(delayed[f"p_{s}"]) for s in OUTCOMES}
                 if all(s in prices and prices[s] is not None for s in OUTCOMES):
                     key = (period, minute)
                     if key in timeline[mid]:
@@ -209,7 +234,8 @@ def run() -> tuple[list[dict], dict]:
                 "name": f"Polymarket · {round(slippage * 100)}¢ slippage",
                 "market": "polymarket",
                 "description": (
-                    "Regulation YES/NO; fixed 10 percentage-point probability "
+                    "Regulation YES/NO; three-minute information lag; "
+                    "fixed 10 percentage-point probability "
                     "edge; $100 stake; one position per market; minute <86; hold "
                     "to resolution. Historical prices are not executable quotes."
                 ),

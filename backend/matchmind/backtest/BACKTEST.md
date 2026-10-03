@@ -58,6 +58,9 @@ The main API registration and frontend belong to the orchestrator.
   Goal-based alignment is retrospective data QA, never optimization of profits.
   Use the latest corroborating jump offset and exclude entries within three
   minutes of every regulation goal. Goal-free halves fail this strict audit.
+- Use model information deliberately lagged three match-clock minutes to absorb
+  minute-sampling and alignment uncertainty; no entries in the first three
+  minutes of either half. This conservative rule is fixed before P&L evaluation.
 - Prices are strictly backward as-of with a 90-second staleness limit; no forward
   interpolation. Use the same period/minute -> index map as the real timeline.
 - Multiclass Brier sums three squared errors (range 0–2); log loss is natural log.
