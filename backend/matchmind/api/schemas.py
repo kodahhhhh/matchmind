@@ -315,7 +315,7 @@ class Modelled(Contract):
 class BranchPoint(Contract):
     offset_min: int
     actual: Sides[float]
-    modelled: Sides[Band]
+    modelled: None
 
 
 class AnalogOutcome(Contract):
@@ -342,12 +342,36 @@ class CounterfactualRequest(Contract):
     change: Change
 
 
+class ModelCoverage(Contract):
+    xg: float
+    possession: float
+
+
+class ForecastModel(Contract):
+    name: str
+    trained_matches: int
+    coverage_p10_p90: ModelCoverage
+
+
+class AnalogXg(Contract):
+    xg: Band
+
+
+class AnalogSummary(Contract):
+    n: int
+    home: AnalogXg
+    away: AnalogXg
+
+
 class Counterfactual(Contract):
     match_id: str
     event_id: str
     change: Change
     label: Literal["Modelled hypothetical"]
     horizon_minutes: Literal[15]
+    method: Literal["trained_model", "analogs"]
+    model: ForecastModel
+    analog_summary: AnalogSummary
     anchor: Anchor
     actual: Sides[Actual]
     modelled: Sides[Modelled]

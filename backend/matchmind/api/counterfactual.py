@@ -1,21 +1,110 @@
-"""Counterfactual orchestration: DB neighbours in, pure model computation out."""
+"""Counterfactual artifact loading and orchestration; no analytics in the route.
+
+One exact in-memory 19D index per API process covers all training matches. It
+avoids changing the legacy vector(16) DB table used by the refresh command.
+Immutable training artifacts are cached for the process lifetime; restart after
+replacing them. Per-match SPADL inputs are bounded to 128 cached matches.
+"""
+
+import json
+from functools import lru_cache
 
 import pandas as pd
 from fastapi import HTTPException
 
-from matchmind.api.repository import bundle, connect
+from matchmind.api.repository import bundle, require_match
+from matchmind.models.common import data_dir, raw_events
 from matchmind.models.gamestate import (
-    VERSION,
-    changed_features,
+    TrainingAnalogs,
     counterfactual_response,
     outcome_series,
-    standardized_vector,
-    state_features,
+)
+from matchmind.models.gamestate_model import (
+    anchor_features,
+    intervene,
+    match_context,
+    predict,
+    prepare_actions,
 )
 
 
+@lru_cache(maxsize=1)
+def training_analogs() -> TrainingAnalogs:
+    """Build an exact, standardized index once from complete training horizons."""
+    return TrainingAnalogs(
+        pd.read_parquet(data_dir() / "processed/gamestate_windows.parquet")
+    )
+
+
+@lru_cache(maxsize=1)
+def model_metadata() -> dict:
+    """Use measured coverage and training size, never fixture/example numbers."""
+    report = json.loads((data_dir() / "models/gamestate.json").read_text())
+    return {
+        "name": "Game-state quantile model (LightGBM)",
+        "trained_matches": report["n_matches"],
+        "coverage_p10_p90": {
+            "xg": report["metrics"]["xg_for"]["coverage_p10_p90"],
+            "possession": report["metrics"]["possession_share"]["coverage_p10_p90"],
+        },
+    }
+
+
+@lru_cache(maxsize=1)
+def shot_values() -> pd.DataFrame:
+    """Read just the held-out shot values used by the window training pipeline."""
+    return pd.read_parquet(
+        data_dir() / "processed/xg/shots.parquet",
+        columns=["game_id", "original_event_id", "xg"],
+    )
+
+
+@lru_cache(maxsize=128)
+def inference_inputs(match_id: str) -> tuple[pd.DataFrame, dict]:
+    """Load saved SPADL/OOF artifacts; raw timestamps establish the training clock."""
+    match = require_match(match_id)
+    native = match["native_id"]
+    raw = raw_events(native)
+    context = match_context(raw, match)
+    actions = prepare_actions(
+        pd.read_parquet(data_dir() / f"processed/vaep/{native}.parquet"),
+        pd.read_parquet(data_dir() / f"processed/xt/{native}.parquet"),
+        shot_values().loc[lambda rows: rows.game_id == native],
+        raw,
+        match,
+        context,
+    )
+    return actions, context
+
+
+@lru_cache(maxsize=2924)
+def analog_goal_history(match_id: str, home: str) -> list[dict]:
+    """Load only local goal history for top-five analogs, including non-demo games."""
+    from matchmind.models.common import event_clock, event_seconds
+
+    raw = raw_events(int(match_id.split(":")[1]))
+    offsets, _ = event_clock(raw)
+    goals = []
+    for event in raw:
+        if event["period"] == 5:
+            continue
+        kind = event["type"]["name"]
+        if not (
+            (kind == "Shot" and event["shot"]["outcome"]["name"] == "Goal")
+            or kind == "Own Goal Against"
+        ):
+            continue
+        side = "home" if event["team"]["name"] == home else "away"
+        if kind == "Own Goal Against":
+            side = "away" if side == "home" else "home"
+        goals.append(
+            {"t": offsets[event["period"]] + event_seconds(event), "team": side}
+        )
+    return goals
+
+
 def run_counterfactual(match_id: str, event_id: str, change: str) -> dict:
-    """Validate intervention, query forty real analogs and return empirical bands."""
+    """Predict each team's modified state and retrieve forty full-corpus analogs."""
     b = bundle(match_id)
     marker = next((m for m in b["match"]["markers"] if m["event_id"] == event_id), None)
     if marker is None:
@@ -33,27 +122,28 @@ def run_counterfactual(match_id: str, event_id: str, change: str) -> dict:
     )
     if not valid:
         raise HTTPException(422, "Change does not match the selected event")
-    events = pd.DataFrame(b["events"])
-    features = state_features(
-        events, b["match"]["markers"], marker, marker["team"], b["model_values"]
+    try:
+        actions, context = inference_inputs(match_id)
+        anchor = {**context["anchors"][event_id], "team": marker["team"]}
+        factual = anchor_features(actions, context, anchor, require_match(match_id))
+        changed = intervene(factual, anchor, context, change)
+        predictions = predict(changed)
+        metadata = model_metadata()
+        focus = 0 if marker["team"] == "home" else 1
+        neighbours = training_analogs().nearest(changed.iloc[[focus]], match_id)
+        goals = {
+            r["match_id"]: analog_goal_history(r["match_id"], r["home"])
+            for r in neighbours[:5]
+        }
+    except FileNotFoundError as exc:
+        raise HTTPException(
+            503, "Trained game-state artifacts are unavailable"
+        ) from exc
+    if not neighbours:
+        raise HTTPException(503, "No complete historical analogs available")
+    actual = outcome_series(
+        pd.DataFrame(b["events"]), b["match"]["markers"], marker["t"]
     )
-    changed = changed_features(features, marker, b["match"]["markers"], change)
-    with connect() as conn:
-        scaling = conn.execute(
-            "SELECT scaling FROM gamestate_scaling WHERE version=%s", (VERSION,)
-        ).fetchone()
-        if not scaling:
-            raise HTTPException(503, "Empirical analog windows have not been loaded")
-        vector = str(standardized_vector(changed, scaling["scaling"]))
-        conn.execute("SET LOCAL hnsw.ef_search=200")
-        rows = conn.execute(
-            "SELECT w.*,m.meta,w.embedding <-> %s::vector AS distance FROM "
-            "gamestate_windows w JOIN matches m USING(match_id) WHERE "
-            "w.match_id<>%s AND w.window_id LIKE %s ORDER BY w.embedding <-> "
-            "%s::vector LIMIT 40",
-            (vector, match_id, VERSION + ":%", vector),
-        ).fetchall()
-    if not rows:
-        raise HTTPException(503, "No empirical analogs available")
-    actual = outcome_series(events, b["match"]["markers"], marker["t"])
-    return counterfactual_response(b["match"], marker, change, actual, rows, changed)
+    return counterfactual_response(
+        b["match"], marker, change, actual, neighbours, predictions, metadata, goals
+    )
