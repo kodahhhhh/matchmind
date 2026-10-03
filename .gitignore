@@ -1,0 +1,11 @@
+data/*
+!data/catalogue/
+!data/manifest.json
+.env
+*.env
+!.env.example
+.venv/
+__pycache__/
+node_modules/
+dist/
+.DS_Store

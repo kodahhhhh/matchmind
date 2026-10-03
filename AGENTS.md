@@ -22,8 +22,8 @@ Guidance for coding agents (Claude subagents, Codex) working on MatchMind.
 
 * **The LLM never produces numbers.** Every stat in an analyst answer must come from a tool result. Tools return IDs; answers cite them as `[[ev:<event_id>]]` or `[[seq:<sequence_id>]]`.
 * **Never commit secrets.** Azure keys live in `backend/.env` (gitignored). Read config via `matchmind.config`, never `os.environ` scattered through the code.
-* **Never commit data.** `data/` is gitignored. Scraped WhoScored data must never leave this machine.
-* **No scraping outside W1.** No other task makes requests to WhoScored or any other third-party site.
+* **Never commit data,** except `data/catalogue/` (the match list) and `data/manifest.json` (StatsBomb source commit). Everything else in `data/` is gitignored.
+* **No scraping.** No task makes requests to WhoScored or any other third-party data site.
 * **No network calls in `metrics/` or `models/`.** They are pure functions over DataFrames and saved model files.
 * **Counterfactual output is always labelled as modelled.** Never phrase it as what "would have" happened.
 * Don't leave long-running processes behind (dev servers, scrapers, training jobs) unless your task says to.
@@ -32,7 +32,7 @@ Guidance for coding agents (Claude subagents, Codex) working on MatchMind.
 
 * **Coordinates:** SPADL metres, **105 × 68**, origin bottom-left. In API responses, **the home team attacks left → right in both halves** (flip away-team actions and second-half orientation at the API boundary, not in storage). *This supersedes the "120×80" mention in `PLAN.md` §8.* The frontend pitch uses a 105×68 viewBox.
 * **Event IDs:** strings, `"{source}:{match_id}:{action_index}"`, e.g. `"sb:3869685:1042"`. Sequence IDs: `"{source}:{match_id}:s{n}"`.
-* **Match IDs:** `"{source}:{native_id}"`, where source is `sb` (StatsBomb) or `ws` (WhoScored).
+* **Match IDs:** `"sb:{native_id}"`. The match list is `data/catalogue/matches.json`; read it instead of StatsBomb's `matches/` folder, which misses 274 matches. Rebuilt matches have `reconstructed: true` and `null` dates.
 * **Time:** `period` (1–5), `minute` and `second` as shown on the match clock (stoppage time continues counting, e.g. 45+2 → minute 47 with `period: 1`). DB `ts = kickoff_ts + elapsed match seconds`.
 * **Teams in responses:** always `"home"` / `"away"` plus a `teams` object in match meta with names and colours. Never key series by team name.
 * **xG:** always our own model's value (`xg`). StatsBomb's value, when present, is kept only as `sb_xg` for validation.

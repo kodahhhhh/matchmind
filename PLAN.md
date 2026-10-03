@@ -14,10 +14,10 @@ StormHacks 2026 · Deadline **Sun Oct 4, 12:00pm PDT** · This file is the singl
 | Who calculates | **Python calculates, the LLM only explains.** No number in an answer may come from the LLM; every number comes from a tool result. |
 | Custom models | Trained on this EC2 (16 cores, 61 GB, CPU only): **xG**, **VAEP action values**, **game-state outcome model**. No LLM training. |
 | Database | **TimescaleDB + pgvector**, self-hosted in Docker on this EC2. Hypertable for events, continuous aggregates for per-minute metrics, pgvector for commentary search and game-state analogs. No TiDB. |
-| Data | StatsBomb open data (free) + **World Cup 2026 via a WhoScored scrape, gated on a 30-min spike** (§3.2). |
+| Data | StatsBomb open data only: **4,235 matches** catalogued, incl. 274 rebuilt from unlisted files (§3). World Cup 2026 dropped (§3.2). |
 | Design | Broadcast dark, made genuinely beautiful (§8). |
 | Hosting | This EC2 + a free `.tech` domain via MLH. |
-| Execution | Claude orchestrates and owns the core; Codex gets well-specified, file-isolated tasks (§10). |
+| Execution | The team directs; Claude coordinates agents and owns all frontend. Codex (`gpt-6-astra`) builds the models; other Codex tasks use `gpt-6.1-sol`. **Codex never does frontend.** Codex runs as threads on the local app-server daemon (remote control on, visible in ChatGPT mobile) (§10). |
 
 ## 2. Product
 
@@ -45,7 +45,9 @@ StormHacks 2026 · Deadline **Sun Oct 4, 12:00pm PDT** · This file is the singl
 ### 3.1 StatsBomb open data (free, local)
 `git clone --depth 1 https://github.com/statsbomb/open-data data/raw/statsbomb`
 
-**Demo competitions (187 matches):**
+Cloned at commit `4b73468`; verified (no missing files). The full match list lives in **`data/catalogue/matches.json`** (committed; `competitions.json` has the counts). Downstream code reads the catalogue, not StatsBomb's `matches/` folder.
+
+**Demo competitions (493 matches):**
 
 | Competition | Matches | Notes |
 |---|---|---|
@@ -54,18 +56,17 @@ StormHacks 2026 · Deadline **Sun Oct 4, 12:00pm PDT** · This file is the singl
 | Bundesliga 2023/24 | 34 | **Leverkusen's matches only**, not the full league |
 | Copa América 2024 | 32 | |
 | MLS 2023 | 6 | **Inter Miami only**, Messi |
+| Bundesliga 2015/16 | 306 | **Full season.** Only Leverkusen's 34 are in StatsBomb's index; the other 272 were rebuilt from unlisted event files (`reconstructed: true`; dates and matchweeks are `null`) |
 
-**Training corpus:** all 2,651 men's matches in open data (used for xG, VAEP and the game-state model).
+**Training corpus:** all **2,924** men's matches (2,651 listed + 272 rebuilt Bundesliga + 1 rebuilt Barcelona–Zaragoza), used for xG, VAEP and the game-state model.
 
-### 3.2 World Cup 2026 via WhoScored (gated)
-- **Spike (30 min, first thing):** use Playwright (Chromium is already installed) to load one WC 2026 match page and extract the embedded Opta event JSON (`matchCentreData`).
-  - **Pass:** full event list with x/y coordinates and qualifiers → scrape all 104 matches with polite rate limiting (one page at a time, randomized delay of several seconds), caching raw JSON to `data/raw/whoscored/`.
-  - **Fail** (Cloudflare blocks it or the data is missing): drop WC 2026 and do not retry. Note it in §12.
-- WhoScored has no xG, so **our own xG model is used for every source** (keeps metrics consistent).
-- Scraped data is for the demo only: never committed, never redistributed. `data/` is gitignored.
+**Rebuilt metadata** (274 matches): home/away from the order of the `Starting XI` events and scores from goal + own-goal events. Both rules were validated at 3,961/3,961 on listed matches. One women's stray (Man City WFC–Chelsea FCW, inferred WSL 2017/18) is catalogued but excluded from training.
+
+### 3.2 World Cup 2026: dropped
+The WhoScored spike **failed**: Cloudflare returned 403 on the homepage (most likely blocking this EC2's AWS IP range). Per the plan, WC 2026 is dropped and no other sources will be tried. Spike evidence is archived in `data/raw/whoscored/` (gitignored). Our own xG model is still used for every match, so metrics stay consistent with how they're computed everywhere else.
 
 ### 3.3 Normalisation
-All sources convert to **SPADL** via `socceraction` (StatsBomb and Opta/WhoScored loaders both exist). Everything downstream reads SPADL plus a small `match_meta` table, so it never needs to know the source.
+All matches convert to **SPADL** via `socceraction`. Everything downstream reads SPADL plus a small `match_meta` table, so it never needs to know the source.
 
 Output: `data/processed/{source}/{match_id}.parquet` + `data/processed/matches.parquet`.
 
@@ -74,7 +75,7 @@ Output: `data/processed/{source}/{match_id}.parquet` + `data/processed/matches.p
 | Model | Method | Trained on | Validation (report in README) |
 |---|---|---|---|
 | **xG** | LightGBM on shots: distance, angle, body part, shot type, assist type, under pressure, game state | ~70k StatsBomb shots | Log loss + Brier vs StatsBomb's own xG on held-out matches |
-| **VAEP** | `socceraction` VAEP (scores / concedes within the next 10 actions), LightGBM | All 2,651 matches as SPADL | AUC on held-out matches |
+| **VAEP** | `socceraction` VAEP (scores / concedes within the next 10 actions), LightGBM | All 2,924 training matches as SPADL | AUC on held-out matches |
 | **xT** | `socceraction` xT grid (12×8) | Same | n/a (used for the pass-vs-shoot approximation) |
 | **Game-state** | LightGBM quantile regression (p10/p50/p90) | 5-min windows across all matches | Pinball loss; calibration of p10–p90 coverage |
 | **Turning point** | `ruptures` PELT on the momentum series | n/a | Sanity check: WC 2022 final flags ~80' |
@@ -154,10 +155,10 @@ hackathon/
   PLAN.md
   docker-compose.yml          # timescaledb-ha (includes pgvector)
   fixtures/                   # committed JSON for every endpoint
-  data/                       # gitignored: raw/, processed/, models/
+  data/                       # gitignored (raw/, processed/, models/) except catalogue/ and manifest.json
   backend/                    # uv project, Python 3.12
     matchmind/
-      ingest/   statsbomb.py whoscored.py spadl.py
+      ingest/   statsbomb.py spadl.py
       models/   xg.py vaep.py gamestate.py
       metrics/  timeline.py sequences.py players.py turning.py
       analyst/  client.py tools.py agent.py prompts.py commentary.py
@@ -170,30 +171,30 @@ hackathon/
 
 ## 10. Workstreams and owners
 
-Each workstream owns its directories exclusively so parallel agents never edit the same files. Codex tasks run in separate git worktrees and merge through Claude.
+Each workstream owns its directories exclusively so parallel agents never edit the same files. Codex tasks run in separate git worktrees and merge through Claude. **The team decides what runs when;** owners below are the default assignment.
 
 | # | Workstream | Owner | Owns | Depends on | Done when |
 |---|---|---|---|---|---|
 | W0 | Scaffold, contracts, fixtures, docker-compose, Azure smoke test | **Claude** | root, `fixtures/`, `api/` stubs | — | Stub API serves every fixture; Sol and Luna each answer a test call from Python |
-| W1 | WhoScored spike → full scrape | **Subagent** | `ingest/whoscored.py` | — | §3.2 pass/fail recorded; if pass, 104 raw JSON files cached |
-| W2 | StatsBomb ingest → SPADL parquet | **Codex** | `ingest/statsbomb.py`, `ingest/spadl.py` | W0 | All 2,651 matches converted; 187 demo matches have meta |
-| W3 | xG + VAEP + xT training | **Claude** | `models/xg.py`, `models/vaep.py` | W2 | Models saved to `data/models/`; validation numbers in README |
+| ~~W1~~ | ~~WhoScored spike~~ | — | — | — | **Done: FAIL, WC 2026 dropped** (§3.2) |
+| W2 | StatsBomb ingest → SPADL parquet | **Codex** | `ingest/statsbomb.py`, `ingest/spadl.py` | W0 | All 4,235 catalogue matches converted |
+| W3 | xG + VAEP + xT training | **Codex (astra)** | `models/xg.py`, `models/vaep.py` | W2 | Models saved to `data/models/`; validation numbers in README |
 | W4 | Metrics, sequences, players, turning points | **Claude** | `metrics/` | W3 | Real responses match fixture shapes; WC22 final turning point ≈ 80' |
 | W5 | DB schema + loader | **Codex** | `db/`, docker-compose | W0, W4 | Hypertable + continuous aggregate populated for demo matches |
-| W6 | Game-state model + analogs | **Subagent** | `models/gamestate.py` | W3 | p10–p90 coverage reported; analog query < 200 ms |
+| W6 | Game-state model + analogs | **Codex (astra)** | `models/gamestate.py` | W3 | p10–p90 coverage reported; analog query < 200 ms |
 | W7 | Analyst agent (Sol) + tools + SSE | **Claude** | `analyst/` (except commentary) | W4 | Golden set passes the numbers check |
 | W8 | Commentary batch (Luna) + embeddings + hybrid search | **Codex** | `analyst/commentary.py`, `api/routes/search.py` | W5 | All demo sequences have commentary; search returns sensible hits |
-| W9 | Frontend: design system, pitch, timeline | **Codex** | `frontend/src/components/{pitch,timeline}`, theme | W0 fixtures | Pitch + timeline synced on fixture data at 1440×900 |
-| W10 | Frontend: browser, analyst panel, what-if, citations | **Codex** | `frontend/src/components/{browser,analyst,whatif}` | W9 | Works against the real API end to end |
+| W9 | Frontend: design system, pitch, timeline | **Claude** | `frontend/src/components/{pitch,timeline}`, theme | W0 fixtures | Pitch + timeline synced on fixture data at 1440×900 |
+| W10 | Frontend: browser, analyst panel, what-if, citations | **Claude** | `frontend/src/components/{browser,analyst,whatif}` | W9 | Works against the real API end to end |
 | W11 | Integration, deploy, domain | **Claude** | — | all | Live on the `.tech` domain |
 
-Claude reviews every Codex merge against this plan and the design brief, with screenshots for frontend work.
+Claude reviews every Codex merge against this plan before merging.
 
 ## 11. Timeline (T0 = planning sign-off)
 
 | By | Milestone |
 |---|---|
-| T+1h | W0 done; W1 spike verdict; StatsBomb cloned; Timescale up |
+| T+1h | W0 done; StatsBomb cloned + catalogued ✅; Timescale up |
 | T+4h | SPADL conversion done; frontend pitch rendering fixture data |
 | T+7h | xG + VAEP trained; real timeline/events endpoints live; analyst answers one question end to end |
 | T+11h | Turning points, sequences, players live; DB loaded; commentary batch running; frontend on real API |
@@ -208,8 +209,8 @@ If T0 slips, cut features in §2 order. Never cut the 30-minute buffer.
 
 | Risk | Fallback |
 |---|---|
-| WhoScored blocks the scrape | Drop WC 2026; 187 StatsBomb matches is still plenty |
-| Opta → SPADL mapping quirks | WC 2026 matches get replay + xG + VAEP only, no commentary, if time is short |
+| ~~WhoScored blocks the scrape~~ | **Happened.** WC 2026 dropped; 493 demo matches instead |
+| Rebuilt matches have no dates | Show "2015/16 season" instead of a date; sort Bundesliga 2015/16 by `native_id` |
 | VAEP training slow | Train on a 1,000-match subset |
 | Counterfactual model looks weak | Lead with analogs (real data), show the model band as secondary |
 | Sol tool loop is flaky | Fall back to fixed pipelines per question type (routed by Luna) |
@@ -230,8 +231,8 @@ If T0 slips, cut features in §2 order. Never cut the 30-minute buffer.
 2. **0:20–1:00** WC 2022 final → **Find the turning point** → lands on 80–81' → Sol explains, citations jump the pitch.
 3. **1:00–1:40** "Who was actually progressing the ball?" → VAEP ranking vs raw pass counts; they differ.
 4. **1:40–2:20** What if: "Mbappé's penalty is missed" → modelled band vs actual, plus real analog matches.
-5. **2:20–2:45** Search across 187+ matches: "every time a team broke down the left after a turnover".
-6. **2:45–3:00** Architecture: own models trained on 2,651 matches, Timescale continuous aggregates + pgvector, LLM explains and never calculates.
+5. **2:20–2:45** Search across 493 matches: "every time a team broke down the left after a turnover".
+6. **2:45–3:00** Architecture: own models trained on 2,924 matches, Timescale continuous aggregates + pgvector, LLM explains and never calculates.
 
 ## 15. Submission checklist
 

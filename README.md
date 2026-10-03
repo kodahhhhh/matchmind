@@ -33,15 +33,16 @@ Every answer is grounded in real match events. The numbers come from our own tra
 | Bundesliga 2023/24 (Bayer Leverkusen) | 34 |
 | Copa América 2024 | 32 |
 | MLS 2023 (Inter Miami) | 6 |
-| FIFA World Cup 2026 | *pending* |
+| Bundesliga 2015/16 (full season) | 306 |
+| **Total** | **493** |
 
-Models are trained on all **2,651** men's matches in StatsBomb's open data.
+Models are trained on all **2,924** men's matches in StatsBomb's open data. That includes 273 matches we found in the dataset's event files but missing from its match index; we rebuilt their teams and scores from the events and validated the method on all 3,961 indexed matches.
 
 ## How it works
 
 ```mermaid
 flowchart LR
-  SB[StatsBomb open data] --> SPADL[Normalise to SPADL<br/>socceraction]
+  SB[StatsBomb open data<br/>4,235 matches] --> SPADL[Normalise to SPADL<br/>socceraction]
   SPADL --> Models[Our trained models<br/>xG · VAEP · xT · game-state]
   Models --> Metrics[Python analytics<br/>timeline · sequences · players · turning points]
   Metrics --> DB[(TimescaleDB + pgvector<br/>hypertables · continuous aggregates · vectors)]
