@@ -55,3 +55,20 @@ def test_match_split_is_complete_and_reproducible() -> None:
     assert len(splits) == 2924
     assert set(splits.values()) == set(range(5))
     assert splits == fold_map()
+
+
+def test_vaep_retains_score_across_half_time() -> None:
+    import pandas as pd
+
+    from matchmind.models.common import data_dir
+
+    path = data_dir() / "processed/vaep_features/3869685.parquet"
+    if not path.exists():
+        pytest.skip("SPADL feature artifacts not generated")
+    features = pd.read_parquet(path)
+    actions = pd.read_parquet(data_dir() / "processed/spadl/3869685.parquet")
+    first_second_half = actions[actions.period_id == 2].iloc[0]
+    row = features[features.action_id == first_second_half.action_id].iloc[0]
+    argentina_has_ball = first_second_half.team_id == 779
+    assert row.goalscore_team == (2 if argentina_has_ball else 0)
+    assert row.goalscore_opponent == (0 if argentina_has_ball else 2)

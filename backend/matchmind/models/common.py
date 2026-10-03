@@ -48,3 +48,22 @@ def fold_map() -> dict[int, int]:
         )
         for i in test
     }
+
+
+def event_seconds(event: dict[str, Any]) -> float:
+    h, m, s = event["timestamp"].split(":")
+    return float(h) * 3600 + float(m) * 60 + float(s)
+
+
+def event_clock(
+    events: list[dict[str, Any]],
+) -> tuple[dict[int, float], dict[int, float]]:
+    lengths = {
+        p: max(event_seconds(e) for e in events if e["period"] == p)
+        for p in sorted({e["period"] for e in events if e["period"] < 5})
+    }
+    offset, total = {}, 0.0
+    for period, length in lengths.items():
+        offset[period] = total
+        total += length
+    return offset, lengths
