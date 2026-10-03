@@ -1,41 +1,47 @@
-/* MatchMind design tokens: broadcast dark. Components use these via Tailwind theme names or var(). */
+/* MatchMind design tokens: broadcast package. Neutral near-black chrome, a real grass pitch,
+   team colours as the only saturated hues, violet reserved for AI-generated content. */
 :root {
   color-scheme: dark;
 
-  /* surfaces */
-  --bg: #050a08;
-  --surface-1: #09100d;
-  --surface-2: #0e1612;
-  --surface-3: #141e19;
-  --border: rgba(255, 255, 255, 0.07);
-  --border-strong: rgba(255, 255, 255, 0.13);
+  /* chrome */
+  --bg: #06080b;
+  --surface-1: #0c1015;
+  --surface-2: #11161d;
+  --surface-3: #18202a;
+  --surface-4: #212b37;
+  --border: rgba(255, 255, 255, 0.06);
+  --border-strong: rgba(255, 255, 255, 0.12);
+  --glass: rgba(8, 12, 16, 0.62);
 
   /* ink */
-  --ink: #eef3f0;
-  --ink-2: #a9b6b0;
-  --ink-3: #74827b;
-  --ink-4: #4a5752;
+  --ink: #f4f6f8;
+  --ink-2: #b7c0ca;
+  --ink-3: #7f8a97;
+  --ink-4: #525d6a;
 
-  /* pitch */
-  --pitch: #0a1611;
-  --pitch-stripe: #0c1a14;
-  --pitch-line: rgba(214, 255, 232, 0.17);
-  --pitch-glow: rgba(214, 255, 232, 0.05);
+  /* grass */
+  --grass-1: #1d5235;
+  --grass-2: #1a4a30;
+  --grass-edge: #0f2c1c;
+  --pitch-line: rgba(255, 255, 255, 0.58);
+  --pitch-line-soft: rgba(255, 255, 255, 0.22);
+  --on-grass: #0b1f14;
 
   /* chart chrome */
-  --grid: #16201c;
-  --axis: #26322d;
+  --grid: #18202a;
+  --axis: #2a3542;
 
-  /* AI accent: used sparingly, only for analyst-generated things */
-  --ai: #b8a6ff;
-  --ai-soft: rgba(184, 166, 255, 0.12);
-  --ai-line: rgba(184, 166, 255, 0.35);
+  /* AI accent */
+  --ai: #b6a4ff;
+  --ai-2: #7c6cf0;
+  --ai-soft: rgba(182, 164, 255, 0.12);
+  --ai-line: rgba(182, 164, 255, 0.38);
 
-  /* the only saturated colours on screen are team colours, set per match */
+  /* team colours, set per match */
   --home: #7cb9e8;
   --away: #e5484d;
 
-  --radius: 14px;
+  --radius: 18px;
   --font-sans: "Inter Variable", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-display: "Barlow Condensed", "Inter Variable", system-ui, sans-serif;
 }

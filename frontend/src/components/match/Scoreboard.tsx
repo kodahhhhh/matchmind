@@ -1,35 +1,49 @@
-import type { MatchDetail } from "../../api/types";
+import type { MatchDetail, Side } from "../../api/types";
+import { clock } from "../../lib/format";
 
+/** Broadcast scorebug: team blocks, big score, scorers underneath. */
 export function Scoreboard({ match }: { match: MatchDetail }) {
-  const { home, away } = match.teams;
   const pens = match.score.penalties;
+  const players = new Map([...match.lineups.home, ...match.lineups.away].map((p) => [p.player_id, p.short_name]));
+  const scorers = (side: Side) => {
+    const by = new Map<string, string[]>();
+    for (const m of match.markers) {
+      if (m.type !== "goal" || m.team !== side) continue;
+      const name = m.detail === "own_goal" ? "OG" : players.get(m.player_id ?? -1) ?? "?";
+      by.set(name, [...(by.get(name) ?? []), clock(m.period, m.minute) + (m.detail === "penalty" ? " P" : "")]);
+    }
+    return [...by.entries()].map(([n, ms]) => `${n} ${ms.join(", ")}`);
+  };
+
   return (
-    <div className="flex items-center gap-4">
-      <Team name={home.name} short={home.short} side="home" align="right" />
-      <div className="flex flex-col items-center leading-none">
-        <div className="flex items-center gap-2 rounded-xl border border-line bg-surface-2 px-4 py-1.5 font-display text-[28px] font-semibold tracking-wide">
-          <span>{match.score.home}</span>
-          <span className="text-ink-4">–</span>
-          <span>{match.score.away}</span>
+    <div className="flex items-start gap-3">
+      <TeamBlock side="home" name={match.teams.home.name} scorers={scorers("home")} />
+      <div className="flex flex-col items-center">
+        <div className="flex h-[52px] items-center overflow-hidden rounded-xl bg-surface-3 ring-1 ring-white/10">
+          <span className="h-full w-1.5 bg-home" />
+          <span className="display w-14 text-center text-[40px] leading-none text-ink">{match.score.home}</span>
+          <span className="h-6 w-px bg-white/15" />
+          <span className="display w-14 text-center text-[40px] leading-none text-ink">{match.score.away}</span>
+          <span className="h-full w-1.5 bg-away" />
         </div>
-        {pens && (
-          <span className="mt-1 text-[11px] text-ink-3">
-            {pens.home}–{pens.away} on penalties
-          </span>
-        )}
+        <div className="mt-1.5 text-[11px] font-medium text-ink-3">
+          {pens ? <>{pens.home}–{pens.away} pens · <span className="text-ink-2">FT</span></> : "Full time"}
+        </div>
       </div>
-      <Team name={away.name} short={away.short} side="away" align="left" />
+      <TeamBlock side="away" name={match.teams.away.name} scorers={scorers("away")} />
     </div>
   );
 }
 
-function Team({ name, short, side, align }: { name: string; short: string; side: "home" | "away"; align: "left" | "right" }) {
+function TeamBlock({ side, name, scorers }: { side: Side; name: string; scorers: string[] }) {
+  const right = side === "home";
   return (
-    <div className={`flex items-center gap-2.5 ${align === "right" ? "flex-row-reverse text-right" : ""}`}>
-      <span className="h-7 w-1.5 rounded-full" style={{ background: `var(--${side})` }} />
-      <div className="leading-tight">
-        <div className="font-display text-xl font-semibold uppercase tracking-wide">{name}</div>
-        <div className="text-[11px] uppercase tracking-[0.14em] text-ink-3">{side === "home" ? "Home" : "Away"} · {short}</div>
+    <div className={`flex w-[260px] flex-col ${right ? "items-end text-right" : "items-start text-left"}`}>
+      <div className="display flex h-[52px] items-center text-[30px] leading-none text-ink">{name}</div>
+      <div className="mt-1.5 line-clamp-1 text-[11.5px] text-ink-3">
+        {scorers.length ? scorers.map((s, i) => (
+          <span key={s}>{i > 0 && <span className="mx-1 text-ink-4">·</span>}{s}</span>
+        )) : <span className="text-ink-4">No goals</span>}
       </div>
     </div>
   );

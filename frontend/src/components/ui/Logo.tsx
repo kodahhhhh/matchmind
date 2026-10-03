@@ -1,14 +1,20 @@
-export function Logo() {
+export function Logo({ size = 34 }: { size?: number }) {
   return (
     <span className="flex items-center gap-2.5">
-      <svg width="26" height="26" viewBox="0 0 32 32" aria-hidden>
-        <rect width="32" height="32" rx="8" fill="var(--surface-3)" />
-        <rect x="5" y="8" width="22" height="16" rx="1.5" fill="none" stroke="var(--ink-2)" strokeWidth="1.4" />
-        <line x1="16" y1="8" x2="16" y2="24" stroke="var(--ink-2)" strokeWidth="1.4" />
-        <circle cx="16" cy="16" r="3" fill="none" stroke="var(--ink-2)" strokeWidth="1.4" />
-        <circle cx="22.5" cy="12.5" r="2" fill="var(--ai)" />
+      <svg width={size} height={size} viewBox="0 0 40 40" aria-hidden>
+        <defs>
+          <linearGradient id="logo-g" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#235c3c" />
+            <stop offset="100%" stopColor="#123522" />
+          </linearGradient>
+        </defs>
+        <rect width="40" height="40" rx="11" fill="url(#logo-g)" />
+        <rect x="7" y="10" width="26" height="20" rx="2" fill="none" stroke="rgba(255,255,255,0.75)" strokeWidth="1.6" />
+        <line x1="20" y1="10" x2="20" y2="30" stroke="rgba(255,255,255,0.75)" strokeWidth="1.6" />
+        <circle cx="20" cy="20" r="3.6" fill="none" stroke="rgba(255,255,255,0.75)" strokeWidth="1.6" />
+        <circle cx="28" cy="15" r="2.6" fill="#b6a4ff" />
       </svg>
-      <span className="font-display text-lg font-semibold uppercase tracking-[0.12em] text-ink">MatchMind</span>
+      <span className="display text-[19px] tracking-[0.06em] text-ink">MatchMind</span>
     </span>
   );
 }

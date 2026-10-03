@@ -1,33 +1,33 @@
-import { useMemo, useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import type { MatchEvent, Side } from "../../api/types";
 import { bucketKey, useMatch } from "../../store/match";
-import { describe, isDefensive, isMove, isShot, xg } from "../../lib/format";
-import { PITCH, PitchMarkings } from "./PitchMarkings";
+import { clock, describe, isDefensive, isMove, isShot, xg } from "../../lib/format";
+import { PitchMarkings } from "./PitchMarkings";
+import { PITCH, sy } from "./geometry";
+import { useSize } from "../ui/useSize";
 
 const { L, W } = PITCH;
-const sy = (y: number) => W - y; // SPADL y (up) → SVG y (down)
-const DETAIL_MINUTES = 12; // windows up to this long show every action
+const PAD = 2.6;
+const DETAIL_MINUTES = 12;
+const VB = { x: -PAD, y: -PAD, w: L + 2 * PAD, h: W + 2 * PAD };
 
-type Mode = "overview" | "detail" | "sequence";
+export type PitchMode = "overview" | "detail" | "sequence";
 
-export function Pitch() {
+const col = (s: Side) => `var(--${s})`;
+
+export function usePitchEvents() {
   const data = useMatch((s) => s.data);
   const win = useMatch((s) => s.window);
   const focus = useMatch((s) => s.focus);
   const replay = useMatch((s) => s.replay);
-  const stepReplay = useMatch((s) => s.stepReplay);
-  const [hover, setHover] = useState<MatchEvent | null>(null);
-
-  const seq = focus?.kind === "sequence" || replay
-    ? data?.sequences.find((s) => s.id === (replay?.sequenceId ?? (focus as { id: string }).id))
-    : undefined;
-
-  const { events, mode } = useMemo(() => {
-    if (!data) return { events: [] as MatchEvent[], mode: "overview" as Mode };
+  const seqId = replay?.sequenceId ?? (focus?.kind === "sequence" ? focus.id : undefined);
+  const seq = seqId ? data?.sequences.find((s) => s.id === seqId) : undefined;
+  return useMemo(() => {
+    if (!data) return { events: [] as MatchEvent[], mode: "overview" as PitchMode, seq };
     if (seq) {
       const ids = new Set(seq.event_ids);
-      return { events: data.events.filter((e) => ids.has(e.id)), mode: "sequence" as Mode };
+      return { events: data.events.filter((e) => ids.has(e.id)), mode: "sequence" as PitchMode, seq };
     }
     const inWin = win
       ? data.events.filter((e) => {
@@ -36,204 +36,220 @@ export function Pitch() {
         })
       : data.events;
     const span = win ? win.to - win.from + 1 : Infinity;
-    return { events: inWin, mode: (span <= DETAIL_MINUTES ? "detail" : "overview") as Mode };
+    return { events: inWin, mode: (span <= DETAIL_MINUTES ? "detail" : "overview") as PitchMode, seq };
   }, [data, win, seq]);
+}
 
-  // replay ticker
+export function Pitch() {
+  const data = useMatch((s) => s.data);
+  const focus = useMatch((s) => s.focus);
+  const replay = useMatch((s) => s.replay);
+  const stepReplay = useMatch((s) => s.stepReplay);
+  const focusEvent = useMatch((s) => s.focusEvent);
+  const { events, mode } = usePitchEvents();
+  const [hover, setHover] = useState<MatchEvent | null>(null);
+  const [boxRef, box] = useSize<HTMLDivElement>();
+
   useEffect(() => {
     if (!replay?.playing) return;
-    const t = setTimeout(stepReplay, 650);
+    const t = setTimeout(stepReplay, 700);
     return () => clearTimeout(t);
   }, [replay, stepReplay]);
 
-  if (!data) return null;
-  const color = (s: Side) => `var(--${s})`;
+  if (!data) return <div ref={boxRef} className="h-full w-full" />;
+  // extend the grass sideways so the pitch fills its container edge to edge
+  const aspect = box.width && box.height ? box.width / box.height : VB.w / VB.h;
+  const vbW = Math.max(VB.w, VB.h * aspect);
+  const padX = (vbW - L) / 2;
+  const vb = { x: -padX, y: VB.y, w: vbW, h: VB.h };
   const focusId = focus?.kind === "event" ? focus.id : null;
   const visible = mode === "sequence" && replay ? events.slice(0, replay.step + 1) : events;
   const current = mode === "sequence" && replay ? visible[visible.length - 1] : null;
-  const shots = visible.filter((e) => isShot(e.type) && e.x != null);
-  const moves = visible.filter((e) => (isMove(e.type) || e.type === "carry" || e.type === "take_on") && e.x != null);
-  const defensive = mode !== "overview" ? visible.filter((e) => isDefensive(e.type) && e.x != null) : [];
+  const located = visible.filter((e) => e.x != null && e.y != null);
+  const shots = located.filter((e) => isShot(e.type));
+  const moves = mode === "overview" ? [] : located.filter((e) => isMove(e.type) || e.type === "carry" || e.type === "take_on");
+  const defensive = mode === "detail" ? located.filter((e) => isDefensive(e.type)) : [];
   const focusEv = focusId ? data.eventById.get(focusId) : undefined;
-  const { home, away } = data.match.teams;
+  const hoverProps = (e: MatchEvent) => ({
+    onPointerEnter: () => setHover(e),
+    onPointerLeave: () => setHover(null),
+    onClick: () => focusEvent(e.id),
+    style: { cursor: "pointer" } as const,
+  });
 
   return (
-    <div className="relative h-full w-full select-none">
-      <svg viewBox={`-4 -4 ${L + 8} ${W + 8}`} className="h-full w-full" preserveAspectRatio="xMidYMid meet" role="img"
-        aria-label={`Pitch showing ${visible.length} events`}>
+    <div ref={boxRef} className="relative h-full w-full select-none">
+      <svg viewBox={`${vb.x} ${vb.y} ${vb.w} ${vb.h}`} className="block h-full w-full" preserveAspectRatio="xMidYMid meet"
+        role="img" aria-label={`Pitch showing ${visible.length} events`}>
         <defs>
-          <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="0.9" result="b" />
+          <filter id="pglow" x="-60%" y="-60%" width="220%" height="220%">
+            <feGaussianBlur stdDeviation="0.8" result="b" />
             <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
           </filter>
           {(["home", "away"] as Side[]).map((s) => (
-            <marker key={s} id={`arrow-${s}`} viewBox="0 0 6 6" refX="5" refY="3" markerWidth="3.2" markerHeight="3.2" orient="auto-start-reverse">
-              <path d="M0,0.6 L5.4,3 L0,5.4 z" fill={color(s)} />
+            <marker key={s} id={`arr-${s}`} viewBox="0 0 6 6" refX="4.6" refY="3" markerWidth="2.6" markerHeight="2.6" orient="auto-start-reverse">
+              <path d="M0,0.4 L5.6,3 L0,5.6 L1.2,3 z" fill={col(s)} />
             </marker>
           ))}
         </defs>
-        <PitchMarkings />
+        <PitchMarkings pad={PAD} padX={padX} />
 
-        {/* moves */}
+        {/* moves: dark under-stroke keeps team colours readable on grass */}
         <g strokeLinecap="round" fill="none">
           {moves.map((e, i) => {
             const ok = e.result === "success";
             const carry = e.type === "carry" || e.type === "take_on";
             const isFocus = e.id === focusId;
-            if (mode === "overview") {
-              if (carry || !ok) return null;
-              return <line key={e.id} x1={e.x!} y1={sy(e.y!)} x2={e.end_x!} y2={sy(e.end_y!)} stroke={color(e.team)} strokeWidth={0.16} opacity={0.11} />;
-            }
-            const common = {
-              stroke: color(e.team),
-              strokeWidth: isFocus ? 0.55 : carry ? 0.22 : 0.3,
-              opacity: isFocus ? 1 : ok ? (mode === "sequence" ? 0.95 : 0.7) : 0.3,
-              strokeDasharray: carry ? "0.7 0.55" : undefined,
-              markerEnd: !carry && ok ? `url(#arrow-${e.team})` : undefined,
-              onPointerEnter: () => setHover(e),
-              onPointerLeave: () => setHover(null),
-              style: { cursor: "pointer" },
-            };
-            return mode === "sequence" ? (
-              <motion.line key={e.id} x1={e.x!} y1={sy(e.y!)} x2={e.end_x!} y2={sy(e.end_y!)} {...common}
-                initial={{ pathLength: 0, opacity: 0 }} animate={{ pathLength: 1, opacity: common.opacity }}
-                transition={{ duration: 0.5, delay: replay ? 0 : i * 0.06, ease: "easeOut" }} />
-            ) : (
-              <line key={e.id} x1={e.x!} y1={sy(e.y!)} x2={e.end_x!} y2={sy(e.end_y!)} {...common} />
-            );
-          })}
-          {/* failed pass end-marks */}
-          {mode !== "overview" && moves.filter((e) => e.result === "fail" && isMove(e.type)).map((e) => (
-            <g key={`x-${e.id}`} stroke={color(e.team)} strokeWidth={0.22} opacity={0.45}>
-              <line x1={e.end_x! - 0.5} y1={sy(e.end_y!) - 0.5} x2={e.end_x! + 0.5} y2={sy(e.end_y!) + 0.5} />
-              <line x1={e.end_x! - 0.5} y1={sy(e.end_y!) + 0.5} x2={e.end_x! + 0.5} y2={sy(e.end_y!) - 0.5} />
-            </g>
-          ))}
-        </g>
-
-        {/* defensive actions */}
-        <g>
-          {defensive.map((e) => (
-            <rect key={e.id} x={e.x! - 0.45} y={sy(e.y!) - 0.45} width={0.9} height={0.9} transform={`rotate(45 ${e.x} ${sy(e.y!)})`}
-              fill="none" stroke={color(e.team)} strokeWidth={0.18} opacity={0.6}
-              onPointerEnter={() => setHover(e)} onPointerLeave={() => setHover(null)} />
-          ))}
-        </g>
-
-        {/* shots: area ∝ xG */}
-        <g>
-          {shots.map((e) => {
-            const r = 0.55 + Math.sqrt(e.xg ?? 0.02) * 3.1;
-            const goal = e.result === "goal";
-            const isFocus = e.id === focusId;
-            const gx = e.team === "home" ? L : 0;
+            const w = isFocus ? 0.6 : carry ? 0.24 : 0.34;
+            const op = isFocus ? 1 : ok ? (mode === "sequence" ? 1 : 0.85) : 0.35;
+            const geom = { x1: e.x!, y1: sy(e.y!), x2: e.end_x!, y2: sy(e.end_y!) };
+            const anim = mode === "sequence"
+              ? { initial: { pathLength: 0 }, animate: { pathLength: 1 }, transition: { duration: 0.45, delay: replay ? 0 : i * 0.05, ease: "easeOut" as const } }
+              : {};
             return (
-              <g key={e.id} onPointerEnter={() => setHover(e)} onPointerLeave={() => setHover(null)} style={{ cursor: "pointer" }}>
-                {(goal || isFocus || mode !== "overview") && (
-                  <line x1={e.x!} y1={sy(e.y!)} x2={gx} y2={sy(e.end_y ?? W / 2)} stroke={color(e.team)} strokeWidth={0.14}
-                    opacity={goal ? 0.55 : 0.25} />
-                )}
-                <circle cx={e.x!} cy={sy(e.y!)} r={Math.max(r, 2.2)} fill="transparent" />
-                <circle cx={e.x!} cy={sy(e.y!)} r={r + 0.35} fill="var(--pitch)" opacity={0.9} />
-                <circle cx={e.x!} cy={sy(e.y!)} r={r} fill={color(e.team)} fillOpacity={goal ? 0.95 : 0.18}
-                  stroke={color(e.team)} strokeWidth={goal ? 0 : 0.28} filter={goal || isFocus ? "url(#glow)" : undefined} />
-                {goal && <circle cx={e.x!} cy={sy(e.y!)} r={r * 0.32} fill="var(--pitch)" />}
+              <g key={e.id} opacity={op} {...hoverProps(e)}>
+                {!carry && <motion.line {...geom} {...anim} stroke="var(--on-grass)" strokeOpacity={0.45} strokeWidth={w + 0.3} />}
+                <motion.line {...geom} {...anim} stroke={col(e.team)} strokeWidth={w} strokeDasharray={carry ? "0.12 0.7" : undefined}
+                  strokeLinecap="round" markerEnd={!carry && ok ? `url(#arr-${e.team})` : undefined} />
+                {!ok && !carry && <circle cx={e.end_x!} cy={sy(e.end_y!)} r={0.35} fill="none" stroke={col(e.team)} strokeWidth={0.18} />}
               </g>
             );
           })}
         </g>
 
-        {/* sequence step numbers + names */}
-        {mode === "sequence" && (
-          <g>
-            {seqLabels(visible).map(({ e, n, name }) => (
-              <g key={`n-${e.id}`}>
-                <circle cx={e.x!} cy={sy(e.y!)} r={1.05} fill="var(--surface-1)" stroke={color(e.team)} strokeWidth={0.2} />
-                <text x={e.x!} y={sy(e.y!) + 0.42} textAnchor="middle" fontSize={1.15} fontWeight={600} fill="var(--ink)">{n}</text>
-                {name && (
-                  <text x={e.x!} y={sy(e.y!) - 1.7} textAnchor="middle" fontSize={1.5} fill="var(--ink-2)" style={{ paintOrder: "stroke" }}
-                    stroke="var(--pitch)" strokeWidth={0.5}>{name}</text>
-                )}
-              </g>
-            ))}
-          </g>
-        )}
+        {defensive.map((e) => (
+          <rect key={e.id} x={e.x! - 0.5} y={sy(e.y!) - 0.5} width={1} height={1} rx={0.15}
+            transform={`rotate(45 ${e.x} ${sy(e.y!)})`} fill="var(--on-grass)" fillOpacity={0.4} stroke={col(e.team)} strokeWidth={0.2} {...hoverProps(e)} />
+        ))}
 
-        {/* replay ball */}
+        {/* shots: area ∝ xG; goals are solid with a white core */}
+        {shots.map((e) => {
+          const r = 0.6 + Math.sqrt(e.xg ?? 0.02) * 3.2;
+          const goal = e.result === "goal";
+          const isFocus = e.id === focusId;
+          return (
+            <g key={e.id} {...hoverProps(e)}>
+              {(goal || isFocus || mode === "sequence") && (
+                <line x1={e.x!} y1={sy(e.y!)} x2={e.team === "home" ? L : 0} y2={sy(e.end_y ?? W / 2)}
+                  stroke="#fff" strokeOpacity={goal ? 0.5 : 0.25} strokeWidth={0.16} strokeDasharray={goal ? undefined : "0.5 0.5"} />
+              )}
+              <circle cx={e.x!} cy={sy(e.y!)} r={Math.max(r + 1, 2.4)} fill="transparent" />
+              <circle cx={e.x!} cy={sy(e.y!)} r={r} fill={col(e.team)} fillOpacity={goal ? 1 : 0.32}
+                stroke={goal ? "#fff" : col(e.team)} strokeWidth={goal ? 0.32 : 0.3} filter={goal || isFocus ? "url(#pglow)" : undefined} />
+              {goal && <circle cx={e.x!} cy={sy(e.y!)} r={Math.max(r * 0.3, 0.35)} fill="#fff" />}
+            </g>
+          );
+        })}
+
+        {mode === "overview" && <GoalCallouts goals={shots.filter((e) => e.result === "goal")} />}
+        {mode === "sequence" && <SequenceNodes evs={located} />}
+
         <AnimatePresence>
           {current && current.x != null && (
-            <motion.circle key="ball" r={0.75} fill="var(--ink)" filter="url(#glow)"
-              initial={{ cx: current.x, cy: sy(current.y!) }}
-              animate={{ cx: current.end_x ?? current.x, cy: sy(current.end_y ?? current.y!) }}
-              transition={{ duration: 0.55, ease: "easeInOut" }} exit={{ opacity: 0 }} />
+            <motion.g key="ball" initial={{ x: current.x, y: sy(current.y!) }}
+              animate={{ x: current.end_x ?? current.x, y: sy(current.end_y ?? current.y!) }}
+              transition={{ duration: 0.6, ease: "easeInOut" }} exit={{ opacity: 0 }}>
+              <circle r={1.1} fill="#fff" filter="url(#pglow)" />
+              <circle r={0.45} fill="var(--on-grass)" />
+            </motion.g>
           )}
         </AnimatePresence>
 
-        {/* focused event tag */}
-        {focusEv && focusEv.x != null && (
-          <g>
-            <circle cx={focusEv.x} cy={sy(focusEv.y!)} r={2.6} fill="none" stroke="var(--ink)" strokeWidth={0.18} opacity={0.8}>
-              <animate attributeName="r" values="2.2;3.4;2.2" dur="2s" repeatCount="indefinite" />
-              <animate attributeName="opacity" values="0.8;0.15;0.8" dur="2s" repeatCount="indefinite" />
-            </circle>
-          </g>
-        )}
+        {focusEv && focusEv.x != null && mode !== "sequence" && <FocusCallout e={focusEv} />}
 
-        {/* attacking direction */}
-        <g fontSize={1.7} fontWeight={600} letterSpacing={0.1}>
-          <text x={1} y={W + 3.1} fill="var(--ink-3)">{home.short}</text>
-          <path d={`M ${6.2} ${W + 2.55} h 5`} stroke={color("home")} strokeWidth={0.25} markerEnd="url(#arrow-home)" />
-          <text x={L - 1} y={W + 3.1} textAnchor="end" fill="var(--ink-3)">{away.short}</text>
-          <path d={`M ${L - 6.2} ${W + 2.55} h -5`} stroke={color("away")} strokeWidth={0.25} markerEnd="url(#arrow-away)" />
+        <g fontSize={1.5} fontWeight={700} letterSpacing={0.15} fill="#fff" fillOpacity={0.7} textAnchor="middle">
+          <text x={L / 2} y={-0.8}>{data.match.teams.home.short} →  attacking  ← {data.match.teams.away.short}</text>
         </g>
       </svg>
-
-      {hover && <EventTooltip e={hover} />}
-      <PitchLegend mode={mode} count={visible.length} />
+      {hover && hover.id !== focusId && <Tooltip e={hover} vb={vb} />}
     </div>
   );
 }
 
-/** Step numbers for a sequence; a name label only when the player changes and no other label is within 6 m. */
-function seqLabels(evs: MatchEvent[]) {
-  const steps = evs.filter((e) => e.x != null && e.type !== "carry");
+function Pill({ x, y, text, side, anchor = "middle", size = 1.5 }: { x: number; y: number; text: string; side?: Side; anchor?: "middle" | "start" | "end"; size?: number }) {
+  const w = text.length * size * 0.56 + (side ? 2.4 : 1.6);
+  const h = size * 1.75;
+  const x0 = anchor === "middle" ? x - w / 2 : anchor === "end" ? x - w : x;
+  return (
+    <g pointerEvents="none">
+      <rect x={x0} y={y - h / 2} width={w} height={h} rx={h / 2} fill="rgba(6,10,8,0.82)" stroke="rgba(255,255,255,0.14)" strokeWidth={0.08} />
+      {side && <circle cx={x0 + 1.15} cy={y} r={0.42} fill={col(side)} />}
+      <text x={x0 + (side ? 1.9 : 0.8)} y={y + size * 0.36} fontSize={size} fontWeight={600} fill="#fff">{text}</text>
+    </g>
+  );
+}
+
+function GoalCallouts({ goals }: { goals: MatchEvent[] }) {
+  const placed: { x: number; y: number }[] = [];
+  return (
+    <g>
+      {goals.map((e) => {
+        let ly = sy(e.y!) - 4.2;
+        while (placed.some((p) => Math.abs(p.x - e.x!) < 12 && Math.abs(p.y - ly) < 2.8)) ly -= 3;
+        placed.push({ x: e.x!, y: ly });
+        const label = `${e.player} ${clock(e.period, e.minute)}${e.type === "shot_penalty" ? " (P)" : ""}`;
+        const anchor = e.x! > L - 10 ? "end" : e.x! < 10 ? "start" : "middle";
+        return (
+          <g key={`c-${e.id}`}>
+            <line x1={e.x!} y1={sy(e.y!) - 1} x2={e.x!} y2={ly + 1.2} stroke="#fff" strokeOpacity={0.4} strokeWidth={0.1} />
+            <Pill x={e.x!} y={ly} text={label} side={e.team} anchor={anchor} size={1.35} />
+          </g>
+        );
+      })}
+    </g>
+  );
+}
+
+function FocusCallout({ e }: { e: MatchEvent }) {
+  const y = sy(e.y!);
+  const above = y > 8;
+  return (
+    <g>
+      <circle cx={e.x!} cy={y} r={2.4} fill="none" stroke="#fff" strokeWidth={0.2}>
+        <animate attributeName="r" values="2;3.6;2" dur="1.8s" repeatCount="indefinite" />
+        <animate attributeName="opacity" values="0.9;0.1;0.9" dur="1.8s" repeatCount="indefinite" />
+      </circle>
+      <Pill x={e.x!} y={above ? y - 4.6 : y + 4.6} text={describe(e)} side={e.team} anchor={e.x! > L - 14 ? "end" : e.x! < 14 ? "start" : "middle"} />
+    </g>
+  );
+}
+
+function SequenceNodes({ evs }: { evs: MatchEvent[] }) {
+  const steps = evs.filter((e) => e.type !== "carry");
   const placed: { x: number; y: number }[] = [];
   let prev: string | null = null;
-  return steps.map((e, i) => {
-    let name: string | null = null;
-    if (e.player && e.player !== prev && placed.every((p) => Math.hypot(p.x - e.x!, p.y - e.y!) > 6)) {
-      name = e.player;
-      placed.push({ x: e.x!, y: e.y! });
-    }
-    prev = e.player;
-    return { e, n: i + 1, name };
-  });
+  return (
+    <g>
+      {steps.map((e, i) => {
+        let name: string | null = null;
+        if (e.player && e.player !== prev && placed.every((p) => Math.hypot(p.x - e.x!, p.y - e.y!) > 7)) {
+          name = e.player;
+          placed.push({ x: e.x!, y: e.y! });
+        }
+        prev = e.player;
+        return (
+          <motion.g key={`n-${e.id}`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.05 }}>
+            <circle cx={e.x!} cy={sy(e.y!)} r={1.25} fill={col(e.team)} stroke="#fff" strokeWidth={0.22} />
+            <text x={e.x!} y={sy(e.y!) + 0.46} textAnchor="middle" fontSize={1.25} fontWeight={700} fill="var(--on-grass)">{i + 1}</text>
+            {name && <Pill x={e.x!} y={sy(e.y!) - 3.1} text={name} size={1.3} />}
+          </motion.g>
+        );
+      })}
+    </g>
+  );
 }
 
-function EventTooltip({ e }: { e: MatchEvent }) {
-  const left = `${((e.x! + 4) / (L + 8)) * 100}%`;
-  const top = `${((sy(e.y!) + 4) / (W + 8)) * 100}%`;
+function Tooltip({ e, vb }: { e: MatchEvent; vb: typeof VB }) {
+  const left = `${((e.x! - vb.x) / vb.w) * 100}%`;
+  const top = `${((sy(e.y!) - vb.y) / vb.h) * 100}%`;
   return (
-    <div className="pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-[calc(100%+14px)] rounded-lg border border-line-strong bg-surface-2/95 px-3 py-2 text-xs shadow-xl backdrop-blur"
+    <div className="glass pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-[calc(100%+16px)] rounded-xl px-3 py-2 text-xs shadow-2xl"
       style={{ left, top }}>
-      <div className="flex items-center gap-2">
-        <span className="h-2 w-2 rounded-full" style={{ background: `var(--${e.team})` }} />
-        <span className="font-medium text-ink">{describe(e)}</span>
+      <div className="flex items-center gap-2 whitespace-nowrap">
+        <span className="h-2 w-2 rounded-full" style={{ background: col(e.team) }} />
+        <span className="font-semibold text-ink">{describe(e)}</span>
+        {isShot(e.type) && <span className="tabular text-ink-2">{xg(e.xg)} xG</span>}
       </div>
-      {isShot(e.type) && <div className="mt-1 text-ink-2"><span className="tabular font-semibold text-ink">{xg(e.xg)}</span> xG</div>}
     </div>
   );
 }
-
-function PitchLegend({ mode, count }: { mode: Mode; count: number }) {
-  const label = mode === "overview" ? "Whole window · completed passes + shots" : mode === "detail" ? "Every action in window" : "Sequence";
-  return (
-    <div className="pointer-events-none absolute left-3 top-2 flex items-center gap-3 text-[11px] text-ink-3">
-      <span>{label}</span>
-      <span className="tabular text-ink-4">{count} events</span>
-      <span className="flex items-center gap-1.5"><svg width="14" height="14"><circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" strokeWidth="1.2" /></svg>shot, size = xG</span>
-      <span className="flex items-center gap-1.5"><svg width="14" height="14"><circle cx="7" cy="7" r="5" fill="currentColor" /><circle cx="7" cy="7" r="1.8" fill="var(--bg)" /></svg>goal</span>
-    </div>
-  );
-}
-

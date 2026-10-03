@@ -1,5 +1,6 @@
-import { useEffect, type CSSProperties } from "react";
+import { useEffect, type CSSProperties, type ReactNode } from "react";
 import { Link, useParams } from "react-router";
+import { motion } from "motion/react";
 import { useMatch, type RightTab } from "../../store/match";
 import { Pitch } from "../pitch/Pitch";
 import { Timeline } from "../timeline/Timeline";
@@ -8,10 +9,10 @@ import { Sequences } from "../sequences/Sequences";
 import { Players } from "../players/Players";
 import { WhatIf } from "../whatif/WhatIf";
 import { Scoreboard } from "./Scoreboard";
-import { WindowBar } from "./WindowBar";
+import { PitchOverlays } from "./WindowBar";
 import { Logo } from "../ui/Logo";
 
-const TABS: [RightTab, string][] = [["analyst", "Analyst"], ["sequences", "Sequences"], ["players", "Players"], ["whatif", "What if"]];
+const TABS: [RightTab, string][] = [["analyst", "Analyst"], ["sequences", "Moments"], ["players", "Players"], ["whatif", "What if"]];
 
 export function MatchView() {
   const { id = "" } = useParams();
@@ -20,7 +21,7 @@ export function MatchView() {
   useEffect(() => { void load(decodeURIComponent(id)); }, [id, load]);
 
   if (status === "error") return <Centered>Couldn't load this match. <span className="text-ink-4">{error}</span></Centered>;
-  if (!data) return <Centered><span className="animate-pulse text-ink-3">Loading match…</span></Centered>;
+  if (!data) return <Centered><span className="shimmer text-sm font-medium">Loading match</span></Centered>;
 
   const { match } = data;
   const vars = { "--home": match.teams.home.color, "--away": match.teams.away.color } as CSSProperties;
@@ -31,42 +32,51 @@ export function MatchView() {
   };
 
   return (
-    <div className="flex h-full min-h-[760px] flex-col" style={vars}>
-      <header className="flex h-[68px] shrink-0 items-center gap-6 border-b border-line px-5">
-        <Link to="/" className="flex items-center gap-2.5"><Logo /></Link>
-        <div className="hidden min-w-0 text-xs leading-tight text-ink-3 lg:block">
-          <div className="truncate text-ink-2">{match.competition} {match.season}</div>
-          <div className="truncate">{[match.stage, match.venue, match.match_date].filter(Boolean).join(" · ")}</div>
+    <div className="flex h-full min-h-[780px] flex-col" style={vars}>
+      <header className="relative flex h-[92px] shrink-0 items-center px-6">
+        <div className="flex w-[300px] items-center gap-4">
+          <Link to="/" className="rounded-xl p-1 transition hover:bg-white/5" aria-label="All matches"><Logo /></Link>
+          <div className="min-w-0 leading-tight">
+            <div className="truncate text-[13px] font-semibold text-ink">{match.competition} {match.season}</div>
+            <div className="truncate text-[11.5px] text-ink-3">{[match.stage, match.venue].filter(Boolean).join(" · ")}</div>
+          </div>
         </div>
-        <div className="flex flex-1 justify-center"><Scoreboard match={match} /></div>
-        <button onClick={findTurningPoint}
-          className="group relative flex items-center gap-2 overflow-hidden rounded-xl border border-[var(--ai-line)] bg-ai-soft px-4 py-2 text-sm font-semibold text-ink transition hover:shadow-[0_0_24px_rgba(184,166,255,0.25)]">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M1 11 5 7l3 3 6-7" stroke="var(--ai)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /><circle cx="8" cy="10" r="1.6" fill="var(--ai)" /></svg>
-          Find the turning point
-        </button>
+        <div className="flex flex-1 justify-center pt-1"><Scoreboard match={match} /></div>
+        <div className="flex w-[300px] justify-end">
+          <button onClick={findTurningPoint}
+            className="ai-button flex items-center gap-2.5 rounded-2xl px-5 py-3 text-sm font-semibold text-white transition">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M1.5 12.5 6 8l3.2 3.2L16.5 4" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /><circle cx="9.2" cy="11.2" r="2" fill="#fff" /></svg>
+            Find the turning point
+          </button>
+        </div>
       </header>
 
-      <main className="flex min-h-0 flex-1">
-        <section className="flex min-w-0 flex-1 flex-col gap-3 px-5 py-4">
-          <div className="relative min-h-0 flex-1 rounded-[var(--radius)] border border-line bg-surface-1/60 p-2">
+      <main className="flex min-h-0 flex-1 gap-4 px-4 pb-4">
+        <section className="flex min-w-0 flex-1 flex-col gap-4">
+          <motion.div initial={{ opacity: 0, scale: 0.99 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5 }}
+            className="relative min-h-0 flex-1 overflow-hidden rounded-[var(--radius)] shadow-[0_30px_80px_-40px_rgba(0,0,0,0.9)] ring-1 ring-white/10">
             <Pitch />
-          </div>
-          <div className="rounded-[var(--radius)] border border-line bg-surface-1/60 px-4 pb-2 pt-3">
-            <WindowBar />
-            <div className="mt-2"><Timeline /></div>
+            <PitchOverlays />
+          </motion.div>
+          <div className="rounded-[var(--radius)] bg-surface-1 px-5 pb-2 pt-4 ring-1 ring-line">
+            <Timeline />
           </div>
         </section>
 
-        <aside className="flex w-[440px] shrink-0 flex-col border-l border-line bg-surface-1/50 xl:w-[480px]">
-          <nav className="flex h-12 shrink-0 items-end gap-1 border-b border-line px-4">
-            {TABS.map(([t, label]) => (
-              <button key={t} onClick={() => setRightTab(t)}
-                className={`relative px-3 pb-3 text-sm transition ${rightTab === t ? "text-ink" : "text-ink-3 hover:text-ink-2"}`}>
-                {t === "analyst" && <span className="mr-1.5 inline-block h-1.5 w-1.5 -translate-y-[1px] rounded-full bg-ai" />}
-                {label}
-                {rightTab === t && <span className="absolute inset-x-2 -bottom-px h-[2px] rounded-full bg-ink" />}
-              </button>
-            ))}
+        <aside className="flex w-[440px] shrink-0 flex-col overflow-hidden rounded-[var(--radius)] bg-surface-1 ring-1 ring-line">
+          <nav className="shrink-0 p-3">
+            <div className="flex rounded-xl bg-surface-2 p-1">
+              {TABS.map(([t, label]) => (
+                <button key={t} onClick={() => setRightTab(t)}
+                  className={`relative flex-1 rounded-lg py-2 text-[13px] font-medium transition ${rightTab === t ? "text-ink" : "text-ink-3 hover:text-ink-2"}`}>
+                  {rightTab === t && <motion.span layoutId="tab" className="absolute inset-0 rounded-lg bg-surface-4 shadow" transition={{ type: "spring", bounce: 0.15, duration: 0.4 }} />}
+                  <span className="relative flex items-center justify-center gap-1.5">
+                    {t === "analyst" && <span className="h-1.5 w-1.5 rounded-full bg-ai" />}
+                    {label}
+                  </span>
+                </button>
+              ))}
+            </div>
           </nav>
           <div className="min-h-0 flex-1">
             {rightTab === "analyst" && <AnalystPanel />}
@@ -80,6 +90,6 @@ export function MatchView() {
   );
 }
 
-function Centered({ children }: { children: React.ReactNode }) {
+function Centered({ children }: { children: ReactNode }) {
   return <div className="flex h-full items-center justify-center gap-2 text-sm text-ink-2">{children}</div>;
 }
