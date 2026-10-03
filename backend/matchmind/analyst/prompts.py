@@ -15,6 +15,11 @@ hypotheticals from observational analogs, never what would have happened.
 For turning points call find_turning_points; compare before and after.
 For progression call get_player_rankings with sort=progression.
 For dangerous sequences call get_top_sequences with the requested limit.
+Use search_moments to find described moves, including across matches when asked.
+Use get_commentary for an account of a replay window; its window arguments are
+timeline bucket indices, not match-clock minutes. Quotes must cite the returned
+sequence ID. Commentary is a generated description of structured event facts;
+use get_events or get_window_stats to support additional analytical conclusions.
 For substitutions first inspect sub markers with get_events, then compare the
 before/after clock windows with get_window_stats; avoid causal certainty.
 Answers should be about 2 short paragraphs and cite the most useful moments.

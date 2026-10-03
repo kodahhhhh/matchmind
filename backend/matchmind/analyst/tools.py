@@ -4,6 +4,7 @@ import asyncio
 
 import pandas as pd
 
+from matchmind.analyst.commentary_store import get_commentary
 from matchmind.analyst.grounding import display_evidence
 from matchmind.api.counterfactual import run_counterfactual
 from matchmind.api.repository import bundle
@@ -93,6 +94,12 @@ TOOLS = [
         "commentary is not loaded.",
         {"query": {"type": "string"}, "all_matches": {"type": "boolean"}},
         ["query"],
+    ),
+    tool_schema(
+        "get_commentary",
+        "Read broadcast commentary in an inclusive timeline bucket window. "
+        "Returns start clocks, danger, outcome and sequence IDs for citations.",
+        {"from_index": INT, "to_index": INT},
     ),
 ]
 
@@ -223,6 +230,8 @@ def _dispatch(match_id: str, name: str, args: dict) -> dict:
         result = search_moments(
             args["query"], None if args.get("all_matches") else match_id
         )
+    elif name == "get_commentary":
+        result = get_commentary(match_id, args.get("from_index"), args.get("to_index"))
     else:
         raise ValueError("Unknown analyst tool")
     registry = citation_registry(b)
@@ -230,6 +239,15 @@ def _dispatch(match_id: str, name: str, args: dict) -> dict:
     from matchmind.analyst.grounding import references
 
     labels = {ref: registry[ref] for ref in references(result) if ref in registry}
+    # Search may cite a different match; short shot/card sequences are absent
+    # from the top-sequences endpoint but remain valid commentary evidence.
+    for row in result.get("results", []) + result.get("lines", []):
+        label = row.get("label") or row.get("start", {}).get("label", "")
+        team_name = (
+            row.get("match", {}).get(row["team"])
+            or b["match"]["teams"][row["team"]]["name"]
+        )
+        labels["seq:" + row["sequence_id"]] = f"{label} {team_name} sequence"
     result["evidence_labels"] = labels
     result["match"] = {
         "teams": {s: b["match"]["teams"][s]["name"] for s in ("home", "away")},
