@@ -185,17 +185,17 @@ def test_ask_provider_error_finishes_cleanly() -> None:
 
 def test_counterfactual_model_seam_receives_intervention_state() -> None:
     from matchmind.api.counterfactual import run_counterfactual
-    from matchmind.models.gamestate import quantile_bands
+    from matchmind.models.gamestate_model import predict
 
     observed = []
 
-    def inspect(
-        neighbours: list, side: str, offset: int, metric: str, state: dict
-    ) -> dict:
-        observed.append(state)
-        return quantile_bands(neighbours, side, offset, metric, state)
+    def inspect(state: pd.DataFrame) -> dict:
+        observed.append(state.copy())
+        return predict(state)
 
-    with patch("matchmind.models.gamestate.quantile_bands", side_effect=inspect):
+    with patch("matchmind.api.counterfactual.predict", side_effect=inspect):
         result = run_counterfactual("sb:3869685", "sb:3869685:2928", "remove_goal")
     assert result["label"] == "Modelled hypothetical"
-    assert observed and all(state["score_diff"] == -2 for state in observed)
+    assert result["method"] == "trained_model"
+    assert len(observed) == 1
+    assert observed[0].score_diff.tolist() == [2, -2]

@@ -1,8 +1,8 @@
-"""Pure empirical game-state model over action DataFrames and saved neighbours.
+"""Pure historical analog retrieval and trained counterfactual serialization.
 
-No DB/HTTP access. Sixteen features use acting-team perspective. Future outcomes
-are strictly after the anchor. Training windows require a complete horizon.
-quantile_bands is the seam for a trained model to replace empirical quantiles.
+TrainingAnalogs uses all 19 trained features and complete future horizons.
+Legacy 16-feature helpers remain compatible with the DB refresh command.
+No DB or HTTP access.
 """
 
 from typing import Any
@@ -260,45 +260,89 @@ def quantile_bands(
     }
 
 
+class TrainingAnalogs:
+    """Exact 19-feature in-memory neighbours over complete OOF training windows.
+
+    Fit scaling once on eligible training rows, never on a request. A cKDTree
+    avoids the legacy DB's incompatible vector(16); metadata needs no DB replay.
+    """
+
+    def __init__(self, windows: pd.DataFrame) -> None:
+        from scipy.spatial import cKDTree
+
+        from matchmind.models.gamestate_model import featurize
+
+        self.windows = windows[
+            (windows.horizon_seconds >= 900) & (windows.future_passes > 0)
+        ].reset_index(drop=True)
+        matrix = featurize(self.windows).to_numpy()
+        self.mean, self.scale = matrix.mean(axis=0), matrix.std(axis=0)
+        self.scale[self.scale < 1e-8] = 1
+        self.tree = cKDTree((matrix - self.mean) / self.scale)
+        self.match_ids = self.windows.match_id.to_numpy()
+
+    def nearest(self, state: pd.DataFrame, match_id: str, k: int = 40) -> list[dict]:
+        """Return exact nearest rows, excluding every perspective of this match."""
+        from matchmind.models.gamestate_model import featurize
+
+        vector = (featurize(state).to_numpy()[0] - self.mean) / self.scale
+        count = min(len(self.windows), k + int((self.match_ids == match_id).sum()))
+        distances, indices = self.tree.query(vector, k=count, workers=1)
+        selected = [
+            (int(i), float(d))
+            for i, d in zip(
+                np.atleast_1d(indices), np.atleast_1d(distances), strict=True
+            )
+            if self.match_ids[i] != match_id
+        ][:k]
+        rows = self.windows.iloc[[i for i, _ in selected]].to_dict("records")
+        for row, (_, distance) in zip(rows, selected, strict=True):
+            row["distance"] = distance
+        return rows
+
+
 def counterfactual_response(
     match: dict,
     marker: dict,
     change: str,
     actual: list[dict],
     neighbours: list[dict],
-    state: dict | None = None,
+    predictions: dict,
+    model: dict,
+    analog_goals: dict[str, list[dict]],
 ) -> dict:
-    """Serialize real neighbours and empirical bands into the fixed UI contract."""
+    """Keep trained 15-minute totals separate from observed analog outcomes."""
     focus = marker["team"]
 
-    def band(side: str, offset: int, metric: str) -> dict:
-        return quantile_bands(
-            neighbours, "for" if side == focus else "against", offset, metric, state
-        )
+    def analog_band(side: str) -> dict:
+        target = "outcome_xg_for" if side == focus else "outcome_xg_against"
+        values = np.quantile([r[target] for r in neighbours], [0.1, 0.5, 0.9])
+        return {f"p{q}": float(v) for q, v in zip((10, 50, 90), values, strict=True)}
 
     analogs = []
     for row in neighbours[:5]:
-        m = row["meta"]
-        outcome = row["outcome"]
+        future = [
+            g
+            for g in analog_goals[row["match_id"]]
+            if row["elapsed_end_seconds"] <= g["t"] < row["elapsed_end_seconds"] + 900
+        ]
         analogs.append(
             {
                 "match_id": row["match_id"],
-                "competition": m["competition"],
-                "season": m["season"],
-                "home": m["home"]["name"],
-                "away": m["away"]["name"],
-                "minute": row["minute"],
-                "score_state": row["features"]["score_state"],
-                "similarity": round(1 / (1 + row["distance"]), 4),
+                **{k: row[k] for k in ("competition", "season", "home", "away")},
+                "minute": int(row["minute"]),
+                "score_state": f"{int(row['score_diff']):+d}",
+                "similarity": 1 / (1 + row["distance"]),
                 "next15": {
-                    k: outcome[k]
-                    for k in ("xg_for", "xg_against", "goals_for", "goals_against")
+                    "xg_for": row["outcome_xg_for"],
+                    "xg_against": row["outcome_xg_against"],
+                    "goals_for": sum(g["team"] == row["team"] for g in future),
+                    "goals_against": sum(g["team"] != row["team"] for g in future),
                 },
             }
         )
     caps = {1: 45, 2: 90, 3: 105, 4: 120}
-    shown = marker["minute"] + 1
-    cap = caps[marker["period"]]
+    shown, cap = marker["minute"] + 1, caps[marker["period"]]
     label = f"{cap}+{shown - cap}'" if shown > cap else f"{shown}'"
     return {
         "match_id": match["match_id"],
@@ -306,6 +350,8 @@ def counterfactual_response(
         "change": change,
         "label": "Modelled hypothetical",
         "horizon_minutes": 15,
+        "method": "trained_model",
+        "model": model,
         "anchor": {
             "period": marker["period"],
             "minute": marker["minute"],
@@ -313,17 +359,27 @@ def counterfactual_response(
         },
         "actual": actual[-1],
         "modelled": {
-            s: {"xg": band(s, 15, "xg"), "possession": band(s, 15, "possession")}
-            for s in ("home", "away")
+            side: {
+                metric: {q: values[i] for q, values in predictions[target].items()}
+                for metric, target in (
+                    ("xg", "xg_for"),
+                    ("possession", "possession_share"),
+                )
+            }
+            for i, side in enumerate(("home", "away"))
         },
         "series": [
             {
                 "offset_min": i,
-                "actual": {s: actual[i][s]["xg"] for s in ("home", "away")},
-                "modelled": {s: band(s, i, "xg") for s in ("home", "away")},
+                "actual": {s: row[s]["xg"] for s in ("home", "away")},
+                "modelled": None,
             }
-            for i in range(16)
+            for i, row in enumerate(actual)
         ],
+        "analog_summary": {
+            "n": len(neighbours),
+            **{s: {"xg": analog_band(s)} for s in ("home", "away")},
+        },
         "analogs": analogs,
         "n_analogs": len(neighbours),
         "caveat": CAVEAT,
