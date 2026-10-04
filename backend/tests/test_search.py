@@ -3,6 +3,7 @@
 import psycopg
 from psycopg.rows import dict_row
 
+from matchmind.analyst.commentary import apply_commentary_schema
 from matchmind.api.search import query_commentary
 from matchmind.config import get_settings
 
@@ -11,6 +12,7 @@ def test_hybrid_search_in_transaction(final_url: str) -> None:
     settings = get_settings()
     dim = settings.embed_dim
     with psycopg.connect(final_url, row_factory=dict_row) as conn:
+        apply_commentary_schema(conn)
         try:
             sequences = conn.execute(
                 "SELECT sequence_id,match_id FROM sequences "
@@ -43,6 +45,7 @@ def test_hybrid_search_in_transaction(final_url: str) -> None:
                 "team",
                 "text",
                 "score",
+                "match",
             }
             assert query_commentary(conn, "dangerous", "sb:missing", vector) == []
             lexical = query_commentary(conn, "left", None, None)

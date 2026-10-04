@@ -67,6 +67,7 @@ def client() -> TestClient:
                 ("sequences", "sequences"),
                 ("players", "players"),
                 ("turning-points", "turning-points"),
+                ("commentary", "commentary"),
             ]
         ],
         (

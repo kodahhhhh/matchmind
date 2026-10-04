@@ -381,6 +381,15 @@ class Counterfactual(Contract):
     caveat: str
 
 
+class SearchMatch(Contract):
+    home: str
+    away: str
+    competition: str
+    season: str
+    home_color: str
+    away_color: str
+
+
 class SearchResult(Contract):
     sequence_id: str
     match_id: str
@@ -389,11 +398,26 @@ class SearchResult(Contract):
     team: Side
     text: str
     score: float
+    match: SearchMatch
 
 
 class Search(Contract):
     query: str
     results: list[SearchResult]
+
+
+class CommentaryLine(Contract):
+    sequence_id: str
+    team: Side
+    start: SequenceStart
+    text: str
+    danger: float
+    outcome: Literal["goal", "shot", "lost"]
+
+
+class Commentary(Contract):
+    match_id: str
+    lines: list[CommentaryLine]
 
 
 class Message(Contract):

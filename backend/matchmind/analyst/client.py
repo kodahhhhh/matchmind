@@ -45,4 +45,6 @@ def embed_query(query: str) -> tuple[float, ...]:
     response = sync_client().embeddings.create(
         model=settings.embed_deployment, input=query, dimensions=settings.embed_dim
     )
+    if len(response.data[0].embedding) != settings.embed_dim:
+        raise RuntimeError("Embedding service returned the wrong dimension")
     return tuple(response.data[0].embedding)
