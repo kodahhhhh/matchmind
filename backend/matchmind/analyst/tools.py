@@ -34,6 +34,14 @@ INT = {"type": "integer"}
 SIDE = {"type": "string", "enum": ["home", "away"]}
 TOOLS = [
     tool_schema(
+        "get_player_profile",
+        "Player identity, historical value/age in this match, all-corpus career "
+        "metrics and top moments with real evidence IDs. Numbers come only from "
+        "this output. Corpus coverage is selected, not a complete career.",
+        {"player_id": INT},
+        ["player_id"],
+    ),
+    tool_schema(
         "get_window_stats",
         "Compare match-clock windows. Includes possession pass share, "
         "tilt, xG, shots, momentum and evidence IDs.",
@@ -141,6 +149,10 @@ def citation_registry(b: dict) -> dict[str, str]:
 
 
 def _dispatch(match_id: str, name: str, args: dict) -> dict:
+    if name == "get_player_profile":
+        from matchmind.players.service import analyst_profile
+
+        return analyst_profile(int(args["player_id"]), match_id)
     b = bundle(match_id)
     events = pd.DataFrame(b["events"])
     if name == "get_window_stats":

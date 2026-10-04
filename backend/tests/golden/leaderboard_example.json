@@ -1,0 +1,75 @@
+{
+  "metric": "vaep_per90",
+  "rows": [
+    {
+      "player_id": 8810,
+      "name": "Raffael Caetano de Araújo",
+      "short_name": "Raffael",
+      "team": "Borussia Mönchengladbach",
+      "competition": "1. Bundesliga",
+      "season": "2015/2016",
+      "minutes": 2751.73435,
+      "value": 0.4198241914,
+      "market_value_eur": 8000000,
+      "value_rank": 66.5,
+      "metric_rank": 1.0,
+      "underrated_score": 0.2330960854
+    },
+    {
+      "player_id": 5555,
+      "name": "Julian Brandt",
+      "short_name": "Julian Brandt",
+      "team": "Bayer Leverkusen",
+      "competition": "1. Bundesliga",
+      "season": "2015/2016",
+      "minutes": 1695.1163166667,
+      "value": 0.3731850061,
+      "market_value_eur": 10000000,
+      "value_rank": 57.0,
+      "metric_rank": 2.0,
+      "underrated_score": 0.1957295374
+    },
+    {
+      "player_id": 8302,
+      "name": "Nicolai Müller",
+      "short_name": "Nicolai Müller",
+      "team": "Hamburger SV",
+      "competition": "1. Bundesliga",
+      "season": "2015/2016",
+      "minutes": 2231.8313166667,
+      "value": 0.3726190927,
+      "market_value_eur": 3500000,
+      "value_rank": 150.0,
+      "metric_rank": 3.0,
+      "underrated_score": 0.5231316726
+    },
+    {
+      "player_id": 5562,
+      "name": "Thomas Müller",
+      "short_name": "Thomas Müller",
+      "team": "Bayern Munich",
+      "competition": "1. Bundesliga",
+      "season": "2015/2016",
+      "minutes": 2411.9447666667,
+      "value": 0.3652171941,
+      "market_value_eur": 75000000,
+      "value_rank": 1.5,
+      "metric_rank": 4.0,
+      "underrated_score": -0.0088967972
+    },
+    {
+      "player_id": 3712,
+      "name": "Pierre-Emerick Aubameyang",
+      "short_name": "Pierre-Emerick Aubameyang",
+      "team": "Borussia Dortmund",
+      "competition": "1. Bundesliga",
+      "season": "2015/2016",
+      "minutes": 2545.695,
+      "value": 0.3630007357,
+      "market_value_eur": 45000000,
+      "value_rank": 4.5,
+      "metric_rank": 5.0,
+      "underrated_score": -0.0017793594
+    }
+  ]
+}
