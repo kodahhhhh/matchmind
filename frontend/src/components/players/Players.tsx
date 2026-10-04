@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { motion } from "motion/react";
 import type { PlayerRow, Side } from "../../api/types";
 import { useMatch } from "../../store/match";
+import { usePlayerUi } from "../../store/ui";
 import { signed } from "../../lib/format";
 
 type Sort = "vaep" | "passes";
@@ -63,7 +64,9 @@ function Jersey({ p, side }: { p: number; side: Side }) {
 function Row({ p, i, maxV, maxP, delta }: { p: PlayerRow; i: number; maxV: number; maxP: number; delta: number }) {
   return (
     <motion.div layout initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: Math.min(i * 0.015, 0.3) }}
-      className="grid grid-cols-[1fr_104px_76px_40px] items-center gap-2 rounded-xl px-1 py-2 transition hover:bg-surface-2">
+      onClick={() => usePlayerUi.getState().openPlayer(p.player_id)} role="button" tabIndex={0}
+      onKeyDown={(e) => e.key === "Enter" && usePlayerUi.getState().openPlayer(p.player_id)}
+      className="grid cursor-pointer grid-cols-[1fr_104px_76px_40px] items-center gap-2 rounded-xl px-1 py-2 transition hover:bg-surface-2">
       <div className="flex min-w-0 items-center gap-2.5">
         <Jersey p={p.jersey} side={p.team} />
         <div className="min-w-0">

@@ -307,3 +307,62 @@ export interface MarketSeries {
   series: { index: number; label: string; minute: number; period: number; market: Probs; model: Probs }[];
   bets: BacktestBet[];
 }
+
+export interface PlayerProfile {
+  player_id: number;
+  name: string;
+  short_name: string;
+  nickname: string | null;
+  photo_url: string | null;
+  photo_credit: string | null;
+  photo_license: string | null;
+  date_of_birth: string | null;
+  height_cm: number | null;
+  foot: string | null;
+  position: string | null;
+  nationality: string | null;
+  transfermarkt_id: number | null;
+  wikidata_id: string | null;
+  current_club: string | null;
+  market_value_eur: number | null;
+  peak_market_value_eur: number | null;
+  caps: number | null;
+  match_confidence: number | null;
+  valuations: { date: string; value_eur: number; club: string | null }[];
+  career: {
+    matches: number; minutes: number; vaep: number; vaep_per90: number; vaep_off: number; vaep_def: number;
+    xg: number; goals: number; shots: number; prog_per90: number;
+    by_competition: { competition: string; season: string; team: string; matches: number; minutes: number; vaep_per90: number; xg: number; goals: number }[];
+  };
+  heatmap: { nx: number; ny: number; values: number[] };
+  top_moments: { match_id: string; match_label: string; minute_label: string; event_id: string | null; sequence_id: string | null; vaep: number; text: string | null }[];
+  matches: { match_id: string; date: string | null; competition: string; season: string; team: string; opponent: string; minutes: number; vaep: number; xg: number; goals: number; in_db: boolean }[];
+  in_match: null | { age: number | null; market_value_eur: number | null; minutes: number; vaep: number; rank_in_match: number };
+}
+
+export interface PlayerHit {
+  player_id: number;
+  name: string;
+  short_name: string;
+  nationality: string | null;
+  position: string | null;
+  photo_url: string | null;
+  teams: string[];
+  matches: number;
+  vaep_per90: number | null;
+}
+
+export interface LeaderboardRow {
+  player_id: number;
+  name: string;
+  short_name: string;
+  team: string;
+  competition: string;
+  season: string;
+  minutes: number;
+  value: number;
+  market_value_eur: number | null;
+  value_rank: number | null;
+  metric_rank: number;
+  underrated_score: number | null;
+}

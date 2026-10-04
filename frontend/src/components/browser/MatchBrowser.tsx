@@ -43,6 +43,7 @@ export function MatchBrowser() {
             <span className="h-1.5 w-1.5 rounded-full bg-[#3ccf8e]" />
             {matches.length} matches · {comps.length} competitions
           </span>
+          <Link to="/players" className="rounded-xl px-3 py-2 text-[13px] font-medium text-ink-2 ring-1 ring-line transition hover:bg-surface-2 hover:text-ink">Underrated players</Link>
           <Link to="/backtest" className="rounded-xl px-3 py-2 text-[13px] font-medium text-ink-2 ring-1 ring-line transition hover:bg-surface-2 hover:text-ink">Backtest vs markets</Link>
           <SearchButton />
         </div>

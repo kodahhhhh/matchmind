@@ -1,6 +1,6 @@
 // The only place the frontend talks to the backend. VITE_USE_FIXTURES=1 serves fixtures/ instead.
 import type {
-  AskChunk, Backtest, CommentaryLine, Competition, MarketSeries, Counterfactual, MatchCard, MatchDetail, MatchEvent,
+  AskChunk, Backtest, CommentaryLine, Competition, LeaderboardRow, MarketSeries, PlayerHit, PlayerProfile, Counterfactual, MatchCard, MatchDetail, MatchEvent,
   PlayerRow, SearchResult, Sequence, TimelineMinute, TurningPoint,
 } from "./types";
 
@@ -48,6 +48,17 @@ export const api = {
     });
     if (!res.ok) throw new Error(`${res.status}: counterfactual`);
     return res.json();
+  },
+
+  player: (id: number, matchId?: string) =>
+    get<PlayerProfile>(`/players/${id}${matchId ? `?match_id=${enc(matchId)}` : ""}`, `/fixtures/players/${id}.json`),
+
+  searchPlayers: (q: string) =>
+    get<{ results: PlayerHit[] }>(`/players?q=${enc(q)}&limit=8`, "/fixtures/players/search.json").then((r) => r.results),
+
+  leaderboard: (params: { metric?: string; min_minutes?: number; competition?: string; season?: string }) => {
+    const qs = new URLSearchParams(Object.entries({ limit: "200", ...params }).filter(([, v]) => v != null && v !== "").map(([k, v]) => [k, String(v)]));
+    return get<{ metric: string; rows: LeaderboardRow[] }>(`/players/leaderboard?${qs}`, "/fixtures/players/leaderboard.json");
   },
 
   backtest: () => get<Backtest>("/backtest", "/fixtures/backtest.json"),

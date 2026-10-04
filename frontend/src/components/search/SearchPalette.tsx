@@ -2,7 +2,8 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { AnimatePresence, motion } from "motion/react";
 import { api } from "../../api/client";
-import type { SearchResult } from "../../api/types";
+import type { PlayerHit, SearchResult } from "../../api/types";
+import { usePlayerUi } from "../../store/ui";
 import { useMatch } from "../../store/match";
 import { useUi } from "../../store/ui";
 
@@ -45,6 +46,7 @@ function Palette({ onClose }: { onClose: () => void }) {
   const [q, setQ] = useState("");
   const [scope, setScope] = useState<"all" | "match">("all");
   const [results, setResults] = useState<SearchResult[]>([]);
+  const [players, setPlayers] = useState<PlayerHit[]>([]);
   const [loading, setLoading] = useState(false);
   const [sel, setSel] = useState(0);
   const navigate = useNavigate();
@@ -57,10 +59,11 @@ function Palette({ onClose }: { onClose: () => void }) {
 
   useEffect(() => {
     const query = q.trim();
-    if (query.length < 2) { setResults([]); return; }
+    if (query.length < 2) { setResults([]); setPlayers([]); return; }
     let live = true;
     const t = setTimeout(() => {
       setLoading(true);
+      api.searchPlayers(query).then((p) => live && setPlayers(p.slice(0, 4))).catch(() => live && setPlayers([]));
       api.search(query, scope === "match" && onMatch ? matchId! : undefined)
         .then((r) => { if (live) { setResults(r); setSel(0); } })
         .catch(() => live && setResults([]))
@@ -117,10 +120,29 @@ function Palette({ onClose }: { onClose: () => void }) {
             </div>
             <p className="mt-4 text-[12px] leading-relaxed text-ink-4">Searches GPT-6 Luna's commentary for every move in 493 matches, by meaning (Qwen3 embeddings on Cloudflare Workers AI + pgvector) and by keyword.</p>
           </div>
-        ) : results.length === 0 && !loading ? (
+        ) : results.length === 0 && players.length === 0 && !loading ? (
           <div className="px-4 py-10 text-center text-[13px] text-ink-3">No moments found for “{q}”.</div>
         ) : (
-          results.map((r, i) => (
+          <>
+          {players.length > 0 && (
+            <div className="mb-1 border-b border-line pb-2">
+              <div className="eyebrow px-3 pb-1 pt-1">Players</div>
+              {players.map((p) => (
+                <button key={p.player_id} onClick={() => { onClose(); usePlayerUi.getState().openPlayer(p.player_id); }}
+                  className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left transition hover:bg-surface-3">
+                  {p.photo_url ? <img src={p.photo_url} alt="" className="h-8 w-8 rounded-full object-cover object-top" />
+                    : <span className="display flex h-8 w-8 items-center justify-center rounded-full bg-surface-3 text-[13px] text-ink-2">{p.short_name.slice(0, 2).toUpperCase()}</span>}
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-[14px] font-semibold text-ink">{p.name}</span>
+                    <span className="block truncate text-[11.5px] text-ink-3">{[p.position, p.nationality, p.teams.slice(0, 3).join(", ")].filter(Boolean).join(" · ")}</span>
+                  </span>
+                  {p.vaep_per90 != null && <span className="text-[12px] tabular text-ink-3"><span className="font-semibold text-ai">{p.vaep_per90.toFixed(2)}</span> VAEP/90</span>}
+                </button>
+              ))}
+            </div>
+          )}
+          {results.length > 0 && <div className="eyebrow px-3 pb-1 pt-1">Moments</div>}
+          {results.map((r, i) => (
             <button key={r.sequence_id} data-i={i} onClick={() => go(r)} onMouseEnter={() => setSel(i)}
               className={`flex w-full gap-3.5 rounded-xl px-3 py-2.5 text-left transition ${i === sel ? "bg-surface-3" : ""}`}>
               <span className="display w-12 shrink-0 pt-[1px] text-right text-[17px] text-ink">{r.label}</span>
@@ -137,7 +159,8 @@ function Palette({ onClose }: { onClose: () => void }) {
               </span>
               {i === sel && <span className="self-center rounded-md bg-surface-4 px-1.5 py-0.5 text-[10.5px] text-ink-3">↵</span>}
             </button>
-          ))
+          ))}
+          </>
         )}
       </div>
       <div className="flex items-center gap-4 border-t border-line px-5 py-2.5 text-[11px] text-ink-4">

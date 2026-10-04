@@ -31,6 +31,7 @@ export function BacktestPage() {
         <Link to="/"><Logo /></Link>
         <div className="flex items-center gap-3">
           <Link to="/" className="rounded-xl px-3 py-2 text-[13px] text-ink-3 transition hover:text-ink">Matches</Link>
+          <Link to="/players" className="rounded-xl px-3 py-2 text-[13px] text-ink-3 transition hover:text-ink">Players</Link>
           <SearchButton />
         </div>
       </header>
