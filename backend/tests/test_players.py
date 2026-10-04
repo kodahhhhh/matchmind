@@ -144,7 +144,9 @@ def test_per90_weights_exposure_instead_of_averaging_match_rates() -> None:
 
 def test_commons_normalization_and_attribution_gate(
     monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
 ) -> None:
+    monkeypatch.setattr("matchmind.players.build.raw_directory", lambda: tmp_path)
     data = {
         "query": {
             "pages": {
@@ -270,6 +272,8 @@ def test_contradictory_wikidata_dob_removes_bridge_and_photo(
 def client() -> TestClient:
     service.store.cache_clear()
     service.leaderboard.cache_clear()
+    service.search_index.cache_clear()
+    service.search_postings.cache_clear()
     return TestClient(create_player_app())
 
 
@@ -277,6 +281,7 @@ def client() -> TestClient:
     ("endpoint", "filename", "model"),
     [
         (f"/players/{MESSI}?match_id={FINAL}", "player_example.json", schemas.Profile),
+        ("/players/-418560", "player_tm_only_example.json", schemas.Profile),
         ("/players?q=mbappe&limit=5", "players_search_example.json", schemas.Search),
         (
             "/players/leaderboard?metric=vaep_per90&min_minutes=900&competition=1.%20Bundesliga&season=2015%2F2016&limit=5",
@@ -338,6 +343,14 @@ def test_search_filters_leaderboard_validation_and_unknowns(client: TestClient) 
     assert client.get("/api/players?limit=0").status_code == 422
     result = client.get("/api/players/leaderboard?competition=missing").json()
     assert result["rows"] == []
+    tm_only = client.get(f"/api/players/-418560?match_id={FINAL}").json()
+    assert tm_only["name"] == "Erling Haaland" and not tm_only["in_dataset"]
+    assert tm_only["sources"][:1] == ["transfermarkt"]
+    assert tm_only["career"] is None and tm_only["heatmap"] is None
+    assert tm_only["matches"] == tm_only["top_moments"] == []
+    assert tm_only["in_match"] is None and tm_only["valuations"]
+    haaland = client.get("/api/players?q=haaland").json()["results"]
+    assert any(p["player_id"] == -418560 and not p["in_dataset"] for p in haaland)
 
 
 def test_all_corpus_coverage_and_replay_availability() -> None:

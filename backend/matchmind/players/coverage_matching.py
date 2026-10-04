@@ -313,6 +313,7 @@ def extend_map(fetch: bool = False) -> pd.DataFrame:
     cumulative = {r["sb_player_id"]: r for r in previous + accepted}
     atomic_json(previous_path, list(cumulative.values()))
     save_frame(mapping, output / "player_map.parquet")
+    (output / "_READY").touch()
     print(
         f"Added {len(accepted)} identities: "
         f"{mapping.tm_player_id.notna().sum()} TM, "

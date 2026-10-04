@@ -76,8 +76,10 @@ def normalise(value: object) -> str:
             }
         )
     )
-    value = unicodedata.normalize("NFKD", value).encode("ascii", "ignore").decode()
-    return " ".join(re.findall(r"[a-z0-9]+", value.lower()))
+    value = "".join(
+        c for c in unicodedata.normalize("NFKD", value) if not unicodedata.combining(c)
+    )
+    return " ".join(re.findall(r"[^\W_]+", value.casefold()))
 
 
 def country(value: object) -> str:
@@ -95,10 +97,14 @@ def club(value: object) -> str:
 def name_score(names: list[str], candidate: str) -> float:
     """Exact aliases first; only complete-token containment for shortened names."""
     target = normalise(candidate)
+    if not target:
+        return 0.0
     tokens = set(target.split())
     best = 0.0
     for name in names:
         alias = normalise(name)
+        if not alias:
+            continue
         other = set(alias.split())
         if alias == target:
             best = max(best, 1.0)

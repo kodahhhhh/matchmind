@@ -359,6 +359,11 @@ def build_coverage() -> list[dict]:
     frame = pd.read_parquet(output / "matches.parquet")
     mapping = pd.read_parquet(output / "player_map.parquet")
     matched = set(mapping.loc[mapping.tm_player_id.notna(), "sb_player_id"])
+    profiles = pd.read_parquet(output / "profiles.parquet")
+    enriched = {
+        field: set(profiles.loc[profiles[field].notna(), "sb_player_id"])
+        for field in ("wikidata_qid", "photo_url", "date_of_birth", "height_cm")
+    }
     coverage = []
     for (competition, season), group in frame.groupby(["competition", "season"]):
         players = set(group.player_id)
@@ -377,6 +382,20 @@ def build_coverage() -> list[dict]:
                     group[group.player_id.isin(matched)].minutes.sum()
                     / group.minutes.sum()
                 ),
+                **{
+                    field: {
+                        "players": len(players & ids),
+                        "player_share": len(players & ids) / len(players),
+                        "minutes": float(
+                            group[group.player_id.isin(ids)].minutes.sum()
+                        ),
+                        "minute_share": float(
+                            group[group.player_id.isin(ids)].minutes.sum()
+                            / group.minutes.sum()
+                        ),
+                    }
+                    for field, ids in enriched.items()
+                },
             }
         )
     (output / "coverage.json").write_text(json.dumps(coverage, indent=2))

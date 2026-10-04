@@ -1,10 +1,22 @@
-"""Thin player routes; register router with prefix='/api' in the shared app."""
+"""Thin player routes; negative identifiers address Transfermarkt-only profiles."""
+
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 
 from fastapi import APIRouter, FastAPI, HTTPException, Query
 
 from matchmind.players import schemas, service
 
-router = APIRouter()
+
+@asynccontextmanager
+async def player_lifespan(app: FastAPI) -> AsyncIterator[None]:
+    """Warm artifacts/search before accepting requests in every consuming app."""
+    service.search_index()
+    service.search_postings()
+    yield
+
+
+router = APIRouter(lifespan=player_lifespan)
 
 
 @router.get("/players", response_model=schemas.Search)

@@ -22,6 +22,12 @@ CREATE TABLE IF NOT EXISTS player_profiles (
     CHECK (photo_url IS NULL OR (photo_credit IS NOT NULL AND photo_license IS NOT NULL))
 );
 CREATE INDEX IF NOT EXISTS player_profiles_tm ON player_profiles (tm_player_id);
+-- W11b: positive StatsBomb IDs; TM-only identities are -tm_player_id.
+ALTER TABLE player_profiles ADD COLUMN IF NOT EXISTS in_dataset boolean NOT NULL DEFAULT true;
+ALTER TABLE player_profiles ADD COLUMN IF NOT EXISTS sources text[] NOT NULL DEFAULT ARRAY['statsbomb']::text[];
+ALTER TABLE player_profiles ADD COLUMN IF NOT EXISTS aliases text[] NOT NULL DEFAULT ARRAY[]::text[];
+COMMENT ON COLUMN player_profiles.sb_player_id IS 'Positive StatsBomb ID, or -Transfermarkt ID for TM-only profiles';
+CREATE INDEX IF NOT EXISTS player_profiles_dataset_value ON player_profiles (in_dataset DESC, market_value_eur DESC);
 CREATE TABLE IF NOT EXISTS player_valuations (
     tm_player_id bigint NOT NULL,
     date date NOT NULL,
