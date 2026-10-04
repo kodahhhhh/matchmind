@@ -50,9 +50,12 @@ export function resolveSequence(d: MatchData | null, id: string): Sequence | und
   if (cached) return cached;
   const evs = d.eventsBySeq.get(id);
   if (!evs?.length) return undefined;
+  // the possessing team starts the sequence; only override it when the other side clearly dominates
   const counts = { home: 0, away: 0 };
   for (const e of evs) counts[e.team]++;
-  const team = counts.home >= counts.away ? "home" : "away";
+  const starter = evs[0].team;
+  const other = starter === "home" ? "away" : "home";
+  const team = counts[other] > 2 * counts[starter] ? other : starter;
   const own = evs.filter((e) => e.team === team);
   const shots = own.filter((e) => isShot(e.type));
   const names: string[] = [];
