@@ -46,26 +46,26 @@ export function MatchBrowser() {
 
   return (
     <div className="scroll-thin h-full overflow-y-auto">
-      <header className="mx-auto flex max-w-[1280px] items-center justify-between px-8 py-6">
+      <header className="mx-auto flex max-w-[1280px] items-center justify-between gap-3 px-5 py-5 md:px-8 md:py-6">
         <Logo />
         <div className="flex items-center gap-4">
-          <span className="flex items-center gap-2 text-[12.5px] text-ink-3">
+          <span className="hidden items-center gap-2 text-[12.5px] text-ink-3 lg:flex">
             <span className="h-1.5 w-1.5 rounded-full bg-[#3ccf8e]" />
             {matches.length} matches · {comps.length} competitions
           </span>
-          <Link to="/players" className="rounded-xl px-3 py-2 text-[13px] font-medium text-ink-2 ring-1 ring-line transition hover:bg-surface-2 hover:text-ink">Underrated players</Link>
-          <Link to="/backtest" className="rounded-xl px-3 py-2 text-[13px] font-medium text-ink-2 ring-1 ring-line transition hover:bg-surface-2 hover:text-ink">Backtest vs markets</Link>
+          <Link to="/players" className="hidden rounded-xl px-3 py-2 md:block text-[13px] font-medium text-ink-2 ring-1 ring-line transition hover:bg-surface-2 hover:text-ink">Underrated players</Link>
+          <Link to="/backtest" className="hidden rounded-xl px-3 py-2 md:block text-[13px] font-medium text-ink-2 ring-1 ring-line transition hover:bg-surface-2 hover:text-ink">Backtest vs markets</Link>
           <SearchButton />
         </div>
       </header>
 
-      <section className="mx-auto grid max-w-[1280px] grid-cols-1 items-center gap-10 px-8 pb-14 pt-6 lg:grid-cols-[1fr_560px]">
+      <section className="mx-auto grid max-w-[1280px] grid-cols-1 items-center gap-10 px-5 pb-14 pt-6 md:px-8 lg:grid-cols-[1fr_560px]">
         <div>
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="eyebrow mb-4 flex items-center gap-2">
             <span className="h-1.5 w-1.5 rounded-full bg-ai" /> AI football analyst
           </motion.div>
           <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}
-            className="display text-[76px] leading-[0.9] text-ink">
+            className="display text-[48px] leading-[0.9] text-ink md:text-[76px]">
             Stats say what<br />happened.<br /><span className="bg-gradient-to-r from-[#cfc4ff] to-[#8f7dff] bg-clip-text text-transparent">We show why.</span>
           </motion.h1>
           <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
@@ -79,7 +79,7 @@ export function MatchBrowser() {
       <Stats />
       <Features />
 
-      <section className="mx-auto max-w-[1280px] px-8 pb-20">
+      <section className="mx-auto max-w-[1280px] px-5 pb-20 md:px-8">
         <div className="mb-6 flex flex-wrap items-center gap-2">
           {comps.map((c) => {
             const on = active === c.id && !q;
@@ -127,14 +127,14 @@ function Featured({ m, shots, move }: { m: MatchCard; shots: MatchEvent[]; move:
           })}
         </svg>
         <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/50 to-transparent px-6 pb-5 pt-16">
-          <div className="eyebrow mb-2 text-white/60">Featured · {m.competition} {m.season} · {m.stage}</div>
+          <div className="eyebrow mb-2 truncate text-white/60">Featured · {m.competition} {m.season} · {m.stage}</div>
           <div className="flex items-center justify-between">
-            <div className="display flex items-center gap-3 text-[34px] leading-none text-white">
+            <div className="display flex flex-wrap items-center gap-x-3 gap-y-1 text-[22px] leading-none text-white md:text-[34px]">
               <span className="h-7 w-1.5 rounded-full" style={{ background: m.home.color }} />{m.home.name}
-              <span className="mx-1 text-white/70">{m.home_score}–{m.away_score}</span>
+              <span className="mx-1 whitespace-nowrap text-white/70">{m.home_score}–{m.away_score}</span>
               {m.away.name}<span className="h-7 w-1.5 rounded-full" style={{ background: m.away.color }} />
             </div>
-            <span className="ai-button rounded-xl px-4 py-2.5 text-[13px] font-semibold text-white transition group-hover:translate-x-0.5">Open match →</span>
+            <span className="ai-button hidden shrink-0 rounded-xl px-4 py-2.5 text-[13px] font-semibold text-white transition group-hover:translate-x-0.5 sm:inline">Open match →</span>
           </div>
         </div>
       </Link>
@@ -193,7 +193,7 @@ function LoopingMove({ move }: { move: MatchEvent[] }) {
 function Stats() {
   const items: [number, string][] = [[493, "matches to explore"], [2924, "matches our models trained on"], [82580, "lines of AI commentary"], [52151, "player profiles"]];
   return (
-    <section className="mx-auto max-w-[1280px] px-8 pb-10">
+    <section className="mx-auto max-w-[1280px] px-5 pb-10 md:px-8">
       <div className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl bg-line ring-1 ring-line md:grid-cols-4">
         {items.map(([n, label], i) => (
           <motion.div key={label} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 + i * 0.07 }}
@@ -215,7 +215,7 @@ function Features() {
     { title: "Would it beat the bookies?", body: "We backtested our models against Pinnacle and Polymarket. Honest answer inside.", cta: "See the backtest", to: "/backtest", accent: "#f2c94c" },
   ];
   return (
-    <section className="mx-auto grid max-w-[1280px] grid-cols-1 gap-3 px-8 pb-12 md:grid-cols-3">
+    <section className="mx-auto grid max-w-[1280px] grid-cols-1 gap-3 px-5 pb-12 md:grid-cols-3 md:px-8">
       {cards.map((c, i) => {
         const inner = (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 + i * 0.08 }}

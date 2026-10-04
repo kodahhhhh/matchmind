@@ -35,45 +35,46 @@ export function MatchView() {
   };
 
   return (
-    <div className="flex h-full min-h-[780px] flex-col" style={vars}>
-      <header className="relative grid h-[92px] shrink-0 grid-cols-[1fr_auto_1fr] items-center gap-4 px-6">
+    <div className="flex h-full flex-col overflow-y-auto lg:min-h-[780px] lg:overflow-hidden" style={vars}>
+      <header className="relative flex shrink-0 flex-wrap items-center justify-between gap-x-4 gap-y-3 px-4 py-3 lg:grid lg:h-[92px] lg:grid-cols-[1fr_auto_1fr] lg:px-6 lg:py-0">
         <div className="flex min-w-0 items-center gap-4">
           <Link to="/" className="rounded-xl p-1 transition hover:bg-white/5" aria-label="All matches"><Logo /></Link>
-          <div className="min-w-0 leading-tight">
+          <div className="hidden min-w-0 leading-tight xl:block">
             <div className="truncate text-[13px] font-semibold text-ink">{match.competition} {match.season}</div>
             <div className="truncate text-[11.5px] text-ink-3">{[match.stage, match.venue].filter(Boolean).join(" · ")}</div>
           </div>
         </div>
-        <div className="flex justify-center pt-1"><Scoreboard match={match} /></div>
+        <div className="order-3 flex w-full justify-center pt-1 lg:order-none lg:w-auto"><Scoreboard match={match} /></div>
         <div className="flex min-w-0 items-center justify-end gap-2">
-          <KeyboardHelp />
+          <div className="hidden lg:block"><KeyboardHelp /></div>
           <SearchButton compact />
           <button onClick={() => useMatch.getState().playHighlights()} title="Play highlights (H)"
             className="flex shrink-0 items-center gap-2 rounded-2xl bg-surface-2 px-3.5 py-2.5 text-sm font-semibold text-ink ring-1 ring-line transition hover:bg-surface-3">
             <svg width="12" height="14" viewBox="0 0 12 14"><path d="M1.5 1.5 10.5 7l-9 5.5z" fill="currentColor" /></svg>
-            Highlights
+            <span className="hidden sm:inline">Highlights</span>
           </button>
           <button onClick={findTurningPoint}
             className="ai-button flex shrink-0 items-center gap-2.5 rounded-2xl px-4 py-2.5 text-sm font-semibold text-white transition">
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M1.5 12.5 6 8l3.2 3.2L16.5 4" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /><circle cx="9.2" cy="11.2" r="2" fill="#fff" /></svg>
-            Find the turning point
+            <span className="hidden sm:inline">Find the turning point</span>
+            <span className="sm:hidden">Turning point</span>
           </button>
         </div>
       </header>
 
-      <main className="flex min-h-0 flex-1 gap-4 px-4 pb-4">
+      <main className="flex flex-col gap-4 px-3 pb-4 lg:min-h-0 lg:flex-1 lg:flex-row lg:px-4">
         <section className="flex min-w-0 flex-1 flex-col gap-4">
           <motion.div initial={{ opacity: 0, scale: 0.99 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5 }}
-            className="relative min-h-0 flex-1 overflow-hidden rounded-[var(--radius)] shadow-[0_30px_80px_-40px_rgba(0,0,0,0.9)] ring-1 ring-white/10">
+            className="relative aspect-[1.5] overflow-hidden rounded-[var(--radius)] shadow-[0_30px_80px_-40px_rgba(0,0,0,0.9)] ring-1 ring-white/10 lg:aspect-auto lg:min-h-0 lg:flex-1">
             <Pitch />
             <PitchOverlays />
           </motion.div>
-          <div className="relative rounded-[var(--radius)] bg-surface-1 px-5 pb-2 pt-4 ring-1 ring-line">
+          <div className="relative rounded-[var(--radius)] bg-surface-1 px-3 pb-2 pt-4 ring-1 ring-line lg:px-5">
             <Timeline />
           </div>
         </section>
 
-        <aside className="flex w-[440px] shrink-0 flex-col overflow-hidden rounded-[var(--radius)] bg-surface-1 ring-1 ring-line">
+        <aside className="flex h-[640px] w-full shrink-0 flex-col overflow-hidden rounded-[var(--radius)] bg-surface-1 ring-1 ring-line lg:h-auto lg:w-[440px]">
           <nav className="shrink-0 p-3">
             <div className="flex rounded-xl bg-surface-2 p-1">
               {TABS.map(([t, label]) => (

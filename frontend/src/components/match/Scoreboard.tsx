@@ -39,9 +39,9 @@ export function Scoreboard({ match }: { match: MatchDetail }) {
 function TeamBlock({ side, name, scorers }: { side: Side; name: string; scorers: string[] }) {
   const right = side === "home";
   return (
-    <div className={`flex w-[230px] flex-col ${right ? "items-end text-right" : "items-start text-left"}`}>
-      <div className={`display flex h-[52px] items-center leading-none text-ink ${name.length <= 12 ? "text-[30px]" : name.length <= 17 ? "text-[24px]" : "text-[20px]"}`}>{name}</div>
-      <div className="mt-1.5 line-clamp-1 text-[11.5px] text-ink-3">
+    <div className={`flex w-[34vw] flex-col lg:w-[230px] ${right ? "items-end text-right" : "items-start text-left"}`}>
+      <div className={`display flex h-[52px] items-center leading-none text-ink ${name.length <= 12 ? "text-[20px] lg:text-[30px]" : name.length <= 17 ? "text-[17px] lg:text-[24px]" : "text-[15px] lg:text-[20px]"}`}>{name}</div>
+      <div className="mt-1.5 line-clamp-1 text-[10.5px] text-ink-3 lg:text-[11.5px]">
         {scorers.length ? scorers.map((s, i) => (
           <span key={s}>{i > 0 && <span className="mx-1 text-ink-4">·</span>}{s}</span>
         )) : <span className="text-ink-4">No goals</span>}

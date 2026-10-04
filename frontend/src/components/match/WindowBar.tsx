@@ -121,7 +121,7 @@ export function PitchOverlays() {
         )}
       </div>
 
-      <div className={`glass pointer-events-none absolute bottom-4 right-4 flex items-center gap-4 rounded-2xl px-4 py-2.5 transition-opacity ${mode === "sequence" ? "opacity-0" : ""}`}>
+      <div className={`glass pointer-events-none absolute bottom-4 right-4 hidden items-center gap-4 rounded-2xl px-4 py-2.5 transition-opacity md:flex ${mode === "sequence" ? "opacity-0" : ""}`}>
         <div className="flex flex-col gap-1 text-[10.5px] font-bold tracking-wider">
           <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-home" />{home.short}</span>
           <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-away" />{away.short}</span>
@@ -159,7 +159,7 @@ export function PitchOverlays() {
         </div>
       )}
 
-      <div className={`glass pointer-events-none absolute bottom-4 left-4 flex items-center gap-3 rounded-xl px-3 py-2 text-[11px] text-white/75 ${mode === "sequence" && caption ? "hidden" : ""}`}>
+      <div className={`glass pointer-events-none absolute bottom-4 left-4 hidden items-center gap-3 rounded-xl px-3 py-2 text-[11px] text-white/75 md:flex ${mode === "sequence" && caption ? "hidden" : ""}`}>
         <span className="flex items-center gap-1.5"><svg width="12" height="12"><circle cx="6" cy="6" r="4.5" fill="rgba(255,255,255,0.25)" stroke="#fff" strokeWidth="1" /></svg>shot · size = xG</span>
         <span className="flex items-center gap-1.5"><svg width="12" height="12"><circle cx="6" cy="6" r="5" fill="#fff" /><circle cx="6" cy="6" r="1.8" fill="#1a4a30" /></svg>goal</span>
         {mode !== "overview" && <span className="flex items-center gap-1.5"><svg width="18" height="8"><line x1="1" y1="4" x2="17" y2="4" stroke="#fff" strokeWidth="1.5" /></svg>pass</span>}
