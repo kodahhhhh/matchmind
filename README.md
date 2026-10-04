@@ -15,7 +15,7 @@ Stats apps tell you what happened: 62% possession, 1.8 xG. MatchMind shows you w
 - **Ask the analyst (GPT-6.1 Sol).** It answers by calling our analytics as tools and cites the exact moments: every citation is a chip that jumps the pitch there. Numbers come only from tool results, never from the language model.
 - **Read the live commentary (GPT-6 Luna).** 82,580 broadcast-style lines, one for every move in every match, written only from facts in the event data. They appear as a feed, and as captions on the pitch when a move is replayed.
 - **Search every moment (⌘K).** Hybrid semantic + keyword search across all 493 matches: "a goalkeeper makes a brilliant save" finds saves that never use those words. Pick a result to jump straight to the move.
-- **Ask "what if?"** Remove a goal, a substitution or a red card and see the trained game-state model's range for the next 15 minutes, next to the most similar real situations from 2,924 matches.
+- **Ask "what if?"** Remove a goal, a substitution or a red card and the trained game-state model compares the next 15 minutes with and without it (and says so when it sees no real difference), next to the most similar real situations from 2,924 matches. Keeping a player on swaps his rating back in. Or pick a shot and see every pass that was on: completion chance from defender positions, and what it was worth against the shot.
 - **See who really mattered.** Players ranked by value added (VAEP), not pass counts. Click anyone for a profile: bio, market-value history, career numbers from our models across 2,924 matches, an action heatmap and their best moments.
 - **Find who the market underrated.** Value added per 90 against Transfermarkt market value, per competition: in Bundesliga 2015/16, Mark Uth (€2m) and Nicolai Müller (€3.5m) added as much as players worth ten times more.
 - **Check us against the market.** A full backtest against Pinnacle and Polymarket, with confidence intervals and every bet listed.
@@ -34,9 +34,11 @@ All models were trained on **2,924 men's matches** (5.96 million on-ball actions
 | **xG** (LightGBM, 73,598 shots, incl. defender/keeper positions from freeze frames) | Probability a shot becomes a goal | Log loss **0.2629** vs StatsBomb's own model **0.2628**; AUC 0.823 vs 0.825. Total xG 7,993 vs 7,996 actual goals. |
 | **VAEP** (socceraction + LightGBM) | Value each action adds to the chance of scoring / conceding | AUC **0.820** (scores), **0.806** (concedes). Messi ranks #1 in the dataset at 0.83 VAEP/90. |
 | **xT** (12×8 grid) | Threat value of each pitch zone | — |
-| **Game-state model** (LightGBM quantile regression, 106,994 windows) | p10/p50/p90 of next-15-minute xG and possession | p10–p90 coverage **79%** for possession (target 80%), 88% for xG (slightly conservative) |
+| **Game-state model** (LightGBM quantile regression, 106,994 windows, incl. who is on the pitch) | p10/p50/p90 of next-15-minute xG and possession; powers *What if* | Quantiles calibrated (held-out p50 hit 50%, p90 hit 90%). Median error **29%** lower than one fixed range for possession, **4.6%** for xG: 15 minutes of xG mostly depends on whether one big chance happens. |
+| **Player ratings** (shrunk VAEP per 90 from every *other* match) | On-pitch quality, so "keep him on" swaps real players | Leave-one-match-out; held-out fold excluded in validation |
+| **Pass completion** (LightGBM, 260,025 passes with StatsBomb 360 freeze frames) | "What if he passed instead of shooting?" | AUC **0.936** vs 0.901 without defender positions; calibrated by decile |
 | **Pre-match result model** (walk-forward xG team ratings, Poisson) | P(home/draw/away) before kick-off | Used in the Pinnacle backtest |
-| **In-play win probability** (gradient boosting, test tournaments excluded) | P(home/draw/away) at every minute | Used in the Polymarket backtest |
+| **In-play win probability** (gradient boosting, test tournaments excluded) | P(home/draw/away) at every minute | Used in the Polymarket backtest. Held-out Brier 0.4574 vs **0.4565** for a score-and-clock-only baseline: our xG/VAEP features add no accuracy here |
 
 Full model card: [`backend/matchmind/models/MODELS.md`](backend/matchmind/models/MODELS.md).
 
@@ -68,7 +70,7 @@ flowchart LR
   API --> UI[React broadcast UI]
 ```
 
-- **The language model only explains.** Sol answers by calling tools (`get_window_stats`, `find_turning_points`, `get_top_sequences`, `run_counterfactual`, `search_moments`, …) that run our Python analytics. It must cite the event IDs those tools return; an automated check verifies every number in its answers appears in the tool results.
+- **The language model only explains.** Sol answers by calling tools (`get_window_stats`, `find_turning_points`, `get_top_sequences`, `run_counterfactual`, `shot_alternatives`, `search_moments`, …) that run our Python analytics. It must cite the event IDs those tools return. Every sentence is checked before it streams: numbers must appear in the tool results, a number tied to a unit ("3 shots", "0.4 xG") must come from a field about that unit, citations must be real, and "would have" phrasing is blocked. A 10-question golden set (including three what-ifs) passes with no rejected sentences.
 - **TimescaleDB** stores 1.75 million events in a hypertable with a per-minute continuous aggregate (timeline queries in ~1 ms) and **pgvector** HNSW indexes for commentary search.
 - **Luna** writes commentary from structured facts only (players, zones, xG, score, outcome); spot checks found no unsupported claims.
 - **Search** fuses Qwen3 embedding similarity with Postgres full-text rank (reciprocal rank fusion).
