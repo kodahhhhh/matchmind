@@ -57,7 +57,7 @@ export const api = {
     get<{ results: PlayerHit[] }>(`/players?q=${enc(q)}&limit=8`, "/fixtures/players/search.json").then((r) => r.results),
 
   leaderboard: (params: { metric?: string; min_minutes?: number; competition?: string; season?: string }) => {
-    const qs = new URLSearchParams(Object.entries({ limit: "200", ...params }).filter(([, v]) => v != null && v !== "").map(([k, v]) => [k, String(v)]));
+    const qs = new URLSearchParams(Object.entries({ limit: "100", ...params }).filter(([, v]) => v != null && v !== "").map(([k, v]) => [k, String(v)]));
     return get<{ metric: string; rows: LeaderboardRow[] }>(`/players/leaderboard?${qs}`, "/fixtures/players/leaderboard.json");
   },
 

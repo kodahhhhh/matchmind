@@ -133,7 +133,7 @@ function Palette({ onClose }: { onClose: () => void }) {
                   {p.photo_url ? <img src={p.photo_url} alt="" className="h-8 w-8 rounded-full object-cover object-top" />
                     : <span className="display flex h-8 w-8 items-center justify-center rounded-full bg-surface-3 text-[13px] text-ink-2">{p.short_name.slice(0, 2).toUpperCase()}</span>}
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-[14px] font-semibold text-ink">{p.name}</span>
+                    <span className="block truncate text-[14px] font-semibold text-ink">{p.short_name || p.name}</span>
                     <span className="block truncate text-[11.5px] text-ink-3">{[p.position, p.nationality, p.teams.slice(0, 3).join(", ")].filter(Boolean).join(" · ")}</span>
                   </span>
                   {p.vaep_per90 != null && <span className="text-[12px] tabular text-ink-3"><span className="font-semibold text-ai">{p.vaep_per90.toFixed(2)}</span> VAEP/90</span>}

@@ -67,7 +67,8 @@ function Profile({ p }: { p: PlayerProfile }) {
           <Avatar p={p} />
           <div className="min-w-0 pb-1">
             <div className="eyebrow mb-1">{[p.position, p.nationality].filter(Boolean).join(" · ")}</div>
-            <h2 className="display text-[38px] leading-[0.95] text-ink">{p.name}</h2>
+            <h2 className="display text-[38px] leading-[0.95] text-ink">{p.nickname || p.short_name || p.name}</h2>
+            {(p.nickname || p.short_name) && p.name !== (p.nickname || p.short_name) && <div className="mt-1 text-[12px] text-ink-3">{p.name}</div>}
             <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[12.5px] text-ink-2">
               {age != null && <span>{age} yrs</span>}
               {p.height_cm && <span>{p.height_cm} cm</span>}
@@ -84,7 +85,7 @@ function Profile({ p }: { p: PlayerProfile }) {
           <div className="rounded-2xl bg-surface-2 p-4 ring-1 ring-line">
             <div className="eyebrow mb-3">In this match</div>
             <div className="grid grid-cols-4 gap-3">
-              <Big label="Minutes" value={`${p.in_match.minutes}'`} />
+              <Big label="Minutes" value={`${Math.round(p.in_match.minutes)}'`} />
               <Big label="Value added" value={`${p.in_match.vaep >= 0 ? "+" : ""}${p.in_match.vaep.toFixed(2)}`} />
               <Big label="Rank in match" value={`#${p.in_match.rank_in_match}`} />
               <Big label="Market value then" value={eur(p.in_match.market_value_eur)} />
@@ -96,7 +97,7 @@ function Profile({ p }: { p: PlayerProfile }) {
         <div>
           <div className="eyebrow mb-2">Career in our data · {p.career.matches} matches</div>
           <div className="grid grid-cols-5 gap-2">
-            <Stat label="Minutes" value={p.career.minutes.toLocaleString()} />
+            <Stat label="Minutes" value={Math.round(p.career.minutes).toLocaleString()} />
             <Stat label="VAEP / 90" value={p.career.vaep_per90.toFixed(2)} accent />
             <Stat label="xG" value={p.career.xg.toFixed(1)} />
             <Stat label="Goals" value={String(p.career.goals)} />
@@ -127,7 +128,7 @@ function Profile({ p }: { p: PlayerProfile }) {
               <div key={c.competition + c.season + c.team} className={`grid grid-cols-[1.6fr_0.6fr_0.7fr_0.6fr_0.5fr] items-center gap-2 px-3.5 py-2 text-[12.5px] ${i ? "border-t border-line" : ""}`}>
                 <span className="min-w-0"><span className="block truncate font-medium text-ink">{c.competition} {c.season}</span><span className="block truncate text-[11px] text-ink-3">{c.team}</span></span>
                 <span className="tabular text-ink-3">{c.matches} gp</span>
-                <span className="tabular text-ink-3">{c.minutes.toLocaleString()}'</span>
+                <span className="tabular text-ink-3">{Math.round(c.minutes).toLocaleString()}'</span>
                 <span className="text-right font-semibold tabular text-ink">{c.vaep_per90.toFixed(2)}</span>
                 <span className="text-right tabular text-ink-2">{c.goals}g</span>
               </div>
@@ -150,7 +151,7 @@ function Avatar({ p }: { p: PlayerProfile }) {
   const [broken, setBroken] = useState(false);
   const initials = p.short_name.split(/\s+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase();
   return p.photo_url && !broken ? (
-    <img src={p.photo_url} alt={p.name} onError={() => setBroken(true)}
+    <img src={p.photo_url} alt={p.nickname || p.name} onError={() => setBroken(true)}
       className="h-[104px] w-[104px] shrink-0 rounded-[28px] object-cover object-top ring-2 ring-white/15" />
   ) : (
     <div className="display flex h-[104px] w-[104px] shrink-0 items-center justify-center rounded-[28px] bg-surface-3 text-[40px] text-ink-2 ring-2 ring-white/10">{initials}</div>
@@ -250,16 +251,18 @@ function Moments({ p }: { p: PlayerProfile }) {
     navigate(`/match/${encodeURIComponent(m.match_id)}`);
   };
   const rows = useMemo(() => p.top_moments.slice(0, 6), [p]);
+  const inDb = useMemo(() => new Set(p.matches.filter((m) => m.in_db).map((m) => m.match_id)), [p]);
   return (
     <div>
       <div className="eyebrow mb-2">Best moments by value added</div>
       <div className="overflow-hidden rounded-2xl bg-surface-2 ring-1 ring-line">
         {rows.map((m, i) => (
-          <button key={i} onClick={() => go(m)} className={`flex w-full items-start gap-3 px-3.5 py-2.5 text-left transition hover:bg-surface-3 ${i ? "border-t border-line" : ""}`}>
+          <button key={i} onClick={() => inDb.has(m.match_id) && go(m)} disabled={!inDb.has(m.match_id)}
+            className={`flex w-full items-start gap-3 px-3.5 py-2.5 text-left transition enabled:hover:bg-surface-3 ${i ? "border-t border-line" : ""}`}>
             <span className="display w-12 shrink-0 text-[16px] text-ink">{m.minute_label}</span>
             <span className="min-w-0 flex-1">
               <span className="block text-[11.5px] text-ink-3">{m.match_label}</span>
-              <span className="block text-[13px] leading-snug text-ink-2">{m.text ?? "Open the moment"}</span>
+              <span className="block text-[13px] leading-snug text-ink-2">{m.text ?? (inDb.has(m.match_id) ? "Open the moment" : "Training match (not in the demo set)")}</span>
             </span>
             <span className="shrink-0 text-[12px] font-semibold tabular text-ai">+{m.vaep.toFixed(2)}</span>
           </button>

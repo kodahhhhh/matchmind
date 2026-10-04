@@ -10,22 +10,36 @@ import { useSize } from "../ui/useSize";
 import { eur } from "./PlayerDrawer";
 
 const METRICS: [string, string][] = [["vaep_per90", "VAEP / 90"], ["xg", "xG"], ["prog_per90", "Progression / 90"]];
+const COMPS: [string, string, string][] = [
+  ["1. Bundesliga", "2015/2016", "Bundesliga 2015/16"],
+  ["1. Bundesliga", "2023/2024", "Bundesliga 2023/24"],
+  ["La Liga", "2015/2016", "La Liga 2015/16"],
+  ["Premier League", "2015/2016", "Premier League 2015/16"],
+  ["FIFA World Cup", "2022", "World Cup 2022"],
+  ["UEFA Euro", "2024", "Euro 2024"],
+  ["Copa America", "2024", "Copa América 2024"],
+];
 
 /** Value added vs market value: who did the market underrate? */
 export function LeaderboardPage() {
   const [metric, setMetric] = useState("vaep_per90");
   const [rows, setRows] = useState<LeaderboardRow[]>([]);
-  const [comp, setComp] = useState("");
+  const [comp, setComp] = useState(0);
   const [err, setErr] = useState(false);
   const openPlayer = usePlayerUi((s) => s.openPlayer);
 
   useEffect(() => {
-    api.leaderboard({ metric, min_minutes: 900 }).then((r) => { setRows(r.rows); setErr(false); }).catch(() => setErr(true));
-  }, [metric]);
+    const [competition, season] = COMPS[comp];
+    const tournament = !competition.includes("Bundesliga") && !competition.includes("Liga") && !competition.includes("Premier");
+    api.leaderboard({ metric, min_minutes: tournament ? 270 : 900, competition, season })
+      .then((r) => { setRows(r.rows); setErr(false); }).catch(() => setErr(true));
+  }, [metric, comp]);
 
-  const comps = useMemo(() => [...new Set(rows.map((r) => `${r.competition} ${r.season}`))].sort(), [rows]);
-  const shown = useMemo(() => rows.filter((r) => !comp || `${r.competition} ${r.season}` === comp), [rows, comp]);
-  const underrated = useMemo(() => [...shown].filter((r) => r.underrated_score != null).sort((a, b) => b.underrated_score! - a.underrated_score!).slice(0, 8), [shown]);
+  const shown = rows;
+  // underrated = genuinely high value added (top 40% here) at the lowest market prices
+  const underrated = useMemo(() => [...shown]
+    .filter((r) => r.underrated_score != null && r.metric_rank <= Math.max(5, Math.ceil(shown.length * 0.4)))
+    .sort((a, b) => b.underrated_score! - a.underrated_score!).slice(0, 8), [shown]);
   const label = METRICS.find(([k]) => k === metric)?.[1] ?? metric;
 
   return (
@@ -43,7 +57,7 @@ export function LeaderboardPage() {
         <div className="eyebrow mb-3 flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-ai" />Players</div>
         <h1 className="display max-w-[900px] text-[60px] leading-[0.92] text-ink">Who did the<br />market underrate?</h1>
         <p className="mt-4 max-w-[640px] text-[15.5px] leading-relaxed text-ink-2">
-          Every player with 900+ minutes, ranked by the value our models say they added, against what the transfer market said they were worth at the time.
+          Every player with enough minutes (900 in a league season, 270 at a tournament), ranked by the value our models say they added, against what the transfer market said they were worth at the time.
         </p>
         <div className="mt-6 flex flex-wrap items-center gap-2">
           <div className="flex rounded-xl bg-surface-2 p-1">
@@ -51,10 +65,9 @@ export function LeaderboardPage() {
               <button key={k} onClick={() => setMetric(k)} className={`rounded-lg px-3 py-1.5 text-[12.5px] font-medium transition ${metric === k ? "bg-surface-4 text-ink shadow" : "text-ink-3 hover:text-ink-2"}`}>{l}</button>
             ))}
           </div>
-          <select value={comp} onChange={(e) => setComp(e.target.value)}
+          <select value={comp} onChange={(e) => setComp(Number(e.target.value))}
             className="rounded-xl bg-surface-2 px-3 py-2 text-[12.5px] text-ink ring-1 ring-line focus:outline-none">
-            <option value="">All competitions</option>
-            {comps.map((c) => <option key={c} value={c}>{c}</option>)}
+            {COMPS.map(([, , label], i) => <option key={label} value={i}>{label}</option>)}
           </select>
           <span className="ml-auto text-[12px] text-ink-4">{shown.length} players</span>
         </div>
@@ -78,7 +91,7 @@ export function LeaderboardPage() {
                 <button onClick={() => openPlayer(r.player_id)} className="flex w-full items-center gap-3 rounded-xl px-2 py-2 text-left transition hover:bg-surface-2">
                   <span className="display w-6 text-[18px] text-ink-4">{i + 1}</span>
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-[14px] font-semibold text-ink">{r.name}</span>
+                    <span className="block truncate text-[14px] font-semibold text-ink">{r.short_name || r.name}</span>
                     <span className="block truncate text-[11.5px] text-ink-3">{r.team} · {r.competition} {r.season}</span>
                   </span>
                   <span className="text-right">
@@ -89,7 +102,7 @@ export function LeaderboardPage() {
               </li>
             ))}
           </ol>
-          <p className="mt-3 text-[11px] leading-relaxed text-ink-4">Underrated = how many places higher a player ranks on {label} than on market value, within the same filter. Market values from Transfermarkt (CC0 dataset).</p>
+          <p className="mt-3 text-[11px] leading-relaxed text-ink-4">Among the top 40% on {label}, the players who rank furthest above their market value. Market values from Transfermarkt (CC0 dataset), at the end of that season.</p>
         </div>
       </section>
     </div>
@@ -148,7 +161,7 @@ function Scatter({ rows, label, highlight, onPick }: { rows: LeaderboardRow[]; l
       {hover && (
         <div className="glass pointer-events-none absolute rounded-xl px-3 py-2 text-xs shadow-xl"
           style={{ left: Math.min(x(hover.market_value_eur!) + 12, width - 210), top: Math.max(y(hover.value) - 50, 0) }}>
-          <div className="font-semibold text-ink">{hover.name}</div>
+          <div className="font-semibold text-ink">{hover.short_name || hover.name}</div>
           <div className="text-ink-3">{hover.team} · {hover.competition} {hover.season}</div>
           <div className="mt-1 tabular text-ink-2"><span className="font-semibold text-ai">{hover.value.toFixed(2)}</span> {label} · {eur(hover.market_value_eur)} · {hover.minutes}'</div>
         </div>
