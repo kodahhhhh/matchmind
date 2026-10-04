@@ -98,3 +98,10 @@ body::before {
   color: transparent;
   animation: shimmer 2.4s linear infinite;
 }
+
+@keyframes sweep { to { transform: translateX(100%); } }
+
+/* analyst answers: the first paragraph reads as the lead */
+.answer > div > p:first-child { font-size: 16px; font-weight: 500; color: var(--ink); }
+.answer > div > p:not(:first-child), .answer li { color: var(--ink-2); }
+.answer strong { color: var(--ink); }

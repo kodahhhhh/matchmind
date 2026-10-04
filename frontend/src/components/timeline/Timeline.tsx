@@ -1,4 +1,5 @@
 import { useId, useMemo, useRef, useState } from "react";
+import { motion } from "motion/react";
 import { scaleLinear } from "d3-scale";
 import { area, curveMonotoneX, curveStepAfter, line } from "d3-shape";
 import type { Marker, Side, TimelineMinute } from "../../api/types";
@@ -114,6 +115,9 @@ export function Timeline() {
                   <stop offset="100%" stopColor={`var(--${s})`} stopOpacity={0.1} />
                 </linearGradient>
               ))}
+              <clipPath id={`reveal-${uid}`}>
+                <motion.rect key={data.match.match_id} x={0} y={0} height={geo.height} initial={{ width: 0 }} animate={{ width }} transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }} />
+              </clipPath>
               <clipPath id={`above-${uid}`}><rect x={0} y={0} width={width} height={geo.yMom(0)} /></clipPath>
               <clipPath id={`below-${uid}`}><rect x={0} y={geo.yMom(0)} width={width} height={geo.height} /></clipPath>
             </defs>
@@ -126,8 +130,10 @@ export function Timeline() {
               return (
                 <g key={p.period}>
                   <rect x={x0} y={geo.waveTop} width={x1 - x0} height={H_WAVE} rx={8} fill="var(--surface-2)" />
-                  <path d={wave(pts) ?? ""} fill={`url(#wave-home-${uid})`} clipPath={`url(#above-${uid})`} />
-                  <path d={wave(pts) ?? ""} fill={`url(#wave-away-${uid})`} clipPath={`url(#below-${uid})`} />
+                  <g clipPath={`url(#reveal-${uid})`}>
+                    <path d={wave(pts) ?? ""} fill={`url(#wave-home-${uid})`} clipPath={`url(#above-${uid})`} />
+                    <path d={wave(pts) ?? ""} fill={`url(#wave-away-${uid})`} clipPath={`url(#below-${uid})`} />
+                  </g>
                   <line x1={x0} x2={x1} y1={geo.yMom(0)} y2={geo.yMom(0)} stroke="var(--ink-4)" strokeOpacity={0.5} />
                   <line x1={x0} x2={x1} y1={geo.yXg(0)} y2={geo.yXg(0)} stroke="var(--axis)" />
                   <text x={x0 + 2} y={geo.height - 5} fontSize={10.5} fill="var(--ink-3)" fontWeight={500}>{PERIOD_NAME[p.period] ?? `Period ${p.period}`}</text>
@@ -147,7 +153,7 @@ export function Timeline() {
               ))}
             </g>
 
-            <XgLines tl={geo.tl} x={geo.x} step={geo.step} y={geo.yXg} periods={periods} />
+            <g clipPath={`url(#reveal-${uid})`}><XgLines tl={geo.tl} x={geo.x} step={geo.step} y={geo.yXg} periods={periods} /></g>
 
             {market && (
               <g>

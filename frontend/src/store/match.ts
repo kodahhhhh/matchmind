@@ -85,7 +85,8 @@ interface State {
   window: Window | null;
   focus: Focus;
   hoverIndex: number | null;
-  replay: { sequenceId: string; step: number; playing: boolean } | null;
+  replay: { sequenceId: string; step: number; playing: boolean; ms: number } | null;
+  reel: { items: ReelItem[]; index: number } | null;
   rightTab: RightTab;
   chat: ChatMessage[];
   commentary: CommentaryLine[];
@@ -101,11 +102,43 @@ interface State {
   focusTurningPoint: (id: string) => void;
   setHoverIndex: (i: number | null) => void;
   setRightTab: (t: RightTab) => void;
-  startReplay: (sequenceId: string) => void;
+  startReplay: (sequenceId: string, opts?: { tail?: number; ms?: number }) => void;
+  playHighlights: () => void;
+  nextHighlight: () => void;
+  stopHighlights: () => void;
   stepReplay: () => void;
   stopReplay: () => void;
   ask: (question: string) => Promise<void>;
   setPendingFocus: (f: { seq?: string; ev?: string } | null) => void;
+}
+
+export interface ReelItem {
+  sequenceId: string;
+  kind: "goal" | "chance";
+  label: string;
+  team: "home" | "away";
+}
+
+/** Goals plus the most dangerous non-goal moves, in match order. */
+function buildReel(d: MatchData): ReelItem[] {
+  const names = new Map([...d.match.lineups.home, ...d.match.lineups.away].map((p) => [p.player_id, p.short_name]));
+  const items = new Map<string, ReelItem>();
+  for (const m of d.match.markers) {
+    if (m.type !== "goal") continue;
+    const ev = d.eventById.get(m.event_id);
+    if (!ev) continue;
+    items.set(ev.sequence_id, {
+      sequenceId: ev.sequence_id, kind: "goal", team: m.team,
+      label: `${clock(m.period, m.minute)} ${names.get(m.player_id ?? -1) ?? "Goal"}${m.detail === "penalty" ? " (pen)" : ""}`,
+    });
+  }
+  for (const s of [...d.sequences].sort((a, b) => b.danger - a.danger).slice(0, 4)) {
+    if (!items.has(s.id) && s.outcome !== "goal") {
+      items.set(s.id, { sequenceId: s.id, kind: "chance", team: s.team, label: `${s.start.label} ${s.players[s.players.length - 1] ?? ""} chance`.trim() });
+    }
+  }
+  const t = (id: string) => resolveSequence(d, id)?.start.t ?? 0;
+  return [...items.values()].sort((a, b) => t(a.sequenceId) - t(b.sequenceId));
 }
 
 export const bucketKey = (period: number, minute: number) => `${period}:${minute}`;
@@ -121,6 +154,7 @@ export const useMatch = create<State>((set, get) => ({
   focus: null,
   hoverIndex: null,
   replay: null,
+  reel: null,
   rightTab: "analyst",
   chat: [],
   commentary: [],
@@ -131,7 +165,7 @@ export const useMatch = create<State>((set, get) => ({
   async load(id) {
     if (get().matchId === id && get().status !== "error") return;
     askAbort?.abort();
-    set({ matchId: id, status: "loading", error: null, data: null, window: null, focus: null, replay: null, chat: [], commentary: [], commentaryBySeq: new Map(), market: null });
+    set({ matchId: id, status: "loading", error: null, data: null, window: null, focus: null, replay: null, reel: null, chat: [], commentary: [], commentaryBySeq: new Map(), market: null });
     try {
       const [match, events, timeline, sequences, players, turningPoints] = await Promise.all([
         api.match(id), api.events(id), api.timeline(id), api.sequences(id), api.players(id), api.turningPoints(id),
@@ -160,7 +194,7 @@ export const useMatch = create<State>((set, get) => ({
     }
   },
 
-  setWindow: (w) => set({ window: w, replay: null }),
+  setWindow: (w) => set({ window: w, replay: null, reel: null }),
   setFocus: (f) => set({ focus: f }),
 
   focusEvent(id) {
@@ -190,10 +224,34 @@ export const useMatch = create<State>((set, get) => ({
   setPendingFocus: (f) => set({ pendingFocus: f }),
   setRightTab: (t) => set({ rightTab: t }),
 
-  startReplay(sequenceId) {
+  startReplay(sequenceId, opts) {
+    const reel = get().reel;
     get().focusSequence(sequenceId);
-    set({ replay: { sequenceId, step: 0, playing: true } });
+    const n = resolveSequence(get().data, sequenceId)?.event_ids.length ?? 1;
+    const step = opts?.tail ? Math.max(0, n - opts.tail) : 0;
+    set({ replay: { sequenceId, step, playing: true, ms: opts?.ms ?? 700 }, reel });
   },
+
+  playHighlights() {
+    const d = get().data;
+    if (!d) return;
+    const items = buildReel(d);
+    if (!items.length) return;
+    set({ reel: { items, index: 0 }, rightTab: get().rightTab });
+    get().startReplay(items[0].sequenceId, { tail: 10, ms: 520 });
+  },
+  nextHighlight() {
+    const r = get().reel;
+    if (!r) return;
+    const index = r.index + 1;
+    if (index >= r.items.length) {
+      set({ reel: null, replay: null, focus: null, window: null });
+      return;
+    }
+    set({ reel: { ...r, index } });
+    get().startReplay(r.items[index].sequenceId, { tail: 10, ms: 520 });
+  },
+  stopHighlights: () => set({ reel: null, replay: null, focus: null, window: null }),
   stepReplay() {
     const r = get().replay;
     const s = r ? resolveSequence(get().data, r.sequenceId) : undefined;

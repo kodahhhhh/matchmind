@@ -50,11 +50,19 @@ export function Pitch() {
   const [hover, setHover] = useState<MatchEvent | null>(null);
   const [boxRef, box] = useSize<HTMLDivElement>();
 
+  const reel = useMatch((s) => s.reel);
+  const nextHighlight = useMatch((s) => s.nextHighlight);
   useEffect(() => {
     if (!replay?.playing) return;
-    const t = setTimeout(stepReplay, 700);
+    const t = setTimeout(stepReplay, replay.ms);
     return () => clearTimeout(t);
   }, [replay, stepReplay]);
+  // highlights reel: hold the finished move on screen, then roll the next one
+  useEffect(() => {
+    if (!reel || !replay || replay.playing) return;
+    const t = setTimeout(nextHighlight, 2200);
+    return () => clearTimeout(t);
+  }, [reel, replay, nextHighlight]);
 
   if (!data) return <div ref={boxRef} className="h-full w-full" />;
   // extend the grass sideways so the pitch fills its container edge to edge
@@ -67,9 +75,12 @@ export function Pitch() {
   const current = mode === "sequence" && replay ? visible[visible.length - 1] : null;
   const located = visible.filter((e) => e.x != null && e.y != null);
   const shots = located.filter((e) => isShot(e.type));
+  const shotIndex = new Map(shots.map((e, i) => [e.id, i]));
   const moves = mode === "overview" ? [] : located.filter((e) => isMove(e.type) || e.type === "carry" || e.type === "take_on");
   const defensive = mode === "detail" ? located.filter((e) => isDefensive(e.type)) : [];
   const focusEv = focusId ? data.eventById.get(focusId) : undefined;
+  const win = useMatch.getState().window;
+  const sceneKey = `${mode}:${win?.from ?? "all"}-${win?.to ?? "all"}:${replay?.sequenceId ?? ""}`;
   const hoverProps = (e: MatchEvent) => ({
     onPointerEnter: () => setHover(e),
     onPointerLeave: () => setHover(null),
@@ -94,6 +105,7 @@ export function Pitch() {
         </defs>
         <PitchMarkings pad={PAD} padX={padX} />
 
+        <motion.g key={sceneKey} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.35, ease: "easeOut" }}>
         {/* moves: dark under-stroke keeps team colours readable on grass */}
         <g strokeLinecap="round" fill="none">
           {moves.map((e, i) => {
@@ -104,8 +116,8 @@ export function Pitch() {
             const op = isFocus ? 1 : ok ? (mode === "sequence" ? 1 : 0.85) : 0.35;
             const geom = { x1: e.x!, y1: sy(e.y!), x2: e.end_x!, y2: sy(e.end_y!) };
             const anim = mode === "sequence"
-              ? { initial: { pathLength: 0 }, animate: { pathLength: 1 }, transition: { duration: 0.45, delay: replay ? 0 : i * 0.05, ease: "easeOut" as const } }
-              : {};
+              ? { initial: { pathLength: 0 }, animate: { pathLength: 1 }, transition: { duration: replay ? replay.ms / 1500 : 0.45, delay: replay ? 0 : i * 0.05, ease: "easeOut" as const } }
+              : { initial: { pathLength: 0 }, animate: { pathLength: 1 }, transition: { duration: 0.4, delay: Math.min(i * 0.004, 0.45), ease: "easeOut" as const } };
             return (
               <g key={e.id} opacity={op} {...hoverProps(e)}>
                 {!carry && <motion.line {...geom} {...anim} stroke="var(--on-grass)" strokeOpacity={0.45} strokeWidth={w + 0.3} />}
@@ -133,14 +145,19 @@ export function Pitch() {
                 <line x1={e.x!} y1={sy(e.y!)} x2={e.team === "home" ? L : 0} y2={sy(e.end_y ?? W / 2)}
                   stroke="#fff" strokeOpacity={goal ? 0.5 : 0.25} strokeWidth={0.16} strokeDasharray={goal ? undefined : "0.5 0.5"} />
               )}
-              <circle cx={e.x!} cy={sy(e.y!)} r={Math.max(r + 1, 2.4)} fill="transparent" />
-              <circle cx={e.x!} cy={sy(e.y!)} r={r} fill={col(e.team)} fillOpacity={goal ? 1 : 0.32}
-                stroke={goal ? "#fff" : col(e.team)} strokeWidth={goal ? 0.32 : 0.3} filter={goal || isFocus ? "url(#pglow)" : undefined} />
-              {goal && <circle cx={e.x!} cy={sy(e.y!)} r={Math.max(r * 0.3, 0.35)} fill="#fff" />}
+              <motion.g initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+                transition={{ type: "spring", stiffness: 380, damping: 22, delay: Math.min(shotIndex.get(e.id) ?? 0, 40) * 0.018 }}
+                style={{ transformBox: "fill-box", transformOrigin: "center" }}>
+                <circle cx={e.x!} cy={sy(e.y!)} r={Math.max(r + 1, 2.4)} fill="transparent" />
+                <circle cx={e.x!} cy={sy(e.y!)} r={r} fill={col(e.team)} fillOpacity={goal ? 1 : 0.32}
+                  stroke={goal ? "#fff" : col(e.team)} strokeWidth={goal ? 0.32 : 0.3} filter={goal || isFocus ? "url(#pglow)" : undefined} />
+                {goal && <circle cx={e.x!} cy={sy(e.y!)} r={Math.max(r * 0.3, 0.35)} fill="#fff" />}
+              </motion.g>
             </g>
           );
         })}
 
+        </motion.g>
         {mode === "overview" && <GoalCallouts goals={shots.filter((e) => e.result === "goal")} />}
         {mode === "sequence" && <SequenceNodes evs={located} />}
 

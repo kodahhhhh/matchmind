@@ -4,6 +4,8 @@ import { motion } from "motion/react";
 import { api } from "../../api/client";
 import type { Competition, MatchCard, MatchEvent } from "../../api/types";
 import { Logo } from "../ui/Logo";
+import { AnimatedNumber } from "../ui/AnimatedNumber";
+import { useUi } from "../../store/ui";
 import { SearchButton } from "../search/SearchPalette";
 import { PitchMarkings } from "../pitch/PitchMarkings";
 import { PITCH, sy } from "../pitch/geometry";
@@ -15,6 +17,7 @@ export function MatchBrowser() {
   const [comps, setComps] = useState<Competition[]>([]);
   const [matches, setMatches] = useState<MatchCard[]>([]);
   const [shots, setShots] = useState<MatchEvent[]>([]);
+  const [move, setMove] = useState<MatchEvent[]>([]);
   const [active, setActive] = useState("");
   const [q, setQ] = useState("");
 
@@ -25,7 +28,14 @@ export function MatchBrowser() {
       setMatches(m);
       setActive(sorted[0]?.id ?? "");
     });
-    api.events(FEATURED).then((ev) => setShots(ev.filter((e) => e.type.startsWith("shot") && e.x != null))).catch(() => {});
+    api.events(FEATURED).then((ev) => {
+      setShots(ev.filter((e) => e.type.startsWith("shot") && e.x != null));
+      // loop the best team goal: the open-play goal whose move has the most passes
+      const goals = ev.filter((e) => e.result === "goal" && e.type === "shot");
+      const best = goals.map((g) => ev.filter((e) => e.sequence_id === g.sequence_id && e.team === g.team && e.x != null))
+        .sort((a, b) => b.filter((e) => e.type === "pass").length - a.filter((e) => e.type === "pass").length)[0];
+      if (best) setMove(best.slice(-9));
+    }).catch(() => {});
   }, []);
 
   const shown = useMemo(() => {
@@ -63,8 +73,11 @@ export function MatchBrowser() {
             Replay any match on a tactical pitch, find the exact moment it turned, and ask an analyst that backs every claim with the events behind it.
           </motion.p>
         </div>
-        {featured && <Featured m={featured} shots={shots} />}
+        {featured && <Featured m={featured} shots={shots} move={move} />}
       </section>
+
+      <Stats />
+      <Features />
 
       <section className="mx-auto max-w-[1280px] px-8 pb-20">
         <div className="mb-6 flex flex-wrap items-center gap-2">
@@ -72,8 +85,9 @@ export function MatchBrowser() {
             const on = active === c.id && !q;
             return (
               <button key={c.id} onClick={() => { setActive(c.id); setQ(""); }}
-                className={`rounded-xl px-3.5 py-2 text-[13px] font-medium ring-1 transition ${on ? "bg-surface-4 text-ink ring-white/15" : "bg-surface-1 text-ink-3 ring-line hover:text-ink-2"}`}>
-                {c.competition} <span className={on ? "text-ink-3" : "text-ink-4"}>{c.season}</span>
+                className={`relative rounded-xl px-3.5 py-2 text-[13px] font-medium ring-1 transition ${on ? "text-ink ring-white/15" : "bg-surface-1 text-ink-3 ring-line hover:text-ink-2"}`}>
+                {on && <motion.span layoutId="comp-pill" className="absolute inset-0 rounded-xl bg-surface-4" transition={{ type: "spring", bounce: 0.15, duration: 0.45 }} />}
+                <span className="relative">{c.competition} <span className={on ? "text-ink-3" : "text-ink-4"}>{c.season}</span></span>
               </button>
             );
           })}
@@ -92,7 +106,7 @@ export function MatchBrowser() {
   );
 }
 
-function Featured({ m, shots }: { m: MatchCard; shots: MatchEvent[] }) {
+function Featured({ m, shots, move }: { m: MatchCard; shots: MatchEvent[]; move: MatchEvent[] }) {
   const { L, W } = PITCH;
   return (
     <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15, duration: 0.6 }}>
@@ -101,6 +115,7 @@ function Featured({ m, shots }: { m: MatchCard; shots: MatchEvent[] }) {
         style={{ ["--home" as string]: m.home.color, ["--away" as string]: m.away.color }}>
         <svg viewBox={`-3 -3 ${L + 6} ${W + 6}`} className="block w-full">
           <PitchMarkings pad={3} />
+          <LoopingMove move={move} />
           {shots.map((e, i) => {
             const goal = e.result === "goal";
             const r = 0.6 + Math.sqrt(e.xg ?? 0.02) * 3.2;
@@ -152,3 +167,70 @@ function Card({ m, i }: { m: MatchCard; i: number }) {
     </motion.div>
   );
 }
+
+/** Draws the featured goal's passing move on repeat over the shot map. */
+function LoopingMove({ move }: { move: MatchEvent[] }) {
+  if (move.length < 2) return null;
+  const total = move.length * 0.32 + 1.6;
+  return (
+    <g strokeLinecap="round" fill="none" pointerEvents="none">
+      {move.map((e, i) => (
+        <motion.line key={e.id} x1={e.x!} y1={sy(e.y!)} x2={e.end_x!} y2={sy(e.end_y!)} stroke="#fff" strokeWidth={e.type === "carry" ? 0.3 : 0.45}
+          strokeDasharray={e.type === "carry" ? "0.15 0.8" : undefined}
+          initial={{ pathLength: 0, opacity: 0 }}
+          animate={{ pathLength: [0, 1, 1, 1], opacity: [0, 0.9, 0.9, 0] }}
+          transition={{ duration: total, times: [0, 0.12, 0.85, 1], delay: i * 0.32, repeat: Infinity, repeatDelay: 0.6, ease: "easeOut" }} />
+      ))}
+      {move.map((e, i) => (
+        <motion.circle key={`d-${e.id}`} cx={e.x!} cy={sy(e.y!)} r={0.9} fill="#fff"
+          initial={{ opacity: 0 }} animate={{ opacity: [0, 1, 1, 0] }}
+          transition={{ duration: total, times: [0, 0.08, 0.85, 1], delay: i * 0.32, repeat: Infinity, repeatDelay: 0.6 }} />
+      ))}
+    </g>
+  );
+}
+
+function Stats() {
+  const items: [number, string][] = [[493, "matches to explore"], [2924, "matches our models trained on"], [82580, "lines of AI commentary"], [52151, "player profiles"]];
+  return (
+    <section className="mx-auto max-w-[1280px] px-8 pb-10">
+      <div className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl bg-line ring-1 ring-line md:grid-cols-4">
+        {items.map(([n, label], i) => (
+          <motion.div key={label} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 + i * 0.07 }}
+            className="bg-surface-1 px-5 py-4">
+            <div className="display text-[34px] leading-none text-ink"><AnimatedNumber value={n} from={0} ms={1400} format={(v) => Math.round(v).toLocaleString()} /></div>
+            <div className="mt-1.5 text-[12.5px] text-ink-3">{label}</div>
+          </motion.div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function Features() {
+  const open = () => useUi.getState().setSearchOpen(true);
+  const cards: { title: string; body: string; cta: string; to?: string; onClick?: () => void; accent: string }[] = [
+    { title: "Search every moment", body: "Semantic search over 82,580 lines of commentary: “a goalkeeper makes a brilliant save”.", cta: "Press ⌘K", onClick: open, accent: "#b6a4ff" },
+    { title: "Who did the market underrate?", body: "Value added per 90 against Transfermarkt prices, for every player with real minutes.", cta: "See players", to: "/players", accent: "#3ccf8e" },
+    { title: "Would it beat the bookies?", body: "We backtested our models against Pinnacle and Polymarket. Honest answer inside.", cta: "See the backtest", to: "/backtest", accent: "#f2c94c" },
+  ];
+  return (
+    <section className="mx-auto grid max-w-[1280px] grid-cols-1 gap-3 px-8 pb-12 md:grid-cols-3">
+      {cards.map((c, i) => {
+        const inner = (
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 + i * 0.08 }}
+            whileHover={{ y: -3 }} className="group relative h-full overflow-hidden rounded-2xl bg-surface-1 p-5 ring-1 ring-line transition-colors hover:ring-white/15">
+            <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full opacity-20 blur-2xl transition-opacity group-hover:opacity-40" style={{ background: c.accent }} />
+            <div className="relative">
+              <div className="text-[16px] font-semibold text-ink">{c.title}</div>
+              <p className="mt-1.5 text-[13.5px] leading-relaxed text-ink-3">{c.body}</p>
+              <div className="mt-4 text-[13px] font-semibold" style={{ color: c.accent }}>{c.cta} →</div>
+            </div>
+          </motion.div>
+        );
+        return c.to ? <Link key={c.title} to={c.to}>{inner}</Link> : <button key={c.title} onClick={c.onClick} className="text-left">{inner}</button>;
+      })}
+    </section>
+  );
+}
+

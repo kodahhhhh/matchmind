@@ -1,5 +1,6 @@
 import type { MatchDetail, Side } from "../../api/types";
 import { clock } from "../../lib/format";
+import { AnimatedNumber } from "../ui/AnimatedNumber";
 
 /** Broadcast scorebug: team blocks, big score, scorers underneath. */
 export function Scoreboard({ match }: { match: MatchDetail }) {
@@ -21,9 +22,9 @@ export function Scoreboard({ match }: { match: MatchDetail }) {
       <div className="flex flex-col items-center">
         <div className="flex h-[52px] items-center overflow-hidden rounded-xl bg-surface-3 ring-1 ring-white/10">
           <span className="h-full w-1.5 bg-home" />
-          <span className="display w-14 text-center text-[40px] leading-none text-ink">{match.score.home}</span>
+          <span className="display w-14 text-center text-[40px] leading-none text-ink"><AnimatedNumber value={match.score.home} from={0} ms={900} /></span>
           <span className="h-6 w-px bg-white/15" />
-          <span className="display w-14 text-center text-[40px] leading-none text-ink">{match.score.away}</span>
+          <span className="display w-14 text-center text-[40px] leading-none text-ink"><AnimatedNumber value={match.score.away} from={0} ms={900} /></span>
           <span className="h-full w-1.5 bg-away" />
         </div>
         <div className="mt-1.5 text-[11px] font-medium text-ink-3">
@@ -38,8 +39,8 @@ export function Scoreboard({ match }: { match: MatchDetail }) {
 function TeamBlock({ side, name, scorers }: { side: Side; name: string; scorers: string[] }) {
   const right = side === "home";
   return (
-    <div className={`flex w-[260px] flex-col ${right ? "items-end text-right" : "items-start text-left"}`}>
-      <div className="display flex h-[52px] items-center text-[30px] leading-none text-ink">{name}</div>
+    <div className={`flex w-[230px] flex-col ${right ? "items-end text-right" : "items-start text-left"}`}>
+      <div className={`display flex h-[52px] items-center leading-none text-ink ${name.length <= 12 ? "text-[30px]" : name.length <= 17 ? "text-[24px]" : "text-[20px]"}`}>{name}</div>
       <div className="mt-1.5 line-clamp-1 text-[11.5px] text-ink-3">
         {scorers.length ? scorers.map((s, i) => (
           <span key={s}>{i > 0 && <span className="mx-1 text-ink-4">·</span>}{s}</span>

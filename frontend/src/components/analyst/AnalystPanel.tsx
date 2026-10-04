@@ -140,17 +140,9 @@ function Answer({ m }: { m: ChatMessage }) {
     <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="flex gap-3">
       <Orb small pulse={m.streaming} />
       <div className="min-w-0 flex-1 space-y-3">
-        <div className="flex flex-wrap gap-x-3 gap-y-1">
-          {m.tools.map((t, i) => (
-            <span key={i} className="flex items-center gap-1.5 text-[12px] text-ink-3">
-              <svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5.5" fill="var(--ai-soft)" /><path d="M3.6 6.2 5.2 7.8 8.4 4.4" stroke="var(--ai)" strokeWidth="1.4" fill="none" strokeLinecap="round" /></svg>
-              {TOOL_LABEL[t] ?? t}
-            </span>
-          ))}
-          {thinking && <span className="shimmer text-[12px] font-medium">{m.tools.length ? "Writing" : "Analysing the match"}</span>}
-        </div>
+        <StepTrace tools={m.tools} active={thinking} />
         {m.content && (
-          <div className="text-[15px] leading-[1.7] text-ink">
+          <div className="answer text-[15px] leading-[1.7] text-ink">
             <RichText text={m.content} />
             {m.streaming && <span className="ml-0.5 inline-block h-4 w-[2px] translate-y-[3px] animate-pulse bg-ai" />}
           </div>
@@ -158,7 +150,54 @@ function Answer({ m }: { m: ChatMessage }) {
         <AnimatePresence>
           {!m.streaming && moments.length > 0 && <Moments ids={moments.map((e) => e.id)} />}
         </AnimatePresence>
+        <AnimatePresence>{!m.streaming && m.content && <FollowUps />}</AnimatePresence>
       </div>
+    </motion.div>
+  );
+}
+
+/** The analyst's tool calls as a live vertical trace: spinner on the step in flight, check when done. */
+function StepTrace({ tools, active }: { tools: string[]; active: boolean }) {
+  const steps = active ? [...tools, null] : tools;
+  if (!steps.length) return null;
+  return (
+    <ol className="relative space-y-1.5 border-l border-[var(--ai-line)] pl-3.5">
+      <AnimatePresence initial={false}>
+        {steps.map((t, i) => (
+          <motion.li key={`${i}-${t}`} initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.25 }}
+            className="relative flex items-center gap-2 text-[12.5px]">
+            <span className="absolute -left-[21px] flex h-3.5 w-3.5 items-center justify-center rounded-full bg-surface-1">
+              {t === null
+                ? <span className="h-2.5 w-2.5 animate-spin rounded-full border-[1.5px] border-[var(--ai-line)] border-t-ai" />
+                : <motion.svg initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 500, damping: 20 }} width="14" height="14" viewBox="0 0 14 14">
+                    <circle cx="7" cy="7" r="6.5" fill="var(--ai-soft)" stroke="var(--ai-line)" />
+                    <path d="M4.2 7.2 6.1 9.1 9.8 5" stroke="var(--ai)" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                  </motion.svg>}
+            </span>
+            {t === null
+              ? <span className="shimmer font-medium">{tools.length ? "Writing the answer" : "Reading the match"}</span>
+              : <span className="text-ink-3">{TOOL_LABEL[t] ?? t}</span>}
+          </motion.li>
+        ))}
+      </AnimatePresence>
+    </ol>
+  );
+}
+
+/** Next questions, plus one-tap actions that drive the UI. */
+function FollowUps() {
+  const chat = useMatch((s) => s.chat);
+  const ask = useMatch((s) => s.ask);
+  const playHighlights = useMatch((s) => s.playHighlights);
+  const setRightTab = useMatch((s) => s.setRightTab);
+  const asked = new Set(chat.filter((c) => c.role === "user").map((c) => c.content));
+  const questions = SUGGESTIONS.map((x) => x.q).filter((q) => !asked.has(q)).slice(0, 2);
+  const chip = "rounded-full bg-surface-2 px-3 py-1.5 text-[12.5px] text-ink-2 ring-1 ring-line transition hover:bg-ai-soft hover:text-ink hover:ring-[var(--ai-line)]";
+  return (
+    <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="flex flex-wrap gap-1.5 pt-1">
+      <button onClick={playHighlights} className={chip}>▶ Play the highlights</button>
+      {questions.map((q) => <button key={q} onClick={() => void ask(q)} className={chip}>{q}</button>)}
+      <button onClick={() => setRightTab("whatif")} className={chip}>Try a what-if →</button>
     </motion.div>
   );
 }
