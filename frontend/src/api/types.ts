@@ -332,13 +332,15 @@ export interface PlayerProfile {
   peak_market_value_eur: number | null;
   caps: number | null;
   match_confidence: number | null;
+  in_dataset?: boolean;
+  sources?: string[];
   valuations: { date: string; value_eur: number; club: string | null }[];
-  career: {
+  career: null | {
     matches: number; minutes: number; vaep: number; vaep_per90: number; vaep_off: number; vaep_def: number;
     xg: number; goals: number; shots: number; prog_per90: number;
     by_competition: { competition: string; season: string; team: string; matches: number; minutes: number; vaep_per90: number; xg: number; goals: number }[];
   };
-  heatmap: { nx: number; ny: number; values: number[] };
+  heatmap: null | { nx: number; ny: number; values: number[] };
   top_moments: { match_id: string; match_label: string; minute_label: string; event_id: string | null; sequence_id: string | null; vaep: number; text: string | null }[];
   matches: { match_id: string; date: string | null; competition: string; season: string; team: string; opponent: string; minutes: number; vaep: number; xg: number; goals: number; in_db: boolean }[];
   in_match: null | { age: number | null; market_value_eur: number | null; minutes: number; vaep: number; rank_in_match: number };
@@ -354,6 +356,7 @@ export interface PlayerHit {
   teams: string[];
   matches: number;
   vaep_per90: number | null;
+  in_dataset?: boolean;
 }
 
 export interface LeaderboardRow {

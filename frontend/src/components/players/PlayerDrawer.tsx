@@ -94,7 +94,14 @@ function Profile({ p }: { p: PlayerProfile }) {
           </div>
         )}
 
-        <div>
+        {!p.career && (
+          <div className="rounded-2xl bg-surface-2 p-4 text-[13px] leading-relaxed text-ink-2 ring-1 ring-line">
+            <span className="font-semibold text-ink">Not in our match data.</span> This profile comes from {(p.sources ?? ["transfermarkt"]).filter((x) => x !== "statsbomb").join(" and ") || "public records"};
+            our models only have event data for the 2,924 matches in StatsBomb's open data.
+          </div>
+        )}
+
+        {p.career && <div>
           <div className="eyebrow mb-2">Career in our data · {p.career.matches} matches</div>
           <div className="grid grid-cols-5 gap-2">
             <Stat label="Minutes" value={Math.round(p.career.minutes).toLocaleString()} />
@@ -103,11 +110,11 @@ function Profile({ p }: { p: PlayerProfile }) {
             <Stat label="Goals" value={String(p.career.goals)} />
             <Stat label="Prog / 90" value={p.career.prog_per90.toFixed(1)} />
           </div>
-        </div>
+        </div>}
 
         {p.valuations.length > 1 && <ValueChart p={p} />}
 
-        <div className="grid grid-cols-[1fr_1fr] gap-4">
+        {p.career && p.heatmap && <div className="grid grid-cols-[1fr_1fr] gap-4">
           <div>
             <div className="eyebrow mb-2">Where they act</div>
             <Heatmap h={p.heatmap} />
@@ -117,11 +124,11 @@ function Profile({ p }: { p: PlayerProfile }) {
             <div className="eyebrow mb-2">Value split</div>
             <Split off={p.career.vaep_off} def={p.career.vaep_def} />
           </div>
-        </div>
+        </div>}
 
         {p.top_moments.length > 0 && <Moments p={p} />}
 
-        <div>
+        {p.career && p.career.by_competition.length > 0 && <div>
           <div className="eyebrow mb-2">By competition</div>
           <div className="overflow-hidden rounded-2xl bg-surface-2 ring-1 ring-line">
             {p.career.by_competition.map((c, i) => (
@@ -134,13 +141,13 @@ function Profile({ p }: { p: PlayerProfile }) {
               </div>
             ))}
           </div>
-        </div>
+        </div>}
 
         <div className="text-[11px] leading-relaxed text-ink-4">
           Profile: Transfermarkt via transfermarkt-datasets (CC0){p.wikidata_id ? " and Wikidata (CC0)" : ""}
           {p.match_confidence != null && <> · matched with {Math.round(p.match_confidence * 100)}% confidence</>}
           {p.photo_credit && <> · Photo: {p.photo_credit}{p.photo_license ? ` (${p.photo_license})` : ""}, Wikimedia Commons</>}
-          . Career numbers are MatchMind's own models.
+          .{p.career ? " Career numbers are MatchMind's own models." : ""}
         </div>
       </div>
     </div>
@@ -205,7 +212,7 @@ function ValueChart({ p }: { p: PlayerProfile }) {
   );
 }
 
-function Heatmap({ h }: { h: PlayerProfile["heatmap"] }) {
+function Heatmap({ h }: { h: NonNullable<PlayerProfile["heatmap"]> }) {
   const { L, W } = PITCH;
   const cw = L / h.nx, ch = W / h.ny;
   return (

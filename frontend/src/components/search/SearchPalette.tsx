@@ -136,7 +136,9 @@ function Palette({ onClose }: { onClose: () => void }) {
                     <span className="block truncate text-[14px] font-semibold text-ink">{p.short_name || p.name}</span>
                     <span className="block truncate text-[11.5px] text-ink-3">{[p.position, p.nationality, p.teams.slice(0, 3).join(", ")].filter(Boolean).join(" · ")}</span>
                   </span>
-                  {p.vaep_per90 != null && <span className="text-[12px] tabular text-ink-3"><span className="font-semibold text-ai">{p.vaep_per90.toFixed(2)}</span> VAEP/90</span>}
+                  {p.vaep_per90 != null
+                    ? <span className="text-[12px] tabular text-ink-3"><span className="font-semibold text-ai">{p.vaep_per90.toFixed(2)}</span> VAEP/90</span>
+                    : p.in_dataset === false && <span className="rounded-md bg-surface-4 px-1.5 py-0.5 text-[10.5px] text-ink-3">profile only</span>}
                 </button>
               ))}
             </div>
