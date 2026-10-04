@@ -1389,40 +1389,40 @@
     {
       "name": "get_window_stats",
       "args": {
-        "from_minute": 25,
+        "from_minute": 30,
         "to_minute": 40,
         "period": 1
       },
       "result": {
-        "from_minute": 25,
+        "from_minute": 30,
         "to_minute": 40,
         "period": 1,
         "stats": {
           "home": {
-            "possession": 0.7,
-            "field_tilt": 0.572,
+            "possession": 0.753,
+            "field_tilt": 0.614,
             "xg": 0.339,
             "shots": 2
           },
           "away": {
-            "possession": 0.3,
-            "field_tilt": 0.428,
+            "possession": 0.247,
+            "field_tilt": 0.386,
             "xg": 0.0,
             "shots": 0
           },
-          "momentum": 0.0709
+          "momentum": 0.0907
         },
         "event_ids": [
           "sb:3869685:1178",
           "sb:3869685:979",
-          "sb:3869685:821",
-          "sb:3869685:823"
+          "sb:3869685:904",
+          "sb:3869685:906"
         ],
         "evidence_labels": {
-          "ev:sb:3869685:821": "26' Varane throw in",
-          "ev:sb:3869685:823": "26' Upamecano carry",
-          "ev:sb:3869685:979": "32' MacAllister shot",
-          "ev:sb:3869685:1178": "36' Di María goal"
+          "ev:sb:3869685:1178": "36' Di María goal",
+          "ev:sb:3869685:906": "31' MacAllister carry",
+          "ev:sb:3869685:904": "31' Messi pass",
+          "ev:sb:3869685:979": "32' MacAllister shot"
         },
         "match": {
           "teams": {
@@ -1452,47 +1452,48 @@
           "0.00",
           "0.000",
           "0.0000",
-          "0.07",
-          "0.0709",
-          "0.071",
+          "0.09",
+          "0.0907",
+          "0.091",
           "0.1",
+          "0.2",
+          "0.247",
+          "0.2470",
+          "0.25",
           "0.3",
-          "0.30",
-          "0.300",
-          "0.3000",
           "0.339",
           "0.3390",
           "0.34",
+          "0.386",
+          "0.3860",
+          "0.39",
           "0.4",
-          "0.428",
-          "0.4280",
-          "0.43",
-          "0.57",
-          "0.572",
-          "0.5720",
           "0.6",
-          "0.7",
-          "0.70",
-          "0.700",
-          "0.7000",
+          "0.61",
+          "0.614",
+          "0.6140",
+          "0.75",
+          "0.753",
+          "0.7530",
+          "0.8",
           "1",
           "2",
-          "25",
+          "24.7%",
+          "25%",
           "3",
-          "30%",
-          "30.0%",
+          "30",
           "33.9%",
           "34%",
+          "38.6%",
+          "39%",
           "4",
           "40",
-          "42.8%",
-          "43%",
-          "57%",
-          "57.2%",
-          "7%",
-          "7.1%",
-          "70%",
-          "70.0%"
+          "61%",
+          "61.4%",
+          "75%",
+          "75.3%",
+          "9%",
+          "9.1%"
         ]
       }
     },
@@ -1500,38 +1501,39 @@
       "name": "get_window_stats",
       "args": {
         "from_minute": 42,
-        "to_minute": 57
+        "to_minute": 52,
+        "period": 1
       },
       "result": {
         "from_minute": 42,
-        "to_minute": 57,
-        "period": null,
+        "to_minute": 52,
+        "period": 1,
         "stats": {
           "home": {
-            "possession": 0.461,
-            "field_tilt": 0.528,
-            "xg": 0.05,
-            "shots": 1
-          },
-          "away": {
-            "possession": 0.539,
-            "field_tilt": 0.472,
+            "possession": 0.448,
+            "field_tilt": 0.545,
             "xg": 0.0,
             "shots": 0
           },
-          "momentum": 0.004
+          "away": {
+            "possession": 0.552,
+            "field_tilt": 0.455,
+            "xg": 0.0,
+            "shots": 0
+          },
+          "momentum": 0.0052
         },
         "event_ids": [
-          "sb:3869685:1916",
           "sb:3869685:1398",
           "sb:3869685:1400",
-          "sb:3869685:1401"
+          "sb:3869685:1401",
+          "sb:3869685:1403"
         ],
         "evidence_labels": {
+          "ev:sb:3869685:1400": "43' Otamendi carry",
+          "ev:sb:3869685:1403": "43' Romero carry",
           "ev:sb:3869685:1401": "43' Otamendi pass",
-          "ev:sb:3869685:1916": "49' De Paul shot",
-          "ev:sb:3869685:1398": "43' Di María freekick",
-          "ev:sb:3869685:1400": "43' Otamendi carry"
+          "ev:sb:3869685:1398": "43' Di María freekick"
         },
         "match": {
           "teams": {
@@ -1561,47 +1563,43 @@
           "0.00",
           "0.000",
           "0.0000",
-          "0.004",
-          "0.0040",
-          "0.05",
-          "0.050",
-          "0.0500",
-          "0.1",
-          "0.4%",
+          "0.005",
+          "0.0052",
+          "0.01",
+          "0.4",
+          "0.448",
+          "0.4480",
+          "0.45",
+          "0.455",
+          "0.4550",
           "0.46",
-          "0.461",
-          "0.4610",
-          "0.47",
-          "0.472",
-          "0.4720",
           "0.5",
-          "0.528",
-          "0.5280",
-          "0.53",
-          "0.539",
-          "0.5390",
-          "0.54",
+          "0.5%",
+          "0.545",
+          "0.5450",
+          "0.55",
+          "0.552",
+          "0.5520",
+          "0.6",
           "1",
+          "1%",
           "2",
           "3",
           "4",
           "42",
+          "44.8%",
+          "45%",
+          "45.5%",
           "46%",
-          "46.1%",
-          "47%",
-          "47.2%",
-          "5%",
-          "5.0%",
-          "52.8%",
-          "53%",
-          "53.9%",
-          "54%",
-          "57"
+          "52",
+          "54.5%",
+          "55%",
+          "55.2%"
         ]
       }
     }
   ],
-  "text": "**The model sees little immediate difference if France kept their original attackers.** Restoring Dembélé instead of Kolo Muani changes France’s estimated xG by -0.0047 over the next 15 minutes; restoring Giroud instead of Thuram changes it by 0.0. Both effects are flagged negligible. These are separate substitution tests—not a joint simulation of cancelling the double change. [[ev:sb:3869685:1378]] [[ev:sb:3869685:1379]]\n\nIn reality, France’s pass share rose from 30% in the pre-change window to 53.9% afterward, but they still produced 0 shots and 0.0 xG; Argentina’s xG fell from 0.339 to 0.05. That suggests improved control rather than an immediate attacking breakthrough. The observational model cannot establish that keeping Giroud and Dembélé on changes the eventual result. [[ev:sb:3869685:1178]] [[ev:sb:3869685:1916]]",
+  "text": "The model sees little immediate difference if France kept Dembélé and Giroud on, but it cannot settle how the whole final might have unfolded. Tested separately, restoring Dembélé instead of Kolo Muani and Giroud instead of Thuram barely changes France’s estimated chance quality or share of passes over the next 15 minutes compared with the model’s estimates for the actual substitutions. This is not a combined test of cancelling both changes. [[ev:sb:3869685:1378]] [[ev:sb:3869685:1379]]\n\nIn reality, France’s share of passes rose from 25% in the pre-change window to 55% in the remaining first-half window, but they still produced 0 shots. That suggests more control, not an immediate attacking transformation, and does not prove the substitutions caused it. The hypothetical is an estimate from observational data, not certainty about an alternative result. [[ev:sb:3869685:1178]] [[ev:sb:3869685:1401]]",
   "rejections": [],
   "chunks": [
     {
@@ -1617,12 +1615,24 @@
       }
     },
     {
+      "type": "tool_result",
+      "name": "get_events",
+      "summary": "Pulled 0 actions and 2 key moments from minutes 0 to 45.",
+      "ok": true
+    },
+    {
       "type": "tool",
       "name": "run_counterfactual",
       "args": {
         "event_id": "sb:3869685:1378",
         "change": "no_sub"
       }
+    },
+    {
+      "type": "tool_result",
+      "name": "run_counterfactual",
+      "summary": "Ran the what-if model: it sees almost no difference.",
+      "ok": true
     },
     {
       "type": "tool",
@@ -1633,57 +1643,84 @@
       }
     },
     {
+      "type": "tool_result",
+      "name": "run_counterfactual",
+      "summary": "Ran the what-if model: it sees almost no difference.",
+      "ok": true
+    },
+    {
       "type": "tool",
       "name": "get_window_stats",
       "args": {
-        "from_minute": 25,
+        "from_minute": 30,
         "to_minute": 40,
         "period": 1
       }
+    },
+    {
+      "type": "tool_result",
+      "name": "get_window_stats",
+      "summary": "Compared both teams over minutes 30 to 40.",
+      "ok": true
     },
     {
       "type": "tool",
       "name": "get_window_stats",
       "args": {
         "from_minute": 42,
-        "to_minute": 57
+        "to_minute": 52,
+        "period": 1
       }
     },
     {
-      "type": "text",
-      "delta": "**The model sees little immediate difference if "
+      "type": "tool_result",
+      "name": "get_window_stats",
+      "summary": "Compared both teams over minutes 42 to 52.",
+      "ok": true
     },
     {
       "type": "text",
-      "delta": "France kept their original attackers.** Restorin"
+      "delta": "The model sees little immediate difference if Fr"
     },
     {
       "type": "text",
-      "delta": "g Dembélé instead of Kolo Muani changes France’s"
+      "delta": "ance kept Dembélé and Giroud on, but it cannot s"
     },
     {
       "type": "text",
-      "delta": " estimated xG by -0.0047 over the next 15 minute"
+      "delta": "ettle how the whole final might have unfolded. "
     },
     {
       "type": "text",
-      "delta": "s; restoring Giroud instead of Thuram changes it"
+      "delta": "Tested separately, restoring Dembélé instead of "
     },
     {
       "type": "text",
-      "delta": " by 0.0. "
+      "delta": "Kolo Muani and Giroud instead of Thuram barely c"
     },
     {
       "type": "text",
-      "delta": "Both effects are flagged negligible. "
+      "delta": "hanges France’s estimated chance quality or shar"
     },
     {
       "type": "text",
-      "delta": "These are separate substitution tests—not a join"
+      "delta": "e of passes over the next 15 minutes compared wi"
     },
     {
       "type": "text",
-      "delta": "t simulation of cancelling the double change. "
+      "delta": "th the model’s estimates for the actual substitu"
+    },
+    {
+      "type": "text",
+      "delta": "tions. "
+    },
+    {
+      "type": "text",
+      "delta": "This is not a combined test of cancelling both c"
+    },
+    {
+      "type": "text",
+      "delta": "hanges. "
     },
     {
       "type": "text",
@@ -1695,43 +1732,47 @@
     },
     {
       "type": "text",
-      "delta": "In reality, France’s pass share rose from 30% in"
+      "delta": "In reality, France’s share of passes rose from 2"
     },
     {
       "type": "text",
-      "delta": " the pre-change window to 53.9% afterward, but t"
+      "delta": "5% in the pre-change window to 55% in the remain"
     },
     {
       "type": "text",
-      "delta": "hey still produced 0 shots and 0.0 xG; Argentina"
+      "delta": "ing first-half window, but they still produced 0"
     },
     {
       "type": "text",
-      "delta": "’s xG fell from 0.339 to 0.05. "
+      "delta": " shots. "
     },
     {
       "type": "text",
-      "delta": "That suggests improved control rather than an im"
+      "delta": "That suggests more control, not an immediate att"
     },
     {
       "type": "text",
-      "delta": "mediate attacking breakthrough. "
+      "delta": "acking transformation, and does not prove the su"
     },
     {
       "type": "text",
-      "delta": "The observational model cannot establish that ke"
+      "delta": "bstitutions caused it. "
     },
     {
       "type": "text",
-      "delta": "eping Giroud and Dembélé on changes the eventual"
+      "delta": "The hypothetical is an estimate from observation"
     },
     {
       "type": "text",
-      "delta": " result. "
+      "delta": "al data, not certainty about an alternative resu"
     },
     {
       "type": "text",
-      "delta": "[[ev:sb:3869685:1178]] [[ev:sb:3869685:1916]]"
+      "delta": "lt. "
+    },
+    {
+      "type": "text",
+      "delta": "[[ev:sb:3869685:1178]] [[ev:sb:3869685:1401]]"
     },
     {
       "type": "citation",
@@ -1750,15 +1791,15 @@
     },
     {
       "type": "citation",
-      "ref": "ev:sb:3869685:1916",
-      "label": "49' De Paul shot"
+      "ref": "ev:sb:3869685:1401",
+      "label": "43' Otamendi pass"
     },
     {
       "type": "done"
     }
   ],
-  "first_text_seconds": 9.53,
-  "total_seconds": 10.47,
+  "first_text_seconds": 6.72,
+  "total_seconds": 8.801,
   "grounding": {
     "unsupported_numbers": [],
     "unsupported_citations": [],

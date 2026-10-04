@@ -1,1 +1,99 @@
-{"match_id":"sb:3869685","question":"Find the turning point","stream":[{"type":"tool","name":"find_turning_points","args":{"match_id":"sb:3869685"}},{"type":"tool","name":"get_window_stats","args":{"match_id":"sb:3869685","from":"114'","to":"120+3'"}},{"type":"text","delta":"The match turned between"},{"type":"text","delta":" 114' and 120+3'. France"},{"type":"text","delta":" went from 33% to 48% of"},{"type":"text","delta":" final-third actions, an"},{"type":"text","delta":"d their xG in that windo"},{"type":"text","delta":"w was 1.09 against 0.11."},{"type":"text","delta":" The key moments: [[ev:s"},{"type":"text","delta":"b:3869685:4203]] [[ev:sb"},{"type":"text","delta":":3869685:4337]]. Before "},{"type":"text","delta":"the shift, Argentina had"},{"type":"text","delta":" 58% of the passes; afte"},{"type":"text","delta":"r it, 52%."},{"type":"citation","ref":"ev:sb:3869685:4203","label":"118' Mbappé shot penalty"},{"type":"citation","ref":"ev:sb:3869685:4337","label":"120+3' Kolo shot"},{"type":"done"}]}
+{
+ "match_id": "sb:3869685",
+ "question": "Find the turning point",
+ "stream": [
+  {
+   "type": "reasoning",
+   "delta": "**Finding the shift in control**\n\nI'll look for where momentum swung, then compare the windows either side."
+  },
+  {
+   "type": "tool",
+   "name": "find_turning_points",
+   "args": {
+    "match_id": "sb:3869685"
+   }
+  },
+  {
+   "type": "tool_result",
+   "name": "find_turning_points",
+   "summary": "Found 3 moments where control shifted, the biggest from 113' to 120+2'.",
+   "ok": true
+  },
+  {
+   "type": "tool",
+   "name": "get_window_stats",
+   "args": {
+    "match_id": "sb:3869685",
+    "from": "114'",
+    "to": "120+3'"
+   }
+  },
+  {
+   "type": "tool_result",
+   "name": "get_window_stats",
+   "summary": "Compared both teams over minutes 114 to 123.",
+   "ok": true
+  },
+  {
+   "type": "text",
+   "delta": "The match turned between"
+  },
+  {
+   "type": "text",
+   "delta": " 114' and 120+3'. France"
+  },
+  {
+   "type": "text",
+   "delta": " went from 33% to 48% of"
+  },
+  {
+   "type": "text",
+   "delta": " final-third actions, an"
+  },
+  {
+   "type": "text",
+   "delta": "d their xG in that windo"
+  },
+  {
+   "type": "text",
+   "delta": "w was 1.09 against 0.11."
+  },
+  {
+   "type": "text",
+   "delta": " The key moments: [[ev:s"
+  },
+  {
+   "type": "text",
+   "delta": "b:3869685:4203]] [[ev:sb"
+  },
+  {
+   "type": "text",
+   "delta": ":3869685:4337]]. Before "
+  },
+  {
+   "type": "text",
+   "delta": "the shift, Argentina had"
+  },
+  {
+   "type": "text",
+   "delta": " 58% of the passes; afte"
+  },
+  {
+   "type": "text",
+   "delta": "r it, 52%."
+  },
+  {
+   "type": "citation",
+   "ref": "ev:sb:3869685:4203",
+   "label": "118' Mbappé shot penalty"
+  },
+  {
+   "type": "citation",
+   "ref": "ev:sb:3869685:4337",
+   "label": "120+3' Kolo shot"
+  },
+  {
+   "type": "done"
+  }
+ ]
+}

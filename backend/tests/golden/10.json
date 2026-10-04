@@ -120,15 +120,15 @@
         "ranking": "vaep",
         "count": 3,
         "evidence_labels": {
-          "ev:sb:3869685:2229": "60' Di María carry",
-          "ev:sb:3869685:3285": "90+4' Romero pass",
+          "ev:sb:3869685:771": "23' Messi penalty goal",
+          "ev:sb:3869685:1178": "36' Di María goal",
+          "ev:sb:3869685:1269": "39' Romero tackle",
           "ev:sb:3869685:2231": "60' Di María cross",
+          "ev:sb:3869685:4070": "108' Messi goal",
+          "ev:sb:3869685:3285": "90+4' Romero pass",
           "ev:sb:3869685:3204": "90+1' Romero pass",
           "ev:sb:3869685:3927": "105' Messi pass",
-          "ev:sb:3869685:771": "23' Messi penalty goal",
-          "ev:sb:3869685:4070": "108' Messi goal",
-          "ev:sb:3869685:1269": "39' Romero tackle",
-          "ev:sb:3869685:1178": "36' Di María goal"
+          "ev:sb:3869685:2229": "60' Di María carry"
         },
         "match": {
           "teams": {
@@ -275,7 +275,7 @@
       }
     }
   ],
-  "text": "**Lionel Messi was Argentina’s most valuable player by total action value:** he led with **1.1343**, ahead of Ángel Di María’s **0.8604**. His contribution combined decisive finishing—the penalty and extra-time goal—with attacking involvement beyond the finishes. [[ev:sb:3869685:771]] [[ev:sb:3869685:4070]] [[ev:sb:3869685:3927]]\n\nMessi also recorded **51 passes** and **567.1** in progressive distance, underlining his role in moving Argentina forward. Di María had the higher value per 90 (**1.084** versus **0.7219**), but Messi delivered the greater total contribution. These value figures use model VAEP where available, with a threat-gain proxy fallback.",
+  "text": "Lionel Messi was Argentina’s most valuable player by the overall impact ranking, ahead of Ángel Di María.\n\nHis contribution combined decisive finishing with involvement in Argentina’s passing game: he scored the penalty and struck again in extra time, while completing 88% of his 51 passes. Those goals were the clearest examples of his influence when Argentina needed it most. [[ev:sb:3869685:771]] [[ev:sb:3869685:4070]]",
   "rejections": [],
   "chunks": [
     {
@@ -288,72 +288,50 @@
       }
     },
     {
-      "type": "text",
-      "delta": "**Lionel Messi was Argentina’s most valuable pla"
+      "type": "tool_result",
+      "name": "get_player_rankings",
+      "summary": "Ranked players by overall impact: Lionel Messi came out on top.",
+      "ok": true
     },
     {
       "type": "text",
-      "delta": "yer by total action value:** he led with **1.134"
+      "delta": "Lionel Messi was Argentina’s most valuable playe"
     },
     {
       "type": "text",
-      "delta": "3**, ahead of Ángel Di María’s **0.8604**. "
+      "delta": "r by the overall impact ranking, ahead of Ángel "
     },
     {
       "type": "text",
-      "delta": "His contribution combined decisive finishing—the"
+      "delta": "Di María.\n\n"
     },
     {
       "type": "text",
-      "delta": " penalty and extra-time goal—with attacking invo"
+      "delta": "His contribution combined decisive finishing wit"
     },
     {
       "type": "text",
-      "delta": "lvement beyond the finishes. "
+      "delta": "h involvement in Argentina’s passing game: he sc"
     },
     {
       "type": "text",
-      "delta": "[[ev:sb:3869685:771]] [[ev:sb:3869685:4070]] [[e"
+      "delta": "ored the penalty and struck again in extra time,"
     },
     {
       "type": "text",
-      "delta": "v:sb:3869685:3927]]\n"
+      "delta": " while completing 88% of his 51 passes. "
     },
     {
       "type": "text",
-      "delta": "\n"
+      "delta": "Those goals were the clearest examples of his in"
     },
     {
       "type": "text",
-      "delta": "Messi also recorded **51 passes** and **567.1** "
+      "delta": "fluence when Argentina needed it most. "
     },
     {
       "type": "text",
-      "delta": "in progressive distance, underlining his role in"
-    },
-    {
-      "type": "text",
-      "delta": " moving Argentina forward. "
-    },
-    {
-      "type": "text",
-      "delta": "Di María had the higher value per 90 (**1.084** "
-    },
-    {
-      "type": "text",
-      "delta": "versus **0.7219**), but Messi delivered the grea"
-    },
-    {
-      "type": "text",
-      "delta": "ter total contribution. "
-    },
-    {
-      "type": "text",
-      "delta": "These value figures use model VAEP where availab"
-    },
-    {
-      "type": "text",
-      "delta": "le, with a threat-gain proxy fallback."
+      "delta": "[[ev:sb:3869685:771]] [[ev:sb:3869685:4070]]"
     },
     {
       "type": "citation",
@@ -366,16 +344,11 @@
       "label": "108' Messi goal"
     },
     {
-      "type": "citation",
-      "ref": "ev:sb:3869685:3927",
-      "label": "105' Messi pass"
-    },
-    {
       "type": "done"
     }
   ],
-  "first_text_seconds": 49.125,
-  "total_seconds": 50.697,
+  "first_text_seconds": 4.115,
+  "total_seconds": 5.264,
   "grounding": {
     "unsupported_numbers": [],
     "unsupported_citations": [],

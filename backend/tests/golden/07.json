@@ -69,8 +69,8 @@
         "n_events": 2,
         "n_markers": 2,
         "evidence_labels": {
-          "seq:sb:3869685:s165": "81' France sequence",
           "ev:sb:3869685:2928": "80' Mbappé penalty goal",
+          "seq:sb:3869685:s165": "81' France sequence",
           "ev:sb:3869685:2987": "81' Mbappé goal"
         },
         "match": {
@@ -793,7 +793,7 @@
       }
     }
   ],
-  "text": "Missing Mbappé’s 80' penalty favours Argentina—but the model estimates only a modest change in subsequent play, not a guaranteed victory. This hypothetical removes the penalty goal. [[ev:sb:3869685:2928]]\n\nOver the next 15 minutes, Argentina’s modelled median xG rises from 0.237 to 0.263, an effect of +0.026; France’s stays at 0.065. That suggests a slightly stronger Argentine position, rather than France’s attacking threat disappearing. The estimates come from observational data: they cannot establish whether Mbappé’s later goal or the eventual outcome changes. [[ev:sb:3869685:2928]] [[ev:sb:3869685:2987]]",
+  "text": "Missing the penalty leaves Argentina in a stronger position, but the model does not establish that they win. It removes Mbappé’s penalty goal without assuming France’s comeback disappears. [[ev:sb:3869685:2928]]\n\nOver the next 15 minutes, compared with the same model’s estimate with the goal scored, the model estimates slightly better chance quality for Argentina and essentially unchanged chance quality for France. Mbappé’s subsequent goal shows why France remained dangerous, but that moment cannot simply be assumed to recur after a miss. This is a modelled hypothetical, not a prediction of the final result. [[ev:sb:3869685:2987]]",
   "rejections": [],
   "chunks": [
     {
@@ -810,6 +810,12 @@
       }
     },
     {
+      "type": "tool_result",
+      "name": "get_events",
+      "summary": "Pulled 2 actions and 2 key moments from minutes 78 to 82.",
+      "ok": true
+    },
+    {
       "type": "tool",
       "name": "run_counterfactual",
       "args": {
@@ -818,20 +824,30 @@
       }
     },
     {
-      "type": "text",
-      "delta": "Missing Mbappé’s 80' penalty favours Argentina—b"
+      "type": "tool_result",
+      "name": "run_counterfactual",
+      "summary": "Ran the what-if model with and without that moment.",
+      "ok": true
     },
     {
       "type": "text",
-      "delta": "ut the model estimates only a modest change in s"
+      "delta": "Missing the penalty leaves Argentina in a strong"
     },
     {
       "type": "text",
-      "delta": "ubsequent play, not a guaranteed victory. "
+      "delta": "er position, but the model does not establish th"
     },
     {
       "type": "text",
-      "delta": "This hypothetical removes the penalty goal. "
+      "delta": "at they win. "
+    },
+    {
+      "type": "text",
+      "delta": "It removes Mbappé’s penalty goal without assumin"
+    },
+    {
+      "type": "text",
+      "delta": "g France’s comeback disappears. "
     },
     {
       "type": "text",
@@ -843,43 +859,47 @@
     },
     {
       "type": "text",
-      "delta": "Over the next 15 minutes, Argentina’s modelled m"
+      "delta": "Over the next 15 minutes, compared with the same"
     },
     {
       "type": "text",
-      "delta": "edian xG rises from 0.237 to 0.263, an effect of"
+      "delta": " model’s estimate with the goal scored, the mode"
     },
     {
       "type": "text",
-      "delta": " +0.026; France’s stays at 0.065. "
+      "delta": "l estimates slightly better chance quality for A"
     },
     {
       "type": "text",
-      "delta": "That suggests a slightly stronger Argentine posi"
+      "delta": "rgentina and essentially unchanged chance qualit"
     },
     {
       "type": "text",
-      "delta": "tion, rather than France’s attacking threat disa"
+      "delta": "y for France. "
     },
     {
       "type": "text",
-      "delta": "ppearing. "
+      "delta": "Mbappé’s subsequent goal shows why France remain"
     },
     {
       "type": "text",
-      "delta": "The estimates come from observational data: they"
+      "delta": "ed dangerous, but that moment cannot simply be a"
     },
     {
       "type": "text",
-      "delta": " cannot establish whether Mbappé’s later goal or"
+      "delta": "ssumed to recur after a miss. "
     },
     {
       "type": "text",
-      "delta": " the eventual outcome changes. "
+      "delta": "This is a modelled hypothetical, not a predictio"
     },
     {
       "type": "text",
-      "delta": "[[ev:sb:3869685:2928]] [[ev:sb:3869685:2987]]"
+      "delta": "n of the final result. "
+    },
+    {
+      "type": "text",
+      "delta": "[[ev:sb:3869685:2987]]"
     },
     {
       "type": "citation",
@@ -895,8 +915,8 @@
       "type": "done"
     }
   ],
-  "first_text_seconds": 5.914,
-  "total_seconds": 7.322,
+  "first_text_seconds": 8.503,
+  "total_seconds": 10.057,
   "grounding": {
     "unsupported_numbers": [],
     "unsupported_citations": [],

@@ -515,10 +515,28 @@ class CitationChunk(Contract):
     label: str
 
 
+class ReasoningChunk(Contract):
+    type: Literal["reasoning"]
+    delta: str
+
+
+class ToolResultChunk(Contract):
+    type: Literal["tool_result"]
+    name: str
+    summary: str
+    ok: bool
+
+
 class DoneChunk(Contract):
     type: Literal["done"]
 
 
 AskChunk = Annotated[
-    ToolChunk | TextChunk | CitationChunk | DoneChunk, Field(discriminator="type")
+    ToolChunk
+    | ToolResultChunk
+    | ReasoningChunk
+    | TextChunk
+    | CitationChunk
+    | DoneChunk,
+    Field(discriminator="type"),
 ]

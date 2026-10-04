@@ -4,7 +4,7 @@
     "tools": [
       "find_turning_points"
     ],
-    "first_text_seconds": 3.946,
+    "first_text_seconds": 5.279,
     "grounding": {
       "unsupported_numbers": [],
       "unsupported_citations": [],
@@ -18,7 +18,7 @@
     "tools": [
       "get_player_rankings"
     ],
-    "first_text_seconds": 3.365,
+    "first_text_seconds": 3.237,
     "grounding": {
       "unsupported_numbers": [],
       "unsupported_citations": [],
@@ -32,7 +32,7 @@
     "tools": [
       "get_top_sequences"
     ],
-    "first_text_seconds": 3.442,
+    "first_text_seconds": 4.247,
     "grounding": {
       "unsupported_numbers": [],
       "unsupported_citations": [],
@@ -49,9 +49,10 @@
       "get_window_stats",
       "get_window_stats",
       "get_window_stats",
-      "get_window_stats"
+      "get_window_stats",
+      "get_events"
     ],
-    "first_text_seconds": 5.494,
+    "first_text_seconds": 6.056,
     "grounding": {
       "unsupported_numbers": [],
       "unsupported_citations": [],
@@ -64,15 +65,14 @@
     "question": "Why did Argentina lose control between the 65th and 85th minute?",
     "tools": [
       "get_events",
-      "get_window_stats",
-      "get_window_stats",
       "find_turning_points",
-      "get_events",
+      "get_window_stats",
+      "get_window_stats",
       "search_moments",
       "get_window_stats",
       "get_window_stats"
     ],
-    "first_text_seconds": 7.836,
+    "first_text_seconds": 9.276,
     "grounding": {
       "unsupported_numbers": [],
       "unsupported_citations": [],
@@ -87,7 +87,7 @@
       "get_events",
       "search_moments"
     ],
-    "first_text_seconds": 6.027,
+    "first_text_seconds": 5.807,
     "grounding": {
       "unsupported_numbers": [],
       "unsupported_citations": [],
@@ -102,7 +102,7 @@
       "get_events",
       "run_counterfactual"
     ],
-    "first_text_seconds": 5.914,
+    "first_text_seconds": 8.503,
     "grounding": {
       "unsupported_numbers": [],
       "unsupported_citations": [],
@@ -120,7 +120,7 @@
       "get_window_stats",
       "get_window_stats"
     ],
-    "first_text_seconds": 9.53,
+    "first_text_seconds": 6.72,
     "grounding": {
       "unsupported_numbers": [],
       "unsupported_citations": [],
@@ -135,7 +135,7 @@
       "get_events",
       "shot_alternatives"
     ],
-    "first_text_seconds": 5.973,
+    "first_text_seconds": 4.711,
     "grounding": {
       "unsupported_numbers": [],
       "unsupported_citations": [],
@@ -149,7 +149,7 @@
     "tools": [
       "get_player_rankings"
     ],
-    "first_text_seconds": 49.125,
+    "first_text_seconds": 4.115,
     "grounding": {
       "unsupported_numbers": [],
       "unsupported_citations": [],

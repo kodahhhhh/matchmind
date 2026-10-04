@@ -13,7 +13,7 @@ from matchmind.analyst.grounding import (
     text_deltas,
 )
 from matchmind.analyst.prompts import SYSTEM, match_summary
-from matchmind.analyst.tools import TOOLS, citation_registry, dispatch
+from matchmind.analyst.tools import TOOLS, citation_registry, dispatch, summarize
 from matchmind.api.repository import bundle
 from matchmind.config import get_settings
 
@@ -61,13 +61,19 @@ async def ask_chunks(
                     tool_choice="required" if turn == 0 else "auto",
                     stream=True,
                     store=False,
-                    reasoning={"effort": "low"},
+                    reasoning={"effort": "low", "summary": "auto"},
                     text={"verbosity": "low"},
                     max_output_tokens=3500,
                 )
                 try:
                     async for event in stream:
-                        if event.type == "response.output_text.delta":
+                        if event.type == "response.reasoning_summary_text.delta":
+                            # The model's own thinking summary: shown as "thinking",
+                            # never as part of the grounded answer.
+                            yield {"type": "reasoning", "delta": event.delta}
+                        elif event.type == "response.reasoning_summary_part.done":
+                            yield {"type": "reasoning", "delta": "\n\n"}
+                        elif event.type == "response.output_text.delta":
                             buffer += event.delta
                             parts, buffer = sentences(buffer)
                             for part in parts:
@@ -122,6 +128,12 @@ async def ask_chunks(
                                 "Try another tool."
                             )
                         }
+                    yield {
+                        "type": "tool_result",
+                        "name": call.name,
+                        "summary": summarize(call.name, args, result),
+                        "ok": "error" not in result,
+                    }
                     results.append(result)
                     audit["tools"].append(
                         {"name": call.name, "args": args, "result": result}

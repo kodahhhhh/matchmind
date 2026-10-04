@@ -306,3 +306,68 @@ def _dispatch(match_id: str, name: str, args: dict) -> dict:
 async def dispatch(match_id: str, name: str, args: dict) -> dict:
     """Move synchronous metrics, DB and embedding work off the event loop."""
     return await asyncio.to_thread(_dispatch, match_id, name, args)
+
+
+def _minutes(args: dict) -> str:
+    start, end = args.get("from_minute"), args.get("to_minute")
+    if start is None and end is None:
+        return "the whole match"
+    start = 0 if start is None else start
+    end = 120 if end is None else end
+    return f"minutes {start} to {end}"
+
+
+def summarize(name: str, args: dict, result: dict) -> str:
+    """One plain-English line on what a tool found, computed in Python for the UI."""
+    if "error" in result:
+        return "That calculation wasn't available, so the analyst tried another way."
+    if name == "find_turning_points":
+        points = result.get("turning_points", [])
+        if not points:
+            return "No clear shift in control was found."
+        first = points[0]
+        return (
+            f"Found {len(points)} moments where control shifted, the biggest "
+            f"from {first['start']['label']} to {first['end']['label']}."
+        )
+    if name == "get_window_stats":
+        return f"Compared both teams over {_minutes(args)}."
+    if name == "get_events":
+        return (
+            f"Pulled {result.get('n_events', 0)} actions and "
+            f"{result.get('n_markers', 0)} key moments from {_minutes(args)}."
+        )
+    if name == "get_top_sequences":
+        return f"Ranked the {result.get('count', 0)} most dangerous attacks."
+    if name == "get_player_rankings":
+        what = {
+            "vaep": "overall impact",
+            "progression": "moving the ball forward",
+            "defending": "defending",
+            "creation": "creating chances",
+        }.get(result.get("ranking", ""), "impact")
+        players = result.get("players", [])
+        top = players[0].get("name") if players else None
+        tail = f": {top} came out on top." if top else "."
+        return f"Ranked players by {what}{tail}"
+    if name == "run_counterfactual":
+        if result.get("negligible"):
+            return "Ran the what-if model: it sees almost no difference."
+        return "Ran the what-if model with and without that moment."
+    if name == "shot_alternatives":
+        options = result.get("options", [])
+        verdict = {
+            "pass_higher": "a pass looked better than the shot",
+            "shot_higher": "the shot was the better option",
+            "similar": "shooting and passing were about equal",
+        }.get(result.get("comparison", ""), "no passing option was found")
+        return f"Checked {len(options)} passing options: {verdict}."
+    if name == "search_moments":
+        found = len(result.get("results", []))
+        return f"Searched the commentary and found {found} matching moments."
+    if name == "get_commentary":
+        return f"Read {len(result.get('lines', []))} lines of match commentary."
+    if name == "get_player_profile":
+        who = result.get("short_name") or result.get("name") or "the player"
+        return f"Loaded {who}'s profile and career numbers."
+    return "Done."

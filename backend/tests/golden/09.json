@@ -10,7 +10,7 @@
         ],
         "team": "away",
         "from_minute": 115,
-        "limit": 20
+        "limit": 30
       },
       "result": {
         "events": [
@@ -58,11 +58,11 @@
         "n_events": 3,
         "n_markers": 0,
         "evidence_labels": {
+          "ev:sb:3869685:4199": "116' Mbappé shot",
           "seq:sb:3869685:s237": "116' France sequence",
           "seq:sb:3869685:s245": "120+3' France sequence",
-          "ev:sb:3869685:4199": "116' Mbappé shot",
-          "ev:sb:3869685:4203": "118' Mbappé penalty goal",
-          "ev:sb:3869685:4337": "120+3' Kolo shot"
+          "ev:sb:3869685:4337": "120+3' Kolo shot",
+          "ev:sb:3869685:4203": "118' Mbappé penalty goal"
         },
         "match": {
           "teams": {
@@ -362,7 +362,7 @@
       }
     }
   ],
-  "text": "**The model favours a pass to Mbappé—but it wasn’t an obvious certainty.** For Kolo Muani’s late chance, that option has a completion probability of 48.8% and a completion-adjusted follow-up value of 0.2771, above the shot’s 0.1939 xG. [[ev:sb:3869685:4337]]\n\nThat assumes a clean reception and an immediate follow-up; defenders’ reactions and execution could change the picture. So passing looks better in this modelled hypothetical, but shooting was defensible—not a clear-cut mistake simply because it was saved. [[ev:sb:3869685:4337]]",
+  "text": "The model favours a pass to Mbappé, but shooting was still a reasonable decision. It estimates a 28% chance of scoring through that pass, allowing for the risk of interception, versus 19% for Kolo Muani’s shot. [[ev:sb:3869685:4337]]\n\nThe catch is that the pass had only a 49% estimated chance of reaching Mbappé. The hypothetical also assumes a clean reception and an immediate finish, with defenders reacting differently in reality. So passing looks better in the model, not a guaranteed missed winner. [[ev:sb:3869685:4337]]",
   "rejections": [],
   "chunks": [
     {
@@ -374,8 +374,14 @@
         ],
         "team": "away",
         "from_minute": 115,
-        "limit": 20
+        "limit": 30
       }
+    },
+    {
+      "type": "tool_result",
+      "name": "get_events",
+      "summary": "Pulled 3 actions and 0 key moments from minutes 115 to 120.",
+      "ok": true
     },
     {
       "type": "tool",
@@ -385,24 +391,30 @@
       }
     },
     {
-      "type": "text",
-      "delta": "**The model favours a pass to Mbappé—but it wasn"
+      "type": "tool_result",
+      "name": "shot_alternatives",
+      "summary": "Checked 3 passing options: a pass looked better than the shot.",
+      "ok": true
     },
     {
       "type": "text",
-      "delta": "’t an obvious certainty.** For Kolo Muani’s late"
+      "delta": "The model favours a pass to Mbappé, but shooting"
     },
     {
       "type": "text",
-      "delta": " chance, that option has a completion probabilit"
+      "delta": " was still a reasonable decision. "
     },
     {
       "type": "text",
-      "delta": "y of 48.8% and a completion-adjusted follow-up v"
+      "delta": "It estimates a 28% chance of scoring through tha"
     },
     {
       "type": "text",
-      "delta": "alue of 0.2771, above the shot’s 0.1939 xG. "
+      "delta": "t pass, allowing for the risk of interception, v"
+    },
+    {
+      "type": "text",
+      "delta": "ersus 19% for Kolo Muani’s shot. "
     },
     {
       "type": "text",
@@ -414,27 +426,31 @@
     },
     {
       "type": "text",
-      "delta": "That assumes a clean reception and an immediate "
+      "delta": "The catch is that the pass had only a 49% estima"
     },
     {
       "type": "text",
-      "delta": "follow-up; defenders’ reactions and execution co"
+      "delta": "ted chance of reaching Mbappé. "
     },
     {
       "type": "text",
-      "delta": "uld change the picture. "
+      "delta": "The hypothetical also assumes a clean reception "
     },
     {
       "type": "text",
-      "delta": "So passing looks better in this modelled hypothe"
+      "delta": "and an immediate finish, with defenders reacting"
     },
     {
       "type": "text",
-      "delta": "tical, but shooting was defensible—not a clear-c"
+      "delta": " differently in reality. "
     },
     {
       "type": "text",
-      "delta": "ut mistake simply because it was saved. "
+      "delta": "So passing looks better in the model, not a guar"
+    },
+    {
+      "type": "text",
+      "delta": "anteed missed winner. "
     },
     {
       "type": "text",
@@ -449,8 +465,8 @@
       "type": "done"
     }
   ],
-  "first_text_seconds": 5.973,
-  "total_seconds": 7.059,
+  "first_text_seconds": 4.711,
+  "total_seconds": 5.984,
   "grounding": {
     "unsupported_numbers": [],
     "unsupported_citations": [],

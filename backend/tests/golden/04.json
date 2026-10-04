@@ -173,19 +173,19 @@
         "n_events": 0,
         "n_markers": 13,
         "evidence_labels": {
-          "ev:sb:3869685:4139": "113' Konaté on for Varane",
-          "ev:sb:3869685:2661": "71' Coman on for Griezmann",
-          "ev:sb:3869685:3834": "102' Paredes on for De Paul",
-          "ev:sb:3869685:4273": "120+1' Disasi on for Koundé",
-          "ev:sb:3869685:1378": "41' Kolo on for Dembélé",
-          "ev:sb:3869685:3835": "102' Martínez on for Álvarez",
-          "ev:sb:3869685:1379": "42' Thuram on for Giroud",
           "ev:sb:3869685:2355": "64' Acuña on for Di María",
-          "ev:sb:3869685:4274": "120+1' Dybala on for Tagliafico",
-          "ev:sb:3869685:3636": "96' Fofana on for Rabiot",
-          "ev:sb:3869685:3443": "91' Montiel on for Molina",
+          "ev:sb:3869685:4273": "120+1' Disasi on for Koundé",
+          "ev:sb:3869685:2660": "71' Camavinga on for Hernández",
+          "ev:sb:3869685:3834": "102' Paredes on for De Paul",
+          "ev:sb:3869685:1378": "41' Kolo on for Dembélé",
+          "ev:sb:3869685:1379": "42' Thuram on for Giroud",
           "ev:sb:3869685:4191": "116' Pezzella on for MacAllister",
-          "ev:sb:3869685:2660": "71' Camavinga on for Hernández"
+          "ev:sb:3869685:2661": "71' Coman on for Griezmann",
+          "ev:sb:3869685:4274": "120+1' Dybala on for Tagliafico",
+          "ev:sb:3869685:4139": "113' Konaté on for Varane",
+          "ev:sb:3869685:3835": "102' Martínez on for Álvarez",
+          "ev:sb:3869685:3636": "96' Fofana on for Rabiot",
+          "ev:sb:3869685:3443": "91' Montiel on for Molina"
         },
         "match": {
           "teams": {
@@ -306,252 +306,40 @@
     {
       "name": "get_window_stats",
       "args": {
-        "from_minute": 25,
-        "to_minute": 40
-      },
-      "result": {
-        "from_minute": 25,
-        "to_minute": 40,
-        "period": null,
-        "stats": {
-          "home": {
-            "possession": 0.7,
-            "field_tilt": 0.572,
-            "xg": 0.339,
-            "shots": 2
-          },
-          "away": {
-            "possession": 0.3,
-            "field_tilt": 0.428,
-            "xg": 0.0,
-            "shots": 0
-          },
-          "momentum": 0.0709
-        },
-        "event_ids": [
-          "sb:3869685:1178",
-          "sb:3869685:979",
-          "sb:3869685:821",
-          "sb:3869685:823"
-        ],
-        "evidence_labels": {
-          "ev:sb:3869685:821": "26' Varane throw in",
-          "ev:sb:3869685:823": "26' Upamecano carry",
-          "ev:sb:3869685:979": "32' MacAllister shot",
-          "ev:sb:3869685:1178": "36' Di María goal"
-        },
-        "match": {
-          "teams": {
-            "home": "Argentina",
-            "away": "France"
-          },
-          "score": {
-            "home": 3,
-            "away": 3,
-            "penalties": {
-              "home": 4,
-              "away": 2
-            }
-          },
-          "season": "2022"
-        },
-        "metric_notes": {
-          "possession": "Pass-share proxy",
-          "xg": "Model xG when populated; sb_xg fallback",
-          "vaep": "Model VAEP when populated; threat-gain proxy fallback"
-        },
-        "display_numbers": [
-          "0",
-          "0%",
-          "0.0",
-          "0.0%",
-          "0.00",
-          "0.000",
-          "0.0000",
-          "0.07",
-          "0.0709",
-          "0.071",
-          "0.1",
-          "0.3",
-          "0.30",
-          "0.300",
-          "0.3000",
-          "0.339",
-          "0.3390",
-          "0.34",
-          "0.4",
-          "0.428",
-          "0.4280",
-          "0.43",
-          "0.57",
-          "0.572",
-          "0.5720",
-          "0.6",
-          "0.7",
-          "0.70",
-          "0.700",
-          "0.7000",
-          "1",
-          "2",
-          "25",
-          "3",
-          "30%",
-          "30.0%",
-          "33.9%",
-          "34%",
-          "4",
-          "40",
-          "42.8%",
-          "43%",
-          "57%",
-          "57.2%",
-          "7%",
-          "7.1%",
-          "70%",
-          "70.0%"
-        ]
-      }
-    },
-    {
-      "name": "get_window_stats",
-      "args": {
-        "from_minute": 42,
-        "to_minute": 57
-      },
-      "result": {
-        "from_minute": 42,
-        "to_minute": 57,
-        "period": null,
-        "stats": {
-          "home": {
-            "possession": 0.461,
-            "field_tilt": 0.528,
-            "xg": 0.05,
-            "shots": 1
-          },
-          "away": {
-            "possession": 0.539,
-            "field_tilt": 0.472,
-            "xg": 0.0,
-            "shots": 0
-          },
-          "momentum": 0.004
-        },
-        "event_ids": [
-          "sb:3869685:1916",
-          "sb:3869685:1398",
-          "sb:3869685:1400",
-          "sb:3869685:1401"
-        ],
-        "evidence_labels": {
-          "ev:sb:3869685:1401": "43' Otamendi pass",
-          "ev:sb:3869685:1916": "49' De Paul shot",
-          "ev:sb:3869685:1398": "43' Di María freekick",
-          "ev:sb:3869685:1400": "43' Otamendi carry"
-        },
-        "match": {
-          "teams": {
-            "home": "Argentina",
-            "away": "France"
-          },
-          "score": {
-            "home": 3,
-            "away": 3,
-            "penalties": {
-              "home": 4,
-              "away": 2
-            }
-          },
-          "season": "2022"
-        },
-        "metric_notes": {
-          "possession": "Pass-share proxy",
-          "xg": "Model xG when populated; sb_xg fallback",
-          "vaep": "Model VAEP when populated; threat-gain proxy fallback"
-        },
-        "display_numbers": [
-          "0",
-          "0%",
-          "0.0",
-          "0.0%",
-          "0.00",
-          "0.000",
-          "0.0000",
-          "0.004",
-          "0.0040",
-          "0.05",
-          "0.050",
-          "0.0500",
-          "0.1",
-          "0.4%",
-          "0.46",
-          "0.461",
-          "0.4610",
-          "0.47",
-          "0.472",
-          "0.4720",
-          "0.5",
-          "0.528",
-          "0.5280",
-          "0.53",
-          "0.539",
-          "0.5390",
-          "0.54",
-          "1",
-          "2",
-          "3",
-          "4",
-          "42",
-          "46%",
-          "46.1%",
-          "47%",
-          "47.2%",
-          "5%",
-          "5.0%",
-          "52.8%",
-          "53%",
-          "53.9%",
-          "54%",
-          "57"
-        ]
-      }
-    },
-    {
-      "name": "get_window_stats",
-      "args": {
-        "from_minute": 54,
-        "to_minute": 63
-      },
-      "result": {
-        "from_minute": 54,
+        "from_minute": 50,
         "to_minute": 63,
-        "period": null,
+        "period": 2
+      },
+      "result": {
+        "from_minute": 50,
+        "to_minute": 63,
+        "period": 2,
         "stats": {
           "home": {
-            "possession": 0.391,
-            "field_tilt": 0.326,
+            "possession": 0.474,
+            "field_tilt": 0.387,
             "xg": 0.34,
             "shots": 2
           },
           "away": {
-            "possession": 0.609,
-            "field_tilt": 0.674,
+            "possession": 0.526,
+            "field_tilt": 0.613,
             "xg": 0.0,
             "shots": 0
           },
-          "momentum": 0.0017
+          "momentum": 0.0021
         },
         "event_ids": [
           "sb:3869685:2235",
           "sb:3869685:2204",
-          "sb:3869685:2088",
-          "sb:3869685:2090"
+          "sb:3869685:1975",
+          "sb:3869685:1978"
         ],
         "evidence_labels": {
+          "ev:sb:3869685:1978": "51' Messi pass",
+          "ev:sb:3869685:2204": "59' Álvarez shot",
           "ev:sb:3869685:2235": "60' Messi shot",
-          "ev:sb:3869685:2088": "55' Tchouaméni pass",
-          "ev:sb:3869685:2090": "55' Hernández carry",
-          "ev:sb:3869685:2204": "59' Álvarez shot"
+          "ev:sb:3869685:1975": "51' Molina throw in"
         },
         "match": {
           "teams": {
@@ -581,44 +369,44 @@
           "0.00",
           "0.000",
           "0.0000",
-          "0.0017",
           "0.002",
+          "0.0021",
           "0.2%",
           "0.3",
-          "0.326",
-          "0.3260",
-          "0.33",
           "0.34",
           "0.340",
           "0.3400",
+          "0.387",
+          "0.3870",
           "0.39",
-          "0.391",
-          "0.3910",
           "0.4",
+          "0.47",
+          "0.474",
+          "0.4740",
+          "0.5",
+          "0.526",
+          "0.5260",
+          "0.53",
           "0.6",
-          "0.609",
-          "0.6090",
           "0.61",
-          "0.67",
-          "0.674",
-          "0.6740",
-          "0.7",
+          "0.613",
+          "0.6130",
           "1",
           "2",
           "3",
-          "32.6%",
-          "33%",
           "34%",
           "34.0%",
+          "38.7%",
           "39%",
-          "39.1%",
           "4",
-          "54",
-          "60.9%",
+          "47%",
+          "47.4%",
+          "50",
+          "52.6%",
+          "53%",
           "61%",
-          "63",
-          "67%",
-          "67.4%"
+          "61.3%",
+          "63"
         ]
       }
     },
@@ -626,12 +414,13 @@
       "name": "get_window_stats",
       "args": {
         "from_minute": 64,
-        "to_minute": 70
+        "to_minute": 70,
+        "period": 2
       },
       "result": {
         "from_minute": 64,
         "to_minute": 70,
-        "period": null,
+        "period": 2,
         "stats": {
           "home": {
             "possession": 0.343,
@@ -654,10 +443,10 @@
           "sb:3869685:2359"
         ],
         "evidence_labels": {
-          "ev:sb:3869685:2658": "71' Mbappé shot",
+          "ev:sb:3869685:2356": "65' Martínez goalkick",
           "ev:sb:3869685:2359": "65' Kolo pass",
           "ev:sb:3869685:2517": "68' Kolo shot",
-          "ev:sb:3869685:2356": "65' Martínez goalkick"
+          "ev:sb:3869685:2658": "71' Mbappé shot"
         },
         "match": {
           "teams": {
@@ -734,26 +523,27 @@
       "name": "get_window_stats",
       "args": {
         "from_minute": 71,
-        "to_minute": 85
+        "to_minute": 90,
+        "period": 2
       },
       "result": {
         "from_minute": 71,
-        "to_minute": 85,
-        "period": null,
+        "to_minute": 90,
+        "period": 2,
         "stats": {
           "home": {
-            "possession": 0.491,
-            "field_tilt": 0.495,
+            "possession": 0.445,
+            "field_tilt": 0.455,
             "xg": 0.064,
             "shots": 2
           },
           "away": {
-            "possession": 0.509,
-            "field_tilt": 0.505,
+            "possession": 0.555,
+            "field_tilt": 0.545,
             "xg": 0.897,
             "shots": 2
           },
-          "momentum": -0.111
+          "momentum": -0.0876
         },
         "event_ids": [
           "sb:3869685:2928",
@@ -762,9 +552,9 @@
           "sb:3869685:3037"
         ],
         "evidence_labels": {
-          "ev:sb:3869685:2928": "80' Mbappé penalty goal",
-          "ev:sb:3869685:3037": "84' Fernandez shot",
           "ev:sb:3869685:2691": "72' Fernandez shot",
+          "ev:sb:3869685:3037": "84' Fernandez shot",
+          "ev:sb:3869685:2928": "80' Mbappé penalty goal",
           "ev:sb:3869685:2987": "81' Mbappé goal"
         },
         "match": {
@@ -789,26 +579,30 @@
         },
         "display_numbers": [
           "-0",
+          "-0.0876",
+          "-0.088",
+          "-0.09",
           "-0.1",
-          "-0.11",
-          "-0.111",
-          "-0.1110",
           "0",
           "0.06",
           "0.064",
           "0.0640",
           "0.1",
-          "0.49",
-          "0.491",
-          "0.4910",
-          "0.495",
-          "0.4950",
+          "0.4",
+          "0.445",
+          "0.4450",
+          "0.45",
+          "0.455",
+          "0.4550",
+          "0.46",
           "0.5",
-          "0.505",
-          "0.5050",
-          "0.509",
-          "0.5090",
-          "0.51",
+          "0.545",
+          "0.5450",
+          "0.55",
+          "0.555",
+          "0.5550",
+          "0.56",
+          "0.6",
           "0.897",
           "0.8970",
           "0.9",
@@ -817,24 +611,377 @@
           "2",
           "3",
           "4",
-          "49%",
-          "49.1%",
-          "49.5%",
-          "50%",
-          "50.5%",
-          "50.9%",
-          "51%",
+          "44%",
+          "44.5%",
+          "45.5%",
+          "46%",
+          "54.5%",
+          "55%",
+          "55.5%",
+          "56%",
           "6%",
           "6.4%",
           "71",
-          "85",
           "89.7%",
+          "90",
           "90%"
+        ]
+      }
+    },
+    {
+      "name": "get_window_stats",
+      "args": {
+        "from_minute": 25,
+        "to_minute": 40,
+        "period": 1
+      },
+      "result": {
+        "from_minute": 25,
+        "to_minute": 40,
+        "period": 1,
+        "stats": {
+          "home": {
+            "possession": 0.7,
+            "field_tilt": 0.572,
+            "xg": 0.339,
+            "shots": 2
+          },
+          "away": {
+            "possession": 0.3,
+            "field_tilt": 0.428,
+            "xg": 0.0,
+            "shots": 0
+          },
+          "momentum": 0.0709
+        },
+        "event_ids": [
+          "sb:3869685:1178",
+          "sb:3869685:979",
+          "sb:3869685:821",
+          "sb:3869685:823"
+        ],
+        "evidence_labels": {
+          "ev:sb:3869685:1178": "36' Di María goal",
+          "ev:sb:3869685:823": "26' Upamecano carry",
+          "ev:sb:3869685:821": "26' Varane throw in",
+          "ev:sb:3869685:979": "32' MacAllister shot"
+        },
+        "match": {
+          "teams": {
+            "home": "Argentina",
+            "away": "France"
+          },
+          "score": {
+            "home": 3,
+            "away": 3,
+            "penalties": {
+              "home": 4,
+              "away": 2
+            }
+          },
+          "season": "2022"
+        },
+        "metric_notes": {
+          "possession": "Pass-share proxy",
+          "xg": "Model xG when populated; sb_xg fallback",
+          "vaep": "Model VAEP when populated; threat-gain proxy fallback"
+        },
+        "display_numbers": [
+          "0",
+          "0%",
+          "0.0",
+          "0.0%",
+          "0.00",
+          "0.000",
+          "0.0000",
+          "0.07",
+          "0.0709",
+          "0.071",
+          "0.1",
+          "0.3",
+          "0.30",
+          "0.300",
+          "0.3000",
+          "0.339",
+          "0.3390",
+          "0.34",
+          "0.4",
+          "0.428",
+          "0.4280",
+          "0.43",
+          "0.57",
+          "0.572",
+          "0.5720",
+          "0.6",
+          "0.7",
+          "0.70",
+          "0.700",
+          "0.7000",
+          "1",
+          "2",
+          "25",
+          "3",
+          "30%",
+          "30.0%",
+          "33.9%",
+          "34%",
+          "4",
+          "40",
+          "42.8%",
+          "43%",
+          "57%",
+          "57.2%",
+          "7%",
+          "7.1%",
+          "70%",
+          "70.0%"
+        ]
+      }
+    },
+    {
+      "name": "get_window_stats",
+      "args": {
+        "from_minute": 41,
+        "to_minute": 55
+      },
+      "result": {
+        "from_minute": 41,
+        "to_minute": 55,
+        "period": null,
+        "stats": {
+          "home": {
+            "possession": 0.518,
+            "field_tilt": 0.572,
+            "xg": 0.05,
+            "shots": 1
+          },
+          "away": {
+            "possession": 0.482,
+            "field_tilt": 0.428,
+            "xg": 0.0,
+            "shots": 0
+          },
+          "momentum": 0.0048
+        },
+        "event_ids": [
+          "sb:3869685:1916",
+          "sb:3869685:1380",
+          "sb:3869685:1383",
+          "sb:3869685:1386"
+        ],
+        "evidence_labels": {
+          "ev:sb:3869685:1383": "42' Kolo foul",
+          "ev:sb:3869685:1380": "42' Otamendi freekick",
+          "ev:sb:3869685:1916": "49' De Paul shot",
+          "ev:sb:3869685:1386": "42' Di María freekick"
+        },
+        "match": {
+          "teams": {
+            "home": "Argentina",
+            "away": "France"
+          },
+          "score": {
+            "home": 3,
+            "away": 3,
+            "penalties": {
+              "home": 4,
+              "away": 2
+            }
+          },
+          "season": "2022"
+        },
+        "metric_notes": {
+          "possession": "Pass-share proxy",
+          "xg": "Model xG when populated; sb_xg fallback",
+          "vaep": "Model VAEP when populated; threat-gain proxy fallback"
+        },
+        "display_numbers": [
+          "0",
+          "0%",
+          "0.0",
+          "0.0%",
+          "0.00",
+          "0.000",
+          "0.0000",
+          "0.0048",
+          "0.005",
+          "0.05",
+          "0.050",
+          "0.0500",
+          "0.1",
+          "0.4",
+          "0.428",
+          "0.4280",
+          "0.43",
+          "0.48",
+          "0.482",
+          "0.4820",
+          "0.5",
+          "0.5%",
+          "0.518",
+          "0.5180",
+          "0.52",
+          "0.57",
+          "0.572",
+          "0.5720",
+          "0.6",
+          "1",
+          "2",
+          "3",
+          "4",
+          "41",
+          "42.8%",
+          "43%",
+          "48%",
+          "48.2%",
+          "5%",
+          "5.0%",
+          "51.8%",
+          "52%",
+          "55",
+          "57%",
+          "57.2%"
+        ]
+      }
+    },
+    {
+      "name": "get_events",
+      "args": {
+        "types": [
+          "goal"
+        ],
+        "from_minute": 71,
+        "to_minute": 90
+      },
+      "result": {
+        "events": [
+          {
+            "id": "sb:3869685:2928",
+            "period": 2,
+            "minute": 79,
+            "second": 24,
+            "team": "away",
+            "player": "Mbappé",
+            "type": "shot_penalty",
+            "result": "goal",
+            "xg": 0.841,
+            "vaep": 0.192,
+            "sequence_id": "sb:3869685:s163"
+          },
+          {
+            "id": "sb:3869685:2987",
+            "period": 2,
+            "minute": 80,
+            "second": 59,
+            "team": "away",
+            "player": "Mbappé",
+            "type": "shot",
+            "result": "goal",
+            "xg": 0.0556,
+            "vaep": 0.873,
+            "sequence_id": "sb:3869685:s165"
+          }
+        ],
+        "markers": [
+          {
+            "period": 2,
+            "minute": 79,
+            "second": 24,
+            "t": 5219.0,
+            "team": "away",
+            "type": "goal",
+            "event_id": "sb:3869685:2928",
+            "player_id": 3009,
+            "detail": "penalty"
+          },
+          {
+            "period": 2,
+            "minute": 80,
+            "second": 59,
+            "t": 5314.0,
+            "team": "away",
+            "type": "goal",
+            "event_id": "sb:3869685:2987",
+            "player_id": 3009,
+            "detail": null
+          }
+        ],
+        "n_events": 2,
+        "n_markers": 2,
+        "evidence_labels": {
+          "ev:sb:3869685:2928": "80' Mbappé penalty goal",
+          "seq:sb:3869685:s165": "81' France sequence",
+          "ev:sb:3869685:2987": "81' Mbappé goal"
+        },
+        "match": {
+          "teams": {
+            "home": "Argentina",
+            "away": "France"
+          },
+          "score": {
+            "home": 3,
+            "away": 3,
+            "penalties": {
+              "home": 4,
+              "away": 2
+            }
+          },
+          "season": "2022"
+        },
+        "metric_notes": {
+          "possession": "Pass-share proxy",
+          "xg": "Model xG when populated; sb_xg fallback",
+          "vaep": "Model VAEP when populated; threat-gain proxy fallback"
+        },
+        "display_numbers": [
+          "0",
+          "0.0556",
+          "0.056",
+          "0.06",
+          "0.1",
+          "0.19",
+          "0.192",
+          "0.1920",
+          "0.2",
+          "0.8",
+          "0.84",
+          "0.841",
+          "0.8410",
+          "0.87",
+          "0.873",
+          "0.8730",
+          "0.9",
+          "1",
+          "19%",
+          "19.2%",
+          "2",
+          "24",
+          "3",
+          "4",
+          "5.6%",
+          "5219",
+          "5219.0",
+          "5219.00",
+          "5219.000",
+          "5219.0000",
+          "5314",
+          "5314.0",
+          "5314.00",
+          "5314.000",
+          "5314.0000",
+          "59",
+          "6%",
+          "79",
+          "80",
+          "84%",
+          "84.1%",
+          "87%",
+          "87.3%"
         ]
       }
     }
   ],
-  "text": "France’s early changes—Kolo Muani for Dembélé and Thuram for Giroud—helped steady the game rather than immediately create chances. Their pass share rose from 30% before the changes to 53.9% afterward, but they still registered 0 shots in that following window. [[ev:sb:3869685:1378]] [[ev:sb:3869685:1379]] After Acuña replaced Di María, Argentina’s attacking outlet faded: their next window produced 0 shots, while France managed 2. French pressure was already building, so the substitution alone cannot explain that shift. [[ev:sb:3869685:2355]] [[ev:sb:3869685:2517]]\n\nThe clearest change in threat followed Camavinga and Coman’s introductions: France went from 0.128 xG in the preceding window to 0.897 afterward, despite having less pass share. [[ev:sb:3869685:2660]] [[ev:sb:3869685:2661]] Mbappé’s penalty and equaliser turned that threat into goals. **The key shift was from territorial pressure to decisive chances**, not simply more possession. These are unequal-length windows and associations, not proof the substitutions caused the comeback. [[ev:sb:3869685:2928]] [[ev:sb:3869685:2987]]",
+  "text": "France gradually gained control after the changes, rather than improving instantly. Bringing on Kolo Muani and Thuram helped them get a larger share of the passing, but they still produced no shots in the immediate comparison window. [[ev:sb:3869685:1378]] [[ev:sb:3869685:1379]]\n\nThe clearer shift came after Acuña replaced Di María: France’s passing share rose from 53% to 66%, and Argentina stopped producing shots in the next window. [[ev:sb:3869685:2355]] France then introduced Camavinga and Coman, and their pressure eventually became goals through Mbappé’s penalty and equaliser. The changes coincided with the comeback, but the numbers alone cannot prove they caused it. [[ev:sb:3869685:2660]] [[ev:sb:3869685:2661]] [[ev:sb:3869685:2928]] [[ev:sb:3869685:2987]]",
   "rejections": [],
   "chunks": [
     {
@@ -848,96 +995,129 @@
       }
     },
     {
-      "type": "tool",
-      "name": "get_window_stats",
-      "args": {
-        "from_minute": 25,
-        "to_minute": 40
-      }
+      "type": "tool_result",
+      "name": "get_events",
+      "summary": "Pulled 0 actions and 13 key moments from the whole match.",
+      "ok": true
     },
     {
       "type": "tool",
       "name": "get_window_stats",
       "args": {
-        "from_minute": 42,
-        "to_minute": 57
+        "from_minute": 50,
+        "to_minute": 63,
+        "period": 2
       }
     },
     {
-      "type": "tool",
+      "type": "tool_result",
       "name": "get_window_stats",
-      "args": {
-        "from_minute": 54,
-        "to_minute": 63
-      }
+      "summary": "Compared both teams over minutes 50 to 63.",
+      "ok": true
     },
     {
       "type": "tool",
       "name": "get_window_stats",
       "args": {
         "from_minute": 64,
-        "to_minute": 70
+        "to_minute": 70,
+        "period": 2
       }
+    },
+    {
+      "type": "tool_result",
+      "name": "get_window_stats",
+      "summary": "Compared both teams over minutes 64 to 70.",
+      "ok": true
     },
     {
       "type": "tool",
       "name": "get_window_stats",
       "args": {
         "from_minute": 71,
-        "to_minute": 85
+        "to_minute": 90,
+        "period": 2
       }
     },
     {
-      "type": "text",
-      "delta": "France’s early changes—Kolo Muani for Dembélé an"
+      "type": "tool_result",
+      "name": "get_window_stats",
+      "summary": "Compared both teams over minutes 71 to 90.",
+      "ok": true
+    },
+    {
+      "type": "tool",
+      "name": "get_window_stats",
+      "args": {
+        "from_minute": 25,
+        "to_minute": 40,
+        "period": 1
+      }
+    },
+    {
+      "type": "tool_result",
+      "name": "get_window_stats",
+      "summary": "Compared both teams over minutes 25 to 40.",
+      "ok": true
+    },
+    {
+      "type": "tool",
+      "name": "get_window_stats",
+      "args": {
+        "from_minute": 41,
+        "to_minute": 55
+      }
+    },
+    {
+      "type": "tool_result",
+      "name": "get_window_stats",
+      "summary": "Compared both teams over minutes 41 to 55.",
+      "ok": true
+    },
+    {
+      "type": "tool",
+      "name": "get_events",
+      "args": {
+        "types": [
+          "goal"
+        ],
+        "from_minute": 71,
+        "to_minute": 90
+      }
+    },
+    {
+      "type": "tool_result",
+      "name": "get_events",
+      "summary": "Pulled 2 actions and 2 key moments from minutes 71 to 90.",
+      "ok": true
     },
     {
       "type": "text",
-      "delta": "d Thuram for Giroud—helped steady the game rathe"
+      "delta": "France gradually gained control after the change"
     },
     {
       "type": "text",
-      "delta": "r than immediately create chances. "
+      "delta": "s, rather than improving instantly. "
     },
     {
       "type": "text",
-      "delta": "Their pass share rose from 30% before the change"
+      "delta": "Bringing on Kolo Muani and Thuram helped them ge"
     },
     {
       "type": "text",
-      "delta": "s to 53.9% afterward, but they still registered "
+      "delta": "t a larger share of the passing, but they still "
     },
     {
       "type": "text",
-      "delta": "0 shots in that following window. "
+      "delta": "produced no shots in the immediate comparison wi"
     },
     {
       "type": "text",
-      "delta": "[[ev:sb:3869685:1378]] [[ev:sb:3869685:1379]] Af"
+      "delta": "ndow. "
     },
     {
       "type": "text",
-      "delta": "ter Acuña replaced Di María, Argentina’s attacki"
-    },
-    {
-      "type": "text",
-      "delta": "ng outlet faded: their next window produced 0 sh"
-    },
-    {
-      "type": "text",
-      "delta": "ots, while France managed 2. "
-    },
-    {
-      "type": "text",
-      "delta": "French pressure was already building, so the sub"
-    },
-    {
-      "type": "text",
-      "delta": "stitution alone cannot explain that shift. "
-    },
-    {
-      "type": "text",
-      "delta": "[[ev:sb:3869685:2355]] [[ev:sb:3869685:2517]]\n"
+      "delta": "[[ev:sb:3869685:1378]] [[ev:sb:3869685:1379]]\n"
     },
     {
       "type": "text",
@@ -945,59 +1125,51 @@
     },
     {
       "type": "text",
-      "delta": "The clearest change in threat followed Camavinga"
+      "delta": "The clearer shift came after Acuña replaced Di M"
     },
     {
       "type": "text",
-      "delta": " and Coman’s introductions: France went from 0.1"
+      "delta": "aría: France’s passing share rose from 53% to 66"
     },
     {
       "type": "text",
-      "delta": "28 xG in the preceding window to 0.897 afterward"
+      "delta": "%, and Argentina stopped producing shots in the "
     },
     {
       "type": "text",
-      "delta": ", despite having less pass share. "
+      "delta": "next window. "
     },
     {
       "type": "text",
-      "delta": "[[ev:sb:3869685:2660]] [[ev:sb:3869685:2661]] Mb"
+      "delta": "[[ev:sb:3869685:2355]] France then introduced Ca"
     },
     {
       "type": "text",
-      "delta": "appé’s penalty and equaliser turned that threat "
+      "delta": "mavinga and Coman, and their pressure eventually"
     },
     {
       "type": "text",
-      "delta": "into goals. "
+      "delta": " became goals through Mbappé’s penalty and equal"
     },
     {
       "type": "text",
-      "delta": "**The key shift was from territorial pressure to"
+      "delta": "iser. "
     },
     {
       "type": "text",
-      "delta": " decisive chances**, not simply more possession."
+      "delta": "The changes coincided with the comeback, but the"
     },
     {
       "type": "text",
-      "delta": " "
+      "delta": " numbers alone cannot prove they caused it. "
     },
     {
       "type": "text",
-      "delta": "These are unequal-length windows and association"
+      "delta": "[[ev:sb:3869685:2660]] [[ev:sb:3869685:2661]] [["
     },
     {
       "type": "text",
-      "delta": "s, not proof the substitutions caused the comeba"
-    },
-    {
-      "type": "text",
-      "delta": "ck. "
-    },
-    {
-      "type": "text",
-      "delta": "[[ev:sb:3869685:2928]] [[ev:sb:3869685:2987]]"
+      "delta": "ev:sb:3869685:2928]] [[ev:sb:3869685:2987]]"
     },
     {
       "type": "citation",
@@ -1013,11 +1185,6 @@
       "type": "citation",
       "ref": "ev:sb:3869685:2355",
       "label": "64' Acuña on for Di María"
-    },
-    {
-      "type": "citation",
-      "ref": "ev:sb:3869685:2517",
-      "label": "68' Kolo shot"
     },
     {
       "type": "citation",
@@ -1043,8 +1210,8 @@
       "type": "done"
     }
   ],
-  "first_text_seconds": 5.494,
-  "total_seconds": 8.547,
+  "first_text_seconds": 6.056,
+  "total_seconds": 8.906,
   "grounding": {
     "unsupported_numbers": [],
     "unsupported_citations": [],

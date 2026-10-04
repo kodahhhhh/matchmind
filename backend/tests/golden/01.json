@@ -165,11 +165,11 @@
           }
         ],
         "evidence_labels": {
-          "ev:sb:3869685:1178": "36' Di María goal",
+          "ev:sb:3869685:3037": "84' Fernandez shot",
           "ev:sb:3869685:4199": "116' Mbappé shot",
+          "ev:sb:3869685:1178": "36' Di María goal",
           "ev:sb:3869685:2928": "80' Mbappé penalty goal",
           "ev:sb:3869685:4203": "118' Mbappé penalty goal",
-          "ev:sb:3869685:3037": "84' Fernandez shot",
           "ev:sb:3869685:2987": "81' Mbappé goal"
         },
         "match": {
@@ -411,7 +411,7 @@
       }
     }
   ],
-  "text": "**The defining turning point was Mbappé’s comeback burst:** his penalty at 80′ followed by his goal at 81′ transformed France’s threat. Across the detected window, France’s xG rose from 0.057 to 0.897 and field tilt from 41.9% to 71.5%—a shift in dangerous territory, not merely possession. [[ev:sb:3869685:2928]] [[ev:sb:3869685:2987]]\n\nThe detector’s **largest momentum swing** came later, in extra time: France went from 0 shots and 0.0 xG to 2 shots and 0.867 xG, capped by Mbappé’s penalty at 118′. That was the late reversal; his earlier burst was the match’s defining transformation. [[ev:sb:3869685:4199]] [[ev:sb:3869685:4203]]",
+  "text": "The clearest turning point was Mbappé’s quick double at 80' and 81', which brought France back into the contest. Before that burst, France had little attacking threat; afterward, they took control of territory and produced much better chances. [[ev:sb:3869685:2928]] [[ev:sb:3869685:2987]]\n\nThe biggest measured momentum swing came later, in extra time: Argentina went from creating chances to recording no shots in the following window, while France threatened through Mbappé and his 118' penalty. That was the final major reversal. [[ev:sb:3869685:4199]] [[ev:sb:3869685:4203]]",
   "rejections": [],
   "chunks": [
     {
@@ -420,32 +420,34 @@
       "args": {}
     },
     {
-      "type": "text",
-      "delta": "**The defining turning point was Mbappé’s comeba"
+      "type": "tool_result",
+      "name": "find_turning_points",
+      "summary": "Found 3 moments where control shifted, the biggest from 113' to 120+2'.",
+      "ok": true
     },
     {
       "type": "text",
-      "delta": "ck burst:** his penalty at 80′ followed by his g"
+      "delta": "The clearest turning point was Mbappé’s quick do"
     },
     {
       "type": "text",
-      "delta": "oal at 81′ transformed France’s threat. "
+      "delta": "uble at 80' and 81', which brought France back i"
     },
     {
       "type": "text",
-      "delta": "Across the detected window, France’s xG rose fro"
+      "delta": "nto the contest. "
     },
     {
       "type": "text",
-      "delta": "m 0.057 to 0.897 and field tilt from 41.9% to 71"
+      "delta": "Before that burst, France had little attacking t"
     },
     {
       "type": "text",
-      "delta": ".5%—a shift in dangerous territory, not merely p"
+      "delta": "hreat; afterward, they took control of territory"
     },
     {
       "type": "text",
-      "delta": "ossession. "
+      "delta": " and produced much better chances. "
     },
     {
       "type": "text",
@@ -457,27 +459,27 @@
     },
     {
       "type": "text",
-      "delta": "The detector’s **largest momentum swing** came l"
+      "delta": "The biggest measured momentum swing came later, "
     },
     {
       "type": "text",
-      "delta": "ater, in extra time: France went from 0 shots an"
+      "delta": "in extra time: Argentina went from creating chan"
     },
     {
       "type": "text",
-      "delta": "d 0.0 xG to 2 shots and 0.867 xG, capped by Mbap"
+      "delta": "ces to recording no shots in the following windo"
     },
     {
       "type": "text",
-      "delta": "pé’s penalty at 118′. "
+      "delta": "w, while France threatened through Mbappé and hi"
     },
     {
       "type": "text",
-      "delta": "That was the late reversal; his earlier burst wa"
+      "delta": "s 118' penalty. "
     },
     {
       "type": "text",
-      "delta": "s the match’s defining transformation. "
+      "delta": "That was the final major reversal. "
     },
     {
       "type": "text",
@@ -507,8 +509,8 @@
       "type": "done"
     }
   ],
-  "first_text_seconds": 3.946,
-  "total_seconds": 5.854,
+  "first_text_seconds": 5.279,
+  "total_seconds": 6.578,
   "grounding": {
     "unsupported_numbers": [],
     "unsupported_citations": [],
