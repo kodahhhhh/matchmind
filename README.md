@@ -16,7 +16,8 @@ Stats apps tell you what happened: 62% possession, 1.8 xG. MatchMind shows you w
 - **Read the live commentary (GPT-6 Luna).** 82,580 broadcast-style lines, one for every move in every match, written only from facts in the event data. They appear as a feed, and as captions on the pitch when a move is replayed.
 - **Search every moment (⌘K).** Hybrid semantic + keyword search across all 493 matches: "a goalkeeper makes a brilliant save" finds saves that never use those words. Pick a result to jump straight to the move.
 - **Ask "what if?"** Remove a goal, a substitution or a red card and see the trained game-state model's range for the next 15 minutes, next to the most similar real situations from 2,924 matches.
-- **See who really mattered.** Players ranked by value added (VAEP), not pass counts.
+- **See who really mattered.** Players ranked by value added (VAEP), not pass counts. Click anyone for a profile: bio, market-value history, career numbers from our models across 2,924 matches, an action heatmap and their best moments.
+- **Find who the market underrated.** Value added per 90 against Transfermarkt market value, per competition: in Bundesliga 2015/16, Mark Uth (€2m) and Nicolai Müller (€3.5m) added as much as players worth ten times more.
 - **Check us against the market.** A full backtest against Pinnacle and Polymarket, with confidence intervals and every bet listed.
 
 | | |
@@ -47,6 +48,8 @@ We replayed the models against real prices using only information available at t
 |---|---:|---:|---:|---|
 | Pre-match vs **Pinnacle** closing odds (Bundesliga 2015/16, flat 1 unit) | 203 | **−8.6 units** | −4.2% | −31.9% to +29.3% |
 | In-play vs **Polymarket** (Euro 2024, $100 bets, 1¢ slippage) | 42 | **+$2,306** | +54.9% | −4.9% to +113.6% |
+
+**Adding player data.** We then added squad information (each starting XI's market value at kick-off, age, caps and missing regulars, from Transfermarkt's CC0 data). It made the pre-match model more accurate on held-out matches (Brier 0.593 → 0.585; Pinnacle: 0.574) but not more profitable (−5.5% flat, 95% CI −25% to +16%); the in-play version got worse, so we kept the original. Note that the decision to keep the improved pre-match model was made on the same held-out matches it is scored on.
 
 **Verdict: no demonstrated edge.** Pinnacle's closing line beat us, as expected for the sharpest price in football. The Polymarket result is positive, but 42 bets on 14 matches is too few to rule out luck, and historical prices don't prove the bets would have been filled. Kalshi had no markets for any of our matches (its football markets start in 2025). Method, leakage guards and every number: [`backend/matchmind/backtest/BACKTEST.md`](backend/matchmind/backtest/BACKTEST.md).
 
@@ -84,6 +87,10 @@ flowchart LR
 
 The models train on all 2,924 men's matches in StatsBomb's open data. That includes 273 matches present in the dataset's event files but missing from its match index (the rest of Bundesliga 2015/16 and two others); we rebuilt their teams and scores from the events and validated the method on all 3,961 indexed matches.
 
+## Players
+
+Player profiles combine StatsBomb lineups, **transfermarkt-datasets** (CC0: bios, 141,999 market valuations) and **Wikidata** (CC0: dates of birth, heights, freely licensed Wikimedia Commons photos with credits). StatsBomb players are matched to Transfermarkt by match date, club and name (87.8% of all minutes played; ~98% in the Bundesliga), with a confidence score per match; ambiguous identities are left unmatched rather than guessed. Career numbers (VAEP, xG, progression) come from our own models across all 2,924 matches.
+
 ## Tech stack
 
 - **Data & models:** Python 3.12, pandas, socceraction, LightGBM, scikit-learn, ruptures
@@ -117,4 +124,4 @@ Training, commentary generation and the backtest each have their own CLIs (`matc
 
 ## Data & attribution
 
-Match event data: [StatsBomb Open Data](https://github.com/statsbomb/open-data), under the StatsBomb public data user agreement. Bookmaker odds: [football-data.co.uk](https://www.football-data.co.uk). Prediction-market prices: Polymarket public API. MatchMind is not affiliated with StatsBomb, FIFA, UEFA, any club or league, or any bookmaker or market. Nothing here is betting advice.
+Match event data: [StatsBomb Open Data](https://github.com/statsbomb/open-data), under the StatsBomb public data user agreement. Player data: [transfermarkt-datasets](https://github.com/dcaribou/transfermarkt-datasets) (CC0) and [Wikidata](https://www.wikidata.org) (CC0); photos from Wikimedia Commons under their individual free licences, credited in the app. Bookmaker odds: [football-data.co.uk](https://www.football-data.co.uk). Prediction-market prices: Polymarket public API. MatchMind is not affiliated with StatsBomb, FIFA, UEFA, any club or league, or any bookmaker or market. Nothing here is betting advice.
