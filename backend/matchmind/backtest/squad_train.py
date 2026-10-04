@@ -261,7 +261,21 @@ def inplay() -> dict:
     joblib.dump(
         {**old, "model": candidate}, root() / "models/backtest_inplay_squad.joblib"
     )
-    save(root() / "models/backtest_inplay_squad.json", report)
+    save(
+        root() / "models/backtest_inplay_squad.json",
+        {
+            **report,
+            "features": features,
+            "model_version": AFTER,
+            "metrics": {
+                **report["metrics"],
+                "model": {
+                    **metrics["validation"]["candidate"],
+                    "temperature": temperature,
+                },
+            },
+        },
+    )
     joblib.dump(bundle, root() / "models/backtest_inplay.joblib")
     save(root() / "models/backtest_inplay.json", report)
     save(output() / "inplay_metrics.json", report)

@@ -232,3 +232,20 @@ def test_staged_market_uses_retained_model_with_existing_lag() -> None:
                 assert getattr(row.model, side) == pytest.approx(p[f"p_{side}"])
             count += 1
     assert count > 0
+
+
+def test_saved_model_cards_match_their_own_bundles() -> None:
+    import json
+
+    import joblib
+
+    from matchmind.backtest.common import root
+
+    for name in ("backtest_inplay", "backtest_inplay_squad"):
+        path = root() / f"models/{name}.json"
+        if not path.exists():
+            pytest.skip("Run W12 pipeline first")
+        card = json.loads(path.read_text())
+        bundle = joblib.load(path.with_suffix(".joblib"))["model"]
+        assert card["features"] == bundle["features"]
+        assert card["metrics"]["model"]["temperature"] == bundle["temperature"]
