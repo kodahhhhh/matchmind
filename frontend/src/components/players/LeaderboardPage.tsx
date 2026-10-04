@@ -44,7 +44,7 @@ export function LeaderboardPage() {
 
   return (
     <div className="scroll-thin h-full overflow-y-auto">
-      <header className="mx-auto flex max-w-[1280px] items-center justify-between px-8 py-6">
+      <header className="mx-auto flex max-w-[1280px] items-center justify-between gap-3 px-5 py-5 md:px-8 md:py-6">
         <Link to="/"><Logo /></Link>
         <div className="flex items-center gap-3">
           <Link to="/" className="rounded-xl px-3 py-2 text-[13px] text-ink-3 transition hover:text-ink">Matches</Link>
@@ -55,7 +55,7 @@ export function LeaderboardPage() {
 
       <section className="mx-auto max-w-[1280px] px-8 pb-6 pt-4">
         <div className="eyebrow mb-3 flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-ai" />Players</div>
-        <h1 className="display max-w-[900px] text-[60px] leading-[0.92] text-ink">Who did the<br />market underrate?</h1>
+        <h1 className="display max-w-[900px] text-[40px] leading-[0.92] md:text-[60px] text-ink">Who did the<br />market underrate?</h1>
         <p className="mt-4 max-w-[640px] text-[15.5px] leading-relaxed text-ink-2">
           Every player with enough minutes (900 in a league season, 270 at a tournament), ranked by the value our models say they added, against what the transfer market said they were worth at the time.
         </p>
