@@ -23,6 +23,7 @@ from matchmind.models.gamestate_model import (
     anchor_features,
     intervene,
     match_context,
+    player_ratings,
     predict,
     prepare_actions,
 )
@@ -46,6 +47,16 @@ def model_metadata() -> dict:
         "coverage_p10_p90": {
             "xg": report["metrics"]["xg_for"]["coverage_p10_p90"],
             "possession": report["metrics"]["possession_share"]["coverage_p10_p90"],
+        },
+        # Share of the constant-range baseline's median error the model removes.
+        "skill_vs_constant": {
+            key: round(
+                1
+                - report["metrics"][target]["pinball"]["p50"]
+                / report["baselines"][target]["constant"]["pinball"]["p50"],
+                4,
+            )
+            for key, target in (("xg", "xg_for"), ("possession", "possession_share"))
         },
     }
 
@@ -125,9 +136,12 @@ def run_counterfactual(match_id: str, event_id: str, change: str) -> dict:
     try:
         actions, context = inference_inputs(match_id)
         anchor = {**context["anchors"][event_id], "team": marker["team"]}
-        factual = anchor_features(actions, context, anchor, require_match(match_id))
-        changed = intervene(factual, anchor, context, change)
+        match = require_match(match_id)
+        ratings = player_ratings(context, match)
+        factual = anchor_features(actions, context, anchor, match)
+        changed = intervene(factual, anchor, context, change, ratings)
         predictions = predict(changed)
+        baseline = predict(factual)
         metadata = model_metadata()
         focus = 0 if marker["team"] == "home" else 1
         neighbours = training_analogs().nearest(changed.iloc[[focus]], match_id)
@@ -145,5 +159,44 @@ def run_counterfactual(match_id: str, event_id: str, change: str) -> dict:
         pd.DataFrame(b["events"]), b["match"]["markers"], marker["t"]
     )
     return counterfactual_response(
-        b["match"], marker, change, actual, neighbours, predictions, metadata, goals
+        b["match"],
+        marker,
+        change,
+        actual,
+        neighbours,
+        predictions,
+        metadata,
+        goals,
+        factual=baseline,
+        lineup_change=lineup_change(b, context, event_id, ratings),
     )
+
+
+def lineup_change(
+    b: dict, context: dict, event_id: str, ratings: dict[int, float]
+) -> dict | None:
+    """Who the intervention puts back on the pitch, with the ratings it swaps."""
+    names = {
+        p["player_id"]: p["short_name"]
+        for side in b["match"]["lineups"].values()
+        for p in side
+    }
+
+    def rated(player_id: int) -> dict:
+        return {
+            "player_id": player_id,
+            "name": names.get(player_id, str(player_id)),
+            "vaep_per90": round(ratings[player_id], 4),
+        }
+
+    for m in context["markers"]:
+        if m["event_id"] != event_id:
+            continue
+        if m["type"] == "sub":
+            return {
+                "restored": rated(m["player_off"]),
+                "removed": rated(m["player_on"]),
+            }
+        if m["type"] == "red":
+            return {"restored": rated(m["player"]), "removed": None}
+    return None

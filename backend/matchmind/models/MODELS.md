@@ -180,44 +180,62 @@ SPADL deliberately excludes raw non-actions such as pressure, ball receipt, line
 
 ## Game-state model: modelled, not causal
 
-Nine LightGBM quantile regressors: p10/p50/p90 for next-15-minute xG for, xG against and possession share. 106,994 five-minute team-perspective windows; 89,450 complete-horizon training/evaluation rows across 2,924 matches. 17,544 late/censored or no-pass future rows remain in the window artifact but are not fitted or scored.
+Nine LightGBM quantile regressors: p10/p50/p90 for next-15-minute xG for, xG against and possession share. 106,994 five-minute team-perspective windows; 89,450 complete-horizon training/evaluation rows across 2,924 matches. 17,544 late/censored or no-pass future rows remain in the window artifact but are not fitted or scored. Trained 2026-10-04T15:06:51.613373+00:00.
 
-The complete stack is held out: for each outer match fold, xG/VAEP predictors exclude that fold and regenerate both training and test windows. Final models fit all-match OOF windows. Overlapping windows and paired team perspectives never cross match folds. This is retrospective random-match evaluation, not a forward-season generalization test.
+The complete stack is held out: for each outer match fold, xG/VAEP predictors exclude that fold and regenerate both training and test windows, and player ratings exclude the held-out fold plus each row's own match. Final models fit all-match OOF windows. Overlapping windows and paired team perspectives never cross match folds. This is retrospective random-match evaluation, not a forward-season generalization test.
 
-Histories are five minutes within a period. Period timestamps concatenate actual playing-clock durations, including stoppage but excluding interval breaks and shootouts. Future horizons can cross half-time. Possession is a **pass-count share proxy**, matching the raw DB convention, not tracked possession time. Field tilt is share of actions beginning beyond 70 metres; an empty denominator yields 0.5 and is not evidence of equal control. Targets are model xG sums, not actual future goals.
+Histories are five minutes within a period. Period timestamps concatenate actual playing-clock durations, including stoppage but excluding interval breaks and shootouts. Future horizons can cross half-time. Possession is a **pass-count share proxy**, not tracked possession time. Field tilt is share of actions beginning beyond 70 metres. Targets are model xG sums, not actual future goals.
 
-Inference contract: `featurize(window_rows)` selects the ordered feature list below and rejects missing/nonfinite inputs. `predict(features)` returns `{target: {p10: [values], p50: [values], p90: [values]}}`, with one aligned value per row. Quantiles are rearranged to remove crossings and clipped to physical support. The API must use the same five-minute feature definitions. Features:
+**Who is on the pitch.** `lineup_vaep_for/against` sum the on-pitch players' ratings: shrunk VAEP per 90 (900 corpus-average minutes of prior) from every *other* match (`player_ratings.py`). Substitutions and dismissals update the set. This gives `no_sub` and `remove_red_card` a player-specific mechanism: the intervention swaps the incoming player's rating back to the outgoing player's (or restores the dismissed player's). Ratings are career-wide, not strictly prior-in-time: fine for retrospective analysis, not a forecast.
 
-`minute, period, score_diff, possession_share, field_tilt, xg_for, xg_against, vaep_for, vaep_against, xt_for_rate, xt_against_rate, shots_for, shots_against, minutes_since_sub, minutes_since_opponent_sub, players_for, players_against, is_home, international_tournament`
+Inference contract: `featurize(window_rows)` selects the ordered feature list below and rejects missing/nonfinite inputs. `predict(features)` returns `{target: {p10: [...], p50: [...], p90: [...]}}`, one aligned value per row, after rearranging crossings, clipping to physical support and applying the outer-quantile calibration factors. Features:
+
+`minute, period, score_diff, possession_share, field_tilt, xg_for, xg_against, vaep_for, vaep_against, xt_for_rate, xt_against_rate, shots_for, shots_against, minutes_since_sub, minutes_since_opponent_sub, players_for, players_against, is_home, international_tournament, lineup_vaep_for, lineup_vaep_against`
 
 | Target | p10 loss | p50 loss | p90 loss | p10–p90 coverage | Mean width | Zero outcomes |
 | --- | --- | --- | --- | --- | --- | --- |
-| xg_for | 0.021630 | 0.088345 | 0.065384 | 0.883522 | 0.565522 | 0.176467 |
-| xg_against | 0.021627 | 0.088349 | 0.065417 | 0.881733 | 0.565357 | 0.176467 |
-| possession_share | 0.021365 | 0.049616 | 0.021368 | 0.794298 | 0.318316 | 0.000000 |
+| xg_for | 0.0216 | 0.0870 | 0.0639 | 0.879 | 0.564 | 0.176 |
+| xg_against | 0.0216 | 0.0870 | 0.0639 | 0.879 | 0.566 | 0.176 |
+| possession_share | 0.0192 | 0.0443 | 0.0192 | 0.798 | 0.286 | 0.000 |
 
-Coverage is inclusive, evaluated against held-out outcomes; zero-inflated xG targets need not achieve exactly 80% with deterministic quantiles. Bands describe outcome spread, not confidence intervals on a causal effect.
+**Baselines (held-out median pinball loss, lower is better).** "One fixed range" predicts the same training quantiles for every situation; "in-match only" is the previous 19-feature model without lineup ratings.
+
+| Target | Model | p50 loss | p10–p90 coverage |
+| --- | --- | --- | --- |
+| xg_for | One fixed range | 0.0912 | 0.900 |
+| xg_for | In-match only (old) | 0.0883 | 0.884 |
+| xg_for | **This model** | **0.0870** | 0.879 |
+| xg_against | One fixed range | 0.0912 | 0.900 |
+| xg_against | In-match only (old) | 0.0883 | 0.882 |
+| xg_against | **This model** | **0.0870** | 0.879 |
+| possession_share | One fixed range | 0.0621 | 0.801 |
+| possession_share | In-match only (old) | 0.0496 | 0.794 |
+| possession_share | **This model** | **0.0443** | 0.798 |
+
+Skill vs one fixed range: **4.6%** for xG, **28.7%** for possession. Fifteen minutes of xG is dominated by whether a single big chance happens, so the xG band stays wide and only modestly sharper than a constant; possession is far more predictable from team style and quality.
+
+**Calibration.** p10/p90 distance from p50 scaled to minimise out-of-fold pinball loss; reported metrics are cross-fitted (factors fitted on the other four folds) and production uses factors fitted on all out-of-fold forecasts. Factors: {"xg_for": [1.0, 1.02], "xg_against": [1.0, 1.02], "possession_share": [1.02, 1.02]} (1.0 = unchanged; the raw quantiles were already close). Per-quantile checks on held-out rows are the right test here: 15-minute xG is exactly zero in about 18% of windows, so a p10 of 0 makes nominal p10–p90 coverage about 90%, not 80%.
 
 | Target | State | N | Coverage | Mean band width |
 | --- | --- | --- | --- | --- |
-| xg_for | leading | 22462 | 0.874588 | 0.695604 |
-| xg_for | drawing | 44526 | 0.885977 | 0.521886 |
-| xg_for | trailing | 22462 | 0.887588 | 0.521940 |
-| xg_for | red_card | 4068 | 0.882989 | 0.585067 |
-| xg_for | early | 29240 | 0.883618 | 0.528643 |
-| xg_for | late | 25070 | 0.885441 | 0.592613 |
-| xg_against | leading | 22462 | 0.886608 | 0.521484 |
-| xg_against | drawing | 44526 | 0.884652 | 0.522234 |
-| xg_against | trailing | 22462 | 0.871071 | 0.694712 |
-| xg_against | red_card | 4068 | 0.879056 | 0.584878 |
-| xg_against | early | 29240 | 0.881361 | 0.528865 |
-| xg_against | late | 25070 | 0.883566 | 0.591520 |
-| possession_share | leading | 22462 | 0.794898 | 0.319590 |
-| possession_share | drawing | 44526 | 0.794210 | 0.317209 |
-| possession_share | trailing | 22462 | 0.793874 | 0.319237 |
-| possession_share | red_card | 4068 | 0.789577 | 0.304536 |
-| possession_share | early | 29240 | 0.797640 | 0.315055 |
-| possession_share | late | 25070 | 0.788991 | 0.326131 |
+| xg_for | leading | 22462 | 0.862 | 0.692 |
+| xg_for | drawing | 44526 | 0.884 | 0.528 |
+| xg_for | trailing | 22462 | 0.886 | 0.507 |
+| xg_for | red_card | 4068 | 0.881 | 0.576 |
+| xg_for | early | 29240 | 0.877 | 0.528 |
+| xg_for | late | 25070 | 0.881 | 0.592 |
+| xg_against | leading | 22462 | 0.886 | 0.508 |
+| xg_against | drawing | 44526 | 0.884 | 0.530 |
+| xg_against | trailing | 22462 | 0.863 | 0.694 |
+| xg_against | red_card | 4068 | 0.881 | 0.576 |
+| xg_against | early | 29240 | 0.878 | 0.530 |
+| xg_against | late | 25070 | 0.881 | 0.593 |
+| possession_share | leading | 22462 | 0.795 | 0.284 |
+| possession_share | drawing | 44526 | 0.800 | 0.288 |
+| possession_share | trailing | 22462 | 0.795 | 0.284 |
+| possession_share | red_card | 4068 | 0.790 | 0.277 |
+| possession_share | early | 29240 | 0.801 | 0.282 |
+| possession_share | late | 25070 | 0.792 | 0.297 |
 
 ### Confounding diagnostic
 
@@ -225,12 +243,25 @@ Only score_diff changed from -1 to +1, holding all other held-out features fixed
 
 | Diagnostic | xG |
 | --- | --- |
-| mean_modelled_median_xg_shift | 0.023925 |
+| mean_modelled_median_xg_shift | 0.001252 |
 | raw_mean_xg_leading | 0.272883 |
 | raw_mean_xg_trailing | 0.196543 |
 | raw_mean_xg_difference | 0.076341 |
 
-**Goals, substitutions and dismissals are not random.** Strong teams lead more, chasing teams attack differently, and coaches substitute because of fatigue, injury and tactical problems that are only partly observed. Changing score difference while holding recent xG/VAEP fixed creates an artificial state; it does not remove the goal’s downstream consequences. `no_sub` must restore the prior substitution age (or elapsed minutes if none), and `remove_red_card` restores only the affected player count. These are modelled sensitivities. Display analogs and the caveat prominently; never claim what would have happened.
+**Goals, substitutions and dismissals are not random.** Strong teams lead more, chasing teams attack differently, and coaches substitute because of fatigue, injury and tactical problems that are only partly observed. These are modelled sensitivities. The API therefore returns the same model's forecast for the real state (`factual`) next to the changed one (`modelled`), their median difference (`effect`) and a `negligible` flag; the UI and the analyst compare those two, never a modelled number with what actually happened. Display analogs and the caveat prominently; never claim what would have happened.
+
+## Pass options: "what if he passed instead of shooting?"
+
+`pass_options.py`. A LightGBM pass-completion model trained on 260,025 open-play passes from the 293 matches with StatsBomb 360 freeze frames. Features: pass geometry plus defenders within 1.5 m and 3 m of the lane, nearest defender to the target and to the passer, defenders within 5 m of the target, distance beyond the offside line (second-last visible defender), passer under pressure, and visible defenders. Pass height, type and body part are excluded because a hypothetical pass has none. Completion rate 85.5%.
+
+| Held-out (5 match folds) | AUC | Brier | Log loss |
+| --- | --- | --- | --- |
+| With defender positions | 0.9363 | 0.0649 | 0.2118 |
+| Geometry only (baseline) | 0.9012 | 0.0736 | 0.2486 |
+
+Calibration deciles (predicted → observed): 0.24→0.24, 0.61→0.61, 0.84→0.83, 0.93→0.93, 0.97→0.97, 0.99→0.99, 0.99→0.99, 1.00→1.00, 1.00→1.00, 1.00→1.00.
+
+At a shot, every teammate in the shot's freeze frame is a pass target: value = P(complete) × max(xG if the receiver shot from there, xT of the receiver's zone). The receiver's xG uses the held-out xG fold model with the same defenders and keeper and assumes a clean first-time strike; the actual shot is scored by the same model, so it matches the app's xG. Both sides are probabilities that the possession ends in a goal. Optimistic by construction (defenders would react, receptions can fail) and always labelled a modelled hypothetical. Example: Kolo Muani's 120+3' chance in the 2022 final, where squaring to Mbappé models above the shot.
 
 ## Artifacts and integration
 

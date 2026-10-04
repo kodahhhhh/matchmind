@@ -301,6 +301,10 @@ class TrainingAnalogs:
         return rows
 
 
+NEGLIGIBLE_XG = 0.02
+NEGLIGIBLE_POSSESSION = 0.01
+
+
 def counterfactual_response(
     match: dict,
     marker: dict,
@@ -310,9 +314,39 @@ def counterfactual_response(
     predictions: dict,
     model: dict,
     analog_goals: dict[str, list[dict]],
+    factual: dict | None = None,
+    lineup_change: dict | None = None,
 ) -> dict:
-    """Keep trained 15-minute totals separate from observed analog outcomes."""
+    """Keep trained 15-minute totals separate from observed analog outcomes.
+
+    `factual` is the same model's forecast for the unchanged state: the honest
+    comparison for `predictions`. Effects are changed minus factual medians.
+    """
     focus = marker["team"]
+    factual = factual or predictions
+
+    def bands(forecast: dict) -> dict:
+        return {
+            side: {
+                metric: {q: values[i] for q, values in forecast[target].items()}
+                for metric, target in (
+                    ("xg", "xg_for"),
+                    ("possession", "possession_share"),
+                )
+            }
+            for i, side in enumerate(("home", "away"))
+        }
+
+    modelled, unchanged = bands(predictions), bands(factual)
+    effect = {
+        side: {
+            metric: round(
+                modelled[side][metric]["p50"] - unchanged[side][metric]["p50"], 4
+            )
+            for metric in ("xg", "possession")
+        }
+        for side in ("home", "away")
+    }
 
     def analog_band(side: str) -> dict:
         target = "outcome_xg_for" if side == focus else "outcome_xg_against"
@@ -358,16 +392,16 @@ def counterfactual_response(
             "label": label,
         },
         "actual": actual[-1],
-        "modelled": {
-            side: {
-                metric: {q: values[i] for q, values in predictions[target].items()}
-                for metric, target in (
-                    ("xg", "xg_for"),
-                    ("possession", "possession_share"),
-                )
-            }
-            for i, side in enumerate(("home", "away"))
-        },
+        "modelled": modelled,
+        "factual": unchanged,
+        "effect": effect,
+        # Below this the change moves neither median by a meaningful amount.
+        "negligible": all(
+            abs(effect[s]["xg"]) < NEGLIGIBLE_XG
+            and abs(effect[s]["possession"]) < NEGLIGIBLE_POSSESSION
+            for s in ("home", "away")
+        ),
+        "lineup_change": lineup_change,
         "series": [
             {
                 "offset_min": i,

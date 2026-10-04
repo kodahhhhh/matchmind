@@ -27,7 +27,8 @@ from matchmind.models.common import (
     event_seconds,
     raw_events,
 )
-from matchmind.models.gamestate_model import FEATURES
+from matchmind.models.gamestate_model import BASE_FEATURES
+from matchmind.models.player_ratings import lineup_features
 from matchmind.models.xg import FEATURES as XG_FEATURES
 
 _SHOTS: dict[int, pd.DataFrame] = {}
@@ -120,6 +121,7 @@ def build_match(match: dict[str, Any]) -> pd.DataFrame:
     goals, subs, reds = [], [], []
     dismissed = set()
     active = {match["home"]["id"]: set(), match["away"]["id"]: set()}
+    lineups = []  # (t, team, players on the pitch after the change)
     for event in events:
         team = event["team"]["id"]
         t = offsets[event["period"]] + event_seconds(event)
@@ -137,10 +139,12 @@ def build_match(match: dict[str, Any]) -> pd.DataFrame:
             )
         if kind == "Starting XI":
             active[team] = {p["player"]["id"] for p in event["tactics"]["lineup"]}
+            lineups.append((t, team, sorted(active[team])))
         if kind == "Substitution":
             subs.append((t, team))
             active[team].discard(event["player"]["id"])
             active[team].add(event["substitution"]["replacement"]["id"])
+            lineups.append((t, team, sorted(active[team])))
         card = (
             event.get("bad_behaviour", {})
             .get("card", event.get("foul_committed", {}).get("card", {}))
@@ -155,6 +159,15 @@ def build_match(match: dict[str, Any]) -> pd.DataFrame:
             reds.append((t, team))
             dismissed.add(player)
             active[team].discard(player)
+            lineups.append((t, team, sorted(active[team])))
+
+    def on_pitch(team: int, end: float) -> list[int]:
+        current: list[int] = []
+        for t, side, players in lineups:
+            if t < end and side == team:
+                current = players
+        return current
+
     rows = []
     nominal = {1: 0, 2: 45, 3: 90, 4: 105}
     for period, length in lengths.items():
@@ -217,6 +230,8 @@ def build_match(match: dict[str, Any]) -> pd.DataFrame:
                     "players_for": 11 - sum(t < end and g == team for t, g in reds),
                     "players_against": 11
                     - sum(t < end and g == other for t, g in reds),
+                    "on_pitch_for": on_pitch(team, end),
+                    "on_pitch_against": on_pitch(other, end),
                     "is_home": int(side == "home"),
                     "international_tournament": int(
                         match["competition"]
@@ -243,7 +258,7 @@ def build_match(match: dict[str, Any]) -> pd.DataFrame:
                     "match_date": match["match_date"],
                     "reconstructed": match["reconstructed"],
                 }
-                assert set(FEATURES).issubset(row)
+                assert set(BASE_FEATURES).issubset(row)
                 rows.append(row)
     return pd.DataFrame(rows)
 
@@ -259,6 +274,7 @@ def provenance(fold: int | None = None) -> str:
         Path(__file__),
         Path(__file__).with_name("gamestate_model.py"),
         Path(__file__).with_name("common.py"),
+        Path(__file__).with_name("player_ratings.py"),
     ]
     for path in paths:
         digest.update(path.read_bytes())
@@ -293,6 +309,8 @@ def build(fold: int | None = None) -> pd.DataFrame:
             if i % 500 == 0:
                 print("Windows", fold, i, flush=True)
     result = pd.concat(frames, ignore_index=True)
+    # Own match always excluded; fold builds also exclude the held-out fold.
+    result = result.join(lineup_features(result, fold))
     suffix = "" if fold is None else f"_fold_{fold}"
     result.to_parquet(
         data_dir() / f"processed/gamestate_windows{suffix}.parquet", index=False

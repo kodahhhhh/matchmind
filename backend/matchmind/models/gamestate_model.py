@@ -12,9 +12,11 @@ All forecasts/counterfactuals must be labelled MODELLED. To form a hypothetical,
 copy the feature row and change just the intervention: remove_goal subtracts
 one from score_diff for the scoring side (adds one for its opponent); no_sub
 resets minutes_since_sub to its pre-substitution age, or elapsed match minutes
-if no prior substitution; remove_red_card restores the affected players count
-(up to 11). Do not blindly restore both teams if only one card is removed.
-Re-predict the copy. This is an observational sensitivity calculation, NOT a
+if no prior substitution, and swaps the incoming player's rating back to the
+outgoing player's in lineup_vaep; remove_red_card restores the affected players
+count (up to 11) and the dismissed player's rating. Do not blindly restore
+both teams if only one card is removed. Re-predict the copy. This is an
+observational sensitivity calculation, NOT a
 causal estimate: goals, substitutions and dismissals are not randomized.
 """
 
@@ -27,7 +29,7 @@ import pandas as pd
 
 from matchmind.models.common import data_dir
 
-FEATURES = [
+BASE_FEATURES = [
     "minute",
     "period",
     "score_diff",
@@ -48,6 +50,9 @@ FEATURES = [
     "is_home",
     "international_tournament",
 ]
+# Sum of on-pitch players' leave-one-match-out VAEP per 90 (player_ratings).
+LINEUP_FEATURES = ["lineup_vaep_for", "lineup_vaep_against"]
+FEATURES = BASE_FEATURES + LINEUP_FEATURES
 TARGETS = ["xg_for", "xg_against", "possession_share"]
 QUANTILES = [0.1, 0.5, 0.9]
 
@@ -80,6 +85,23 @@ def bound_predictions(values: np.ndarray, target: str) -> np.ndarray:
     )
 
 
+@lru_cache(maxsize=1)
+def _calibration() -> dict[str, list[float]]:
+    """Per-target outer-quantile scale factors fitted on out-of-fold forecasts."""
+    import json
+
+    report = json.loads((data_dir() / "models/gamestate.json").read_text())
+    return report.get("calibration", {}).get("factors", {})
+
+
+def calibrate(values: np.ndarray, target: str, factors: list[float]) -> np.ndarray:
+    """Stretch p10/p90 around p50 by fitted factors (1.0 = unchanged)."""
+    out = values.copy()
+    out[:, 0] = values[:, 1] - factors[0] * (values[:, 1] - values[:, 0])
+    out[:, 2] = values[:, 1] + factors[1] * (values[:, 2] - values[:, 1])
+    return bound_predictions(out, target)
+
+
 def predict(features: pd.DataFrame) -> dict[str, dict[str, list[float]]]:
     frame = featurize(features)
     result = {}
@@ -90,6 +112,8 @@ def predict(features: pd.DataFrame) -> dict[str, dict[str, list[float]]]:
             ),
             target,
         )
+        if target in _calibration():
+            values = calibrate(values, target, _calibration()[target])
         result[target] = {
             f"p{q}": values[:, i].tolist() for i, q in enumerate([10, 50, 90])
         }
@@ -129,6 +153,7 @@ def match_context(raw: list[dict], match: dict) -> dict:
     active = {s: set() for s in sides.values()}
     dismissed = set()
     anchors, markers = {}, []
+    starting: dict[str, list[int]] = {s: [] for s in sides.values()}
     for event in events:
         side = sides[event["team"]["id"]]
         kind = event["type"]["name"]
@@ -151,8 +176,16 @@ def match_context(raw: list[dict], match: dict) -> dict:
             )
         if kind == "Starting XI":
             active[side] = {p["player"]["id"] for p in event["tactics"]["lineup"]}
+            starting[side] = sorted(active[side])
         if kind == "Substitution":
-            markers.append({**anchor, "type": "sub"})
+            markers.append(
+                {
+                    **anchor,
+                    "type": "sub",
+                    "player_off": player,
+                    "player_on": event["substitution"]["replacement"]["id"],
+                }
+            )
             active[side].discard(player)
             active[side].add(event["substitution"]["replacement"]["id"])
         card = (
@@ -165,15 +198,30 @@ def match_context(raw: list[dict], match: dict) -> dict:
             and player not in dismissed
             and player in active[side]
         ):
-            markers.append({**anchor, "type": "red"})
+            markers.append({**anchor, "type": "red", "player": player})
             dismissed.add(player)
             active[side].discard(player)
     return {
         "anchors": anchors,
         "markers": markers,
+        "starting": starting,
         "offsets": offsets,
         "lengths": lengths,
     }
+
+
+def on_pitch(context: dict, side: str, markers: list[dict]) -> list[int]:
+    """Players on the pitch for `side` after replaying the given markers."""
+    players = set(context.get("starting", {}).get(side, []))
+    for m in markers:
+        if m["team"] != side:
+            continue
+        if m["type"] == "sub":
+            players.discard(m["player_off"])
+            players.add(m["player_on"])
+        elif m["type"] == "red":
+            players.discard(m["player"])
+    return sorted(players)
 
 
 def prepare_actions(
@@ -202,6 +250,16 @@ def prepare_actions(
         result.original_event_id.map(indices).bfill().fillna(float("inf"))
     )
     return result
+
+
+def player_ratings(context: dict, match: dict) -> dict[int, float]:
+    """Leave-this-match-out VAEP per 90 for everyone who appears in the lineups."""
+    from matchmind.models.player_ratings import ratings_lomo
+
+    ids = {p for side in context["starting"].values() for p in side}
+    for m in context["markers"]:
+        ids.update(m[k] for k in ("player_off", "player_on", "player") if k in m)
+    return ratings_lomo(sorted(ids), match["native_id"])
 
 
 def anchor_features(
@@ -237,6 +295,7 @@ def anchor_features(
     ]
     passes = int(past.is_pass.sum())
     third = past.start_x > 70
+    ratings = player_ratings(context, match) if "starting" in context else {}
     rows = []
     for side, opposite in (("home", "away"), ("away", "home")):
         own = past[past.team_id == match[side]["id"]]
@@ -286,6 +345,10 @@ def anchor_features(
             "is_home": int(side == "home"),
             "international_tournament": int(match["competition"] in INTERNATIONAL),
         }
+        for tag, team in (("for", side), ("against", opposite)):
+            row[f"lineup_vaep_{tag}"] = sum(
+                ratings[p] for p in on_pitch(context, team, markers)
+            )
         for frame, tag in ((own, "for"), (opp, "against")):
             row[f"xg_{tag}"] = float(frame.xg.sum())
             row[f"vaep_{tag}"] = float(frame.vaep_value.sum())
@@ -296,7 +359,11 @@ def anchor_features(
 
 
 def intervene(
-    factual: pd.DataFrame, anchor: dict, context: dict, change: str
+    factual: pd.DataFrame,
+    anchor: dict,
+    context: dict,
+    change: str,
+    ratings: dict[int, float] | None = None,
 ) -> pd.DataFrame:
     """Edit both perspectives of a copy; preserve observed pre-intervention history."""
     result = featurize(factual)
@@ -315,15 +382,35 @@ def intervene(
         age = (anchor["t"] - max(previous, default=0)) / 60
         result.loc[own, "minutes_since_sub"] = age
         result.loc[other, "minutes_since_opponent_sub"] = age
+        sub = next(
+            (
+                m
+                for m in context["markers"]
+                if m["type"] == "sub" and m.get("event_id") == anchor["event_id"]
+            ),
+            None,
+        )
+        if sub is not None and ratings is not None:
+            swing = ratings[sub["player_off"]] - ratings[sub["player_on"]]
+            result.loc[own, "lineup_vaep_for"] += swing
+            result.loc[other, "lineup_vaep_against"] += swing
     elif change == "remove_red_card":
-        if any(
-            m["type"] == "red" and m["event_id"] == anchor["event_id"]
-            for m in context["markers"]
-        ):
+        red = next(
+            (
+                m
+                for m in context["markers"]
+                if m["type"] == "red" and m.get("event_id") == anchor["event_id"]
+            ),
+            None,
+        )
+        if red is not None:
             result.loc[own, "players_for"] = min(11, result.loc[own, "players_for"] + 1)
             result.loc[other, "players_against"] = min(
                 11, result.loc[other, "players_against"] + 1
             )
+            if ratings is not None:
+                result.loc[own, "lineup_vaep_for"] += ratings[red["player"]]
+                result.loc[other, "lineup_vaep_against"] += ratings[red["player"]]
     else:
         raise ValueError(f"Unsupported intervention: {change}")
     return result

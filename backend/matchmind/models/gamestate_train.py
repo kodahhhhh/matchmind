@@ -14,13 +14,30 @@ from sklearn.metrics import mean_pinball_loss
 
 from matchmind.models.common import data_dir, fold_map, save_json, timestamp
 from matchmind.models.gamestate_model import (
+    BASE_FEATURES,
     FEATURES,
     QUANTILES,
     TARGETS,
     bound_predictions,
+    calibrate,
     featurize,
 )
 from matchmind.models.windows import load_or_build
+
+FACTORS = np.round(np.arange(0.3, 2.01, 0.02), 2)
+
+
+def fit_factors(y: np.ndarray, p: np.ndarray, target: str) -> list[float]:
+    """Scale p10/p90 distance from p50 to minimise each quantile's pinball loss."""
+    best = []
+    for j, (i, alpha) in enumerate(((0, 0.1), (2, 0.9))):
+        losses = []
+        for f in FACTORS:
+            factors = [f, 1.0] if j == 0 else [1.0, f]
+            q = calibrate(p, target, factors)[:, i]
+            losses.append(mean_pinball_loss(y, q, alpha=alpha))
+        best.append(float(FACTORS[int(np.argmin(losses))]))
+    return best
 
 
 def evaluate(y: np.ndarray, p: np.ndarray) -> dict:
@@ -43,6 +60,8 @@ def main() -> None:
     windows = all_windows[complete].copy()
     folds = windows.game_id.map(fold_map()).to_numpy()
     predictions = {target: np.zeros((len(windows), 3)) for target in TARGETS}
+    base_predictions = {target: np.zeros((len(windows), 3)) for target in TARGETS}
+    constant = {target: np.zeros((len(windows), 3)) for target in TARGETS}
     outcomes = {target: np.zeros(len(windows)) for target in TARGETS}
     score_shift = np.zeros(len(windows))
     params = dict(
@@ -72,12 +91,24 @@ def main() -> None:
                     objective="quantile", alpha=quantile, **params
                 ).fit(x[~test], y[~test])
                 predictions[target][test, j] = model.predict(x[test])
+                # Baselines: the previous in-match-only features, and one
+                # constant quantile for every situation.
+                base = lgb.LGBMRegressor(
+                    objective="quantile", alpha=quantile, **params
+                ).fit(x.loc[~test, BASE_FEATURES], y[~test])
+                base_predictions[target][test, j] = base.predict(
+                    x.loc[test, BASE_FEATURES]
+                )
+                constant[target][test, j] = np.quantile(y[~test], quantile)
                 if target == "xg_for" and quantile == 0.5:
                     leading, trailing = x[test].copy(), x[test].copy()
                     leading["score_diff"], trailing["score_diff"] = 1, -1
                     score_shift[test] = model.predict(leading) - model.predict(trailing)
             predictions[target][test] = bound_predictions(
                 predictions[target][test], target
+            )
+            base_predictions[target][test] = bound_predictions(
+                base_predictions[target][test], target
             )
             result = evaluate(y[test], predictions[target][test])
             fold_metrics.append({"fold": fold, "target": target, **result})
@@ -93,10 +124,22 @@ def main() -> None:
         "params": params,
         "validation": (
             "5 grouped outer match folds; upstream xG/VAEP refitted excluding "
-            "each held-out fold; complete 15-minute horizons only"
+            "each held-out fold; player ratings exclude the held-out fold and "
+            "each row's own match; complete 15-minute horizons only"
         ),
         "metrics": {},
         "fold_metrics": fold_metrics,
+        "baselines": {},
+        "calibration": {
+            "method": (
+                "p10/p90 distance from p50 scaled to minimise out-of-fold "
+                "pinball loss; reported metrics are cross-fitted (factors "
+                "fitted on the other four folds) and production uses factors "
+                "fitted on all out-of-fold forecasts."
+            ),
+            "factors": {},
+            "uncalibrated": {},
+        },
     }
     scored = windows[
         [
@@ -110,7 +153,20 @@ def main() -> None:
         ]
     ].copy()
     for target in TARGETS:
-        y, p = outcomes[target], predictions[target]
+        y, raw = outcomes[target], predictions[target]
+        report["calibration"]["uncalibrated"][target] = evaluate(y, raw)
+        p = raw.copy()
+        for fold in range(5):
+            test = folds == fold
+            p[test] = calibrate(
+                raw[test], target, fit_factors(y[~test], raw[~test], target)
+            )
+        report["calibration"]["factors"][target] = fit_factors(y, raw, target)
+        predictions[target] = p
+        report["baselines"][target] = {
+            "in_match_only": evaluate(y, base_predictions[target]),
+            "constant": evaluate(y, constant[target]),
+        }
         report["metrics"][target] = evaluate(y, p)
         report["metrics"][target]["by_state"] = {}
         for state, select in {

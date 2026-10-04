@@ -351,6 +351,23 @@ class ForecastModel(Contract):
     name: str
     trained_matches: int
     coverage_p10_p90: ModelCoverage
+    skill_vs_constant: ModelCoverage
+
+
+class Effect(Contract):
+    xg: float
+    possession: float
+
+
+class LineupPlayer(Contract):
+    player_id: int
+    name: str
+    vaep_per90: float
+
+
+class LineupChange(Contract):
+    restored: LineupPlayer
+    removed: LineupPlayer | None
 
 
 class AnalogXg(Contract):
@@ -375,9 +392,60 @@ class Counterfactual(Contract):
     anchor: Anchor
     actual: Sides[Actual]
     modelled: Sides[Modelled]
+    factual: Sides[Modelled]
+    effect: Sides[Effect]
+    negligible: bool
+    lineup_change: LineupChange | None
     series: list[BranchPoint]
     analogs: list[Analog]
     n_analogs: int
+    caveat: str
+
+
+class ShotMoment(Contract):
+    event_id: str
+    team: Side
+    player_id: int | None
+    player: str
+    period: int
+    minute: int
+    label: str
+    x: float
+    y: float
+    xg: float
+    outcome: str
+
+
+class PassOption(Contract):
+    player_id: int | None
+    player: str
+    x: float
+    y: float
+    p_complete: float
+    xg_if_shot: float
+    xt: float
+    value: float
+
+
+class PassModel(Contract):
+    name: str
+    trained_passes: int
+    trained_matches: int
+    auc: float
+    brier: float
+    baseline_auc: float
+
+
+class ShotAlternatives(Contract):
+    match_id: str
+    event_id: str
+    label: Literal["Modelled hypothetical"]
+    shot: ShotMoment
+    options: list[PassOption]
+    comparison: Literal["pass_higher", "shot_higher", "similar", "no_teammates"]
+    margin: float | None
+    model: PassModel
+    assumptions: list[str]
     caveat: str
 
 

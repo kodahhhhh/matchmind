@@ -164,7 +164,29 @@ def test_decimal_split_and_invalid_claims() -> None:
     assert grounding_errors("0.7 xG [[ev:sb:3869685:5]]", [result]) == {
         "unsupported_numbers": ["0.7"],
         "unsupported_citations": ["ev:sb:3869685:5"],
+        "unsupported_units": ["0.7 xG"],
+        "forbidden_phrasing": [],
     }
+
+
+def test_unit_claims_and_forbidden_phrasing() -> None:
+    result = {"home": {"shots": 2, "xg": 0.339}, "away": {"passes": 51}, "minute": 3}
+    assert not any(
+        grounding_errors("France had 2 shots and 0.339 xG.", [result]).values()
+    )
+    # 3 is in the output (a minute), but never as a shot count.
+    errors = grounding_errors("France had 3 shots.", [result])
+    assert errors["unsupported_units"] == ["3 shots"]
+    assert errors["unsupported_numbers"] == []
+    assert not grounding_errors("Messi made 51 progressive passes.", [result])[
+        "unsupported_units"
+    ]
+    assert grounding_errors("A miss would have helped.", [result])[
+        "forbidden_phrasing"
+    ] == ["would have"]
+    assert grounding_errors("It wouldn't have mattered.", [result])[
+        "forbidden_phrasing"
+    ] == ["wouldn't have"]
 
 
 def test_ask_provider_error_finishes_cleanly() -> None:
@@ -197,5 +219,12 @@ def test_counterfactual_model_seam_receives_intervention_state() -> None:
         result = run_counterfactual("sb:3869685", "sb:3869685:2928", "remove_goal")
     assert result["label"] == "Modelled hypothetical"
     assert result["method"] == "trained_model"
-    assert len(observed) == 1
+    # Changed state first, then the same model on the real (factual) state.
+    assert len(observed) == 2
     assert observed[0].score_diff.tolist() == [2, -2]
+    assert observed[1].score_diff.tolist() == [1, -1]
+    assert result["effect"]["home"]["xg"] == round(
+        result["modelled"]["home"]["xg"]["p50"]
+        - result["factual"]["home"]["xg"]["p50"],
+        4,
+    )

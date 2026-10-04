@@ -105,6 +105,29 @@ def test_interventions_only_change_affected_features(side: str, change: str) -> 
     pd.testing.assert_frame_equal(factual, original)
 
 
+def test_no_sub_swaps_player_ratings_back() -> None:
+    frame = pd.DataFrame([dict.fromkeys(FEATURES, 0.0)] * 2)
+    frame["lineup_vaep_for"], frame["lineup_vaep_against"] = [1.5, 1.4], [1.4, 1.5]
+    frame["players_for"] = frame["players_against"] = 11
+    anchor = {"team": "away", "t": 600, "index": 12, "event_id": "sb:1:12"}
+    context = {
+        "markers": [
+            {
+                "type": "sub",
+                "team": "away",
+                "t": 600,
+                "index": 12,
+                "event_id": "sb:1:12",
+                "player_off": 7,
+                "player_on": 8,
+            }
+        ]
+    }
+    changed = intervene(frame, anchor, context, "no_sub", {7: 0.4, 8: 0.1})
+    assert changed.lineup_vaep_for.tolist() == pytest.approx([1.5, 1.7])
+    assert changed.lineup_vaep_against.tolist() == pytest.approx([1.7, 1.5])
+
+
 def test_sub_without_prior_and_bench_red() -> None:
     frame = pd.DataFrame([dict.fromkeys(FEATURES, 0.0)] * 2)
     frame["players_for"] = frame["players_against"] = 11

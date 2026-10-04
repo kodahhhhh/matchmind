@@ -1,0 +1,66 @@
+{
+ "match_id": "sb:3869685",
+ "event_id": "sb:3869685:4337",
+ "label": "Modelled hypothetical",
+ "shot": {
+  "event_id": "sb:3869685:4337",
+  "team": "away",
+  "player_id": 22097,
+  "player": "Kolo",
+  "period": 4,
+  "minute": 122,
+  "label": "120+3'",
+  "x": 14.26,
+  "y": 38.34,
+  "xg": 0.1939,
+  "outcome": "Saved"
+ },
+ "options": [
+  {
+   "player_id": 3009,
+   "player": "Mbappé",
+   "x": 14.7,
+   "y": 30.69,
+   "p_complete": 0.488,
+   "xg_if_shot": 0.5677,
+   "xt": 0.0928,
+   "value": 0.2771
+  },
+  {
+   "player_id": 2972,
+   "player": "Thuram",
+   "x": 22.31,
+   "y": 33.06,
+   "p_complete": 0.8924,
+   "xg_if_shot": 0.1337,
+   "xt": 0.0327,
+   "value": 0.1194
+  },
+  {
+   "player_id": 8217,
+   "player": "Coman",
+   "x": 26.51,
+   "y": 51.43,
+   "p_complete": 0.9374,
+   "xg_if_shot": 0.1041,
+   "xt": 0.0176,
+   "value": 0.0976
+  }
+ ],
+ "comparison": "pass_higher",
+ "margin": 0.0832,
+ "model": {
+  "name": "Pass completion (LightGBM, StatsBomb 360)",
+  "trained_passes": 260025,
+  "trained_matches": 293,
+  "auc": 0.9363,
+  "brier": 0.0649,
+  "baseline_auc": 0.9012
+ },
+ "assumptions": [
+  "Pass completion from a model of 360 freeze-frame passes (lane and target defenders, offside line).",
+  "After receiving, the better of an immediate first-time shot (our xG model, same defenders and keeper) or the zone's average threat (xT).",
+  "The actual shot and every hypothetical shot use the same xG model, which never saw this match."
+ ],
+ "caveat": "Modelled hypothetical from the frozen moment of the shot: defenders would react, and the receiver's control and finish are assumed. Not what would have happened."
+}

@@ -185,3 +185,39 @@ def test_fixture_sse_variants() -> None:
     adapter = TypeAdapter(s.AskChunk)
     for chunk in chunks:
         adapter.validate_python(chunk)
+
+
+def test_counterfactual_reports_factual_band_and_lineup_change(
+    client: TestClient,
+) -> None:
+    marker = next(m for m in bundle(FINAL)["match"]["markers"] if m["type"] == "sub")
+    actual = client.post(
+        f"/api/matches/{FINAL}/counterfactual",
+        json={"event_id": marker["event_id"], "change": "no_sub"},
+    ).json()
+    change = actual["lineup_change"]
+    assert change["restored"]["player_id"] == marker["player_off_id"]
+    assert change["removed"]["player_id"] == marker["player_id"]
+    for side in ("home", "away"):
+        for metric in ("xg", "possession"):
+            assert actual["effect"][side][metric] == pytest.approx(
+                actual["modelled"][side][metric]["p50"]
+                - actual["factual"][side][metric]["p50"],
+                abs=1e-4,
+            )
+
+
+def test_shot_alternatives_contract(client: TestClient) -> None:
+    fixture = json.loads((DIRECTORY / "shot-alternatives.json").read_text())
+    r = client.get(f"/api/matches/{FINAL}/shots/{fixture['event_id']}/alternatives")
+    assert r.status_code == 200, r.text
+    actual = r.json()
+    assert_shape(actual, [fixture])
+    values = [o["value"] for o in actual["options"]]
+    assert values == sorted(values, reverse=True)
+    assert all(0 <= o["p_complete"] <= 1 for o in actual["options"])
+    assert all(0 <= o["x"] <= 105 and 0 <= o["y"] <= 68 for o in actual["options"])
+    # Penalties and non-shots have no passing alternative.
+    for event_id in ("sb:3869685:2928", "sb:3869685:1378"):
+        url = f"/api/matches/{FINAL}/shots/{event_id}/alternatives"
+        assert client.get(url).status_code == 422
