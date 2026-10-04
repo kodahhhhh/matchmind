@@ -288,8 +288,12 @@ export interface BacktestStrategy {
   bets: BacktestBet[];
 }
 
+export interface BacktestRun { n_bets: number; pnl: number; roi: number; roi_ci95: [number, number]; brier_model: number }
+
 export interface Backtest {
   generated_at: string;
+  model_versions?: { before: string; after: string };
+  comparison?: { strategy_id: string; before: BacktestRun; after: BacktestRun }[];
   sources: { name: string; matches: number; notes: string }[];
   strategies: BacktestStrategy[];
   caveats: string[];

@@ -54,6 +54,7 @@ export function BacktestPage() {
             {headline(bt).map((s, i) => <StrategyCard key={s.id} s={s} i={i} />)}
           </section>
           <Sensitivity bt={bt} />
+          <PlayerDataComparison bt={bt} />
 
           <section className="mx-auto max-w-[1280px] px-8 pt-10">
             <div className="mb-4 flex items-center justify-between">
@@ -131,6 +132,41 @@ function Sensitivity({ bt }: { bt: Backtest }) {
           </div>
         ))}
       </div>
+    </section>
+  );
+}
+
+/** Before/after adding squad data (starting-XI market value, age, missing regulars) to the models. */
+function PlayerDataComparison({ bt }: { bt: Backtest }) {
+  if (!bt.comparison?.length) return null;
+  const byId = new Map(bt.strategies.map((s) => [s.id, s]));
+  const pm = bt.comparison.find((c) => c.strategy_id.startsWith("pinnacle"));
+  return (
+    <section className="mx-auto max-w-[1280px] px-8 pt-10">
+      <h2 className="display text-[28px] text-ink">Did player data help?</h2>
+      <p className="mt-1 max-w-[760px] text-[13.5px] leading-relaxed text-ink-3">
+        We added squad information from Transfermarkt (CC0): each starting XI's market value at kick-off, age, caps, and which regular starters were missing.
+        {pm && <> It made the pre-match model more accurate (Brier {pm.before.brier_model.toFixed(3)} → <span className="font-semibold text-ink">{pm.after.brier_model.toFixed(3)}</span>, lower is better), but not more profitable. The in-play version got worse, so we kept the original.</>}
+      </p>
+      <div className="mt-4 overflow-hidden rounded-[var(--radius)] bg-surface-1 ring-1 ring-line">
+        <div className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr] gap-3 border-b border-line px-5 py-2.5 text-[10.5px] font-semibold uppercase tracking-[0.12em] text-ink-4">
+          <span>Strategy</span><span>Brier before → after</span><span>ROI before</span><span>ROI after</span><span>95% CI after</span>
+        </div>
+        {bt.comparison.map((c, i) => {
+          const s = byId.get(c.strategy_id);
+          const better = c.after.brier_model < c.before.brier_model - 1e-6;
+          return (
+            <div key={c.strategy_id} className={`grid grid-cols-[2fr_1fr_1fr_1fr_1fr] items-center gap-3 px-5 py-2.5 text-[13px] ${i ? "border-t border-line" : ""}`}>
+              <span className="font-medium text-ink">{s?.name ?? c.strategy_id}</span>
+              <span className="tabular text-ink-2">{c.before.brier_model.toFixed(3)} → <span className={better ? "font-semibold text-[#3ccf8e]" : "text-ink-3"}>{c.after.brier_model.toFixed(3)}</span></span>
+              <span className="tabular text-ink-3">{pctS(c.before.roi)}</span>
+              <span className={`font-semibold tabular ${c.after.roi >= 0 ? "text-[#3ccf8e]" : "text-[#ff6b6b]"}`}>{pctS(c.after.roi)}</span>
+              <span className="tabular text-ink-3">{pctS(c.after.roi_ci95[0])} to {pctS(c.after.roi_ci95[1])}</span>
+            </div>
+          );
+        })}
+      </div>
+      {bt.model_versions && <div className="mt-2 text-[11px] text-ink-4">Models: {bt.model_versions.before} → {bt.model_versions.after}</div>}
     </section>
   );
 }
