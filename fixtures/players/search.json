@@ -2,11 +2,12 @@
   "results": [
     {
       "player_id": 3009,
+      "in_dataset": true,
       "name": "Kylian Mbappé Lottin",
       "short_name": "Kylian Mbappé",
       "nationality": "France",
       "position": "Centre-Forward",
-      "photo_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/95/Kylian_Mbappe_France_v_Senegal_16_June_2026-391_%28cropped%29.jpg/330px-Kylian_Mbappe_France_v_Senegal_16_June_2026-391_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "photo_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/95/Kylian_Mbappe_France_v_Senegal_16_June_2026-391_%28cropped%29.jpg/500px-Kylian_Mbappe_France_v_Senegal_16_June_2026-391_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
       "teams": [
         "AS Monaco",
         "France",
@@ -14,6 +15,20 @@
       ],
       "matches": 86,
       "vaep_per90": 0.46710796668570925
+    },
+    {
+      "player_id": -903666,
+      "in_dataset": false,
+      "name": "Ethan Mbappé",
+      "short_name": "Ethan Mbappé",
+      "nationality": "France",
+      "position": "Right Winger",
+      "photo_url": null,
+      "teams": [
+        "LOSC Lille"
+      ],
+      "matches": 0,
+      "vaep_per90": 0
     }
   ]
 }

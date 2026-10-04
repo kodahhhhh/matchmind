@@ -145,7 +145,7 @@ def get_player_profile(player_id: int, match_id: str | None = None) -> dict:
 
 
 @lru_cache(maxsize=1)
-def search_index() -> list[tuple[list[str], dict]]:
+def search_index() -> list[tuple[list[str], list[str], dict]]:
     """Precompute normalized names/results ordered by dataset, then market value."""
     profiles, _, careers, _ = store()
     ranked = sorted(
@@ -161,16 +161,15 @@ def search_index() -> list[tuple[list[str], dict]]:
         summary = careers.get(
             str(pid), {"career": {"matches": 0, "vaep_per90": 0}, "matches": []}
         )
-        names = sorted(
-            {normalise(row[k]) for k in ("name", "short_name", "nickname")}
-            | {normalise(n) for n in row.get("aliases", [])}
-        )
+        primary = {normalise(row[k]) for k in ("name", "short_name", "nickname")} - {""}
+        names = sorted(primary | {normalise(n) for n in row.get("aliases", [])} - {""})
         teams = sorted({m["team"] for m in summary["matches"]})
         if not row["in_dataset"] and row["current_club"]:
             teams = [row["current_club"]]
         results.append(
             (
                 names,
+                sorted(primary),
                 {
                     "player_id": pid,
                     "in_dataset": row["in_dataset"],
@@ -198,7 +197,7 @@ def search_players(query: str, limit: int = 20) -> dict:
     tokens = normalise(query).split()
     index = search_index()
     if not tokens:
-        return {"results": [r for _, r in index[:limit]]}
+        return {"results": [r for _, _, r in index[:limit]]}
     postings = search_postings()
     grams = {
         token[i : i + min(3, len(token))]
@@ -207,21 +206,24 @@ def search_players(query: str, limit: int = 20) -> dict:
     }
     groups = sorted((postings.get(g, set()) for g in grams), key=len)
     candidates = groups[0].intersection(*groups[1:])
-    results = []
-    for offset in sorted(candidates):
-        names, row = index[offset]
-        if not tokens or any(all(token in name for token in tokens) for name in names):
-            results.append(row)
-            if len(results) == limit:
-                break
-    return {"results": results}
+    # Rank: matches on a player's real names before alias-only matches (Wikidata
+    # aliases include nicknames and jokes), then the precomputed dataset/value order.
+    scored = []
+    for offset in candidates:
+        names, primary, row = index[offset]
+        if any(all(token in name for token in tokens) for name in primary):
+            scored.append((0, offset, row))
+        elif any(all(token in name for token in tokens) for name in names):
+            scored.append((1, offset, row))
+    scored.sort(key=lambda item: item[:2])
+    return {"results": [row for _, _, row in scored[:limit]]}
 
 
 @lru_cache(maxsize=1)
 def search_postings() -> dict[str, set[int]]:
     """A substring index preserves token search while bounding worst-case scans."""
     postings = {}
-    for offset, (names, _) in enumerate(search_index()):
+    for offset, (names, _, _) in enumerate(search_index()):
         grams = {
             name[i : i + width]
             for name in names

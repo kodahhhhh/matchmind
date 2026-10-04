@@ -193,7 +193,7 @@ def test_every_tm_identity_is_searchable_and_ids_do_not_collide() -> None:
     assert {pid for pid, p in profiles.items() if p["in_dataset"]} == {
         int(pid) for pid in careers
     }
-    assert set(r["player_id"] for _, r in service.search_index()) == set(profiles)
+    assert set(r["player_id"] for _, _, r in service.search_index()) == set(profiles)
     for pid, p in profiles.items():
         assert p["in_dataset"] == (pid > 0)
         assert ("statsbomb" in p["sources"]) == p["in_dataset"]
@@ -217,11 +217,17 @@ def test_index_matches_scan_and_ranks_dataset_then_market_value() -> None:
         "joao pedro",
     ]:
         tokens = service.normalise(query).split()
-        expected = [
-            row
-            for names, row in service.search_index()
-            if not tokens or any(all(t in name for t in tokens) for name in names)
-        ][:20]
+        index = service.search_index()
+
+        def hit(names: list[str], tokens: list[str] = tokens) -> bool:
+            return any(all(t in name for t in tokens) for name in names)
+
+        # real-name matches rank before alias-only matches, each in index order
+        primary = [row for _, prim, row in index if not tokens or hit(prim)]
+        alias = [
+            row for names, prim, row in index if tokens and not hit(prim) and hit(names)
+        ]
+        expected = (primary + alias)[:20]
         assert service.search_players(query)["results"] == expected
         keys = [
             (not r["in_dataset"], -(profiles[r["player_id"]]["market_value_eur"] or 0))

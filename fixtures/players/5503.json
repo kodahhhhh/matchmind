@@ -1,9 +1,8 @@
 {
-  "player_id": 5503,
   "name": "Lionel Andrés Messi Cuccittini",
   "short_name": "Lionel Messi",
   "nickname": "Lionel Messi",
-  "photo_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c8/Leo_Messi_Argentina_v_Egypt_7_July_2026-1.jpg/330px-Leo_Messi_Argentina_v_Egypt_7_July_2026-1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "photo_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c8/Leo_Messi_Argentina_v_Egypt_7_July_2026-1.jpg/500px-Leo_Messi_Argentina_v_Egypt_7_July_2026-1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
   "photo_credit": "Bryan Berlin",
   "photo_license": "CC BY-SA 4.0",
   "date_of_birth": "1987-06-24",
@@ -11,13 +10,20 @@
   "foot": "left",
   "position": "Right Winger",
   "nationality": "Argentina",
-  "transfermarkt_id": 28003,
-  "wikidata_id": "Q615",
   "current_club": "Club Internacional de Fútbol Miami",
   "market_value_eur": 15000000,
   "peak_market_value_eur": 180000000,
   "caps": 204,
   "match_confidence": 0.995,
+  "player_id": 5503,
+  "in_dataset": true,
+  "sources": [
+    "statsbomb",
+    "transfermarkt",
+    "wikidata"
+  ],
+  "transfermarkt_id": 28003,
+  "wikidata_id": "Q615",
   "valuations": [
     {
       "date": "2004-12-20",
