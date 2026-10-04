@@ -278,8 +278,26 @@ export const useMatch = create<State>((set, get) => ({
     const patch = (fn: (m: ChatMessage) => ChatMessage) =>
       set((s) => ({ chat: s.chat.map((m) => (m.id === aid ? fn(m) : m)) }));
     try {
+      // follow the analyst: each newly completed citation jumps the pitch there (paced so it reads as narration)
+      let text = "";
+      let seen = 0;
+      let lastJump = 0;
+      const follow = () => {
+        const refs = [...text.matchAll(/\[\[(ev|seq):([^\]]+)\]\]/g)];
+        if (refs.length <= seen || Date.now() - lastJump < 1200) return;
+        const [, kind, ref] = refs[refs.length - 1];
+        seen = refs.length;
+        lastJump = Date.now();
+        if (get().reel || get().replay) return;
+        if (kind === "ev") get().focusEvent(ref);
+        else get().focusSequence(ref);
+      };
       for await (const chunk of api.ask(id, question, history, signal)) {
-        if (chunk.type === "text") patch((m) => ({ ...m, content: m.content + chunk.delta }));
+        if (chunk.type === "text") {
+          text += chunk.delta;
+          patch((m) => ({ ...m, content: m.content + chunk.delta }));
+          follow();
+        }
         else if (chunk.type === "tool") patch((m) => ({ ...m, tools: [...m.tools, chunk.name] }));
         else if (chunk.type === "done") break;
       }
