@@ -256,3 +256,186 @@ Read-only acceptance (`python -m matchmind.models.verify`): 493 DB matches, 12,5
 - No tracking data, off-ball movement valuation, fatigue/injury measurements or causal identification. SPADL conventions and proxy possession limit interpretation. Own-goal labels follow socceraction and can omit non-shot own goals. Counterfactuals preserve the observed horizon; they do not resimulate whether extra time occurs.
 - Known-corpus xG/VAEP/xT comes from OOF artifacts. Forecast validation is outer-held-out; final game-state inference on known historical windows is in-sample modelled sensitivity. Do not substitute final-model predictions into validation or claim out-of-sample deployment evidence.
 - Quantile coverage is empirical for this corpus and the documented window clock/proxies. All final-model future performance remains unverified.
+
+## W12 player-informed models
+
+
+Generated from artifacts: `2026-10-04T01:59:05.842550+00:00`. W12 explicitly adds a player-model workstream to the older PLAN ownership table. W11 supplies identities; W12 never changes its files.
+
+### Features and leakage boundaries
+
+CC0 Transfermarkt players, player_valuations, games, game_lineups, appearances and clubs are cached under `data/raw/players/transfermarkt/`. Club joins use date, both clubs and explicit name aliases, never scores. Reconstructed Bundesliga dates come from the already-validated bookmaker join. International XIs come from StatsBomb and W11 identities with confidence ≥0.8; unmatched players stay missing.
+
+Pre-match features are home-minus-away differences and mean levels of log(1 + total XI euros), mean log(1 + player euros), log bench value, age at match date, observed earlier international appearances, value of missing usual starters, inferred new-signing share and valuation coverage. Every valuation must be dated strictly before the match; same-day values are excluded. No present-day value, caps, current club or contract snapshot enters a model.
+
+Usual starters started at least three of the team’s previous five observed games, all dated before this match. Clubs use TM lineup history; internationals use prior StatsBomb XIs. Observed caps are the larger of prior TM and SB international appearance counts, a conservative lower bound rather than lifetime caps. Signing share is an imperfect proxy: a player’s first earlier observed appearance at this club must be within 180 days, with an earlier different club observed; established players have at least 180 days at this club. Unknowns stay missing. This is unavailable for national-team selection.
+
+The pre-match candidate is a regularized multinomial correction to the existing walk-forward rating logits. Value, value+age and all-feature sets, with L2 penalties 10 or 100, are scored only on weeks 6–17. Each tuning round fits only earlier rounds. The correction freezes after week 17 while the original ratings continue their established previous-round updates. Missing-value medians and scales use fitting rows only. The original threshold grid and tuning-profit rule are unchanged.
+
+The in-play candidate keeps the incumbent LightGBM parameters and adds log on-pitch value difference plus coverage. Player membership changes only after an observed substitution or on-pitch red card; bench dismissals do not remove active players. All values remain frozen at kickoff. A strength difference is missing unless both sides have values for at least 80% of current players. Strict minute boundaries, the three-minute trading lag, chronological training/calibration/validation partitions, and all tournament exclusions are unchanged.
+
+Candidate selection and retention are distinct. Feature/parameter selection uses tuning data only. Per the requested keep-the-better-model rule, replacement requires both held-out log loss and Brier to improve. The pre-match retention gate therefore uses weeks 18–34 once; it is a post-evaluation deployment decision, not an untouched evaluation of a preselected winner. In-play retention uses the existing 2020–2022 validation partition; tournament results never decide retention. No candidates were retuned after their held-out results.
+
+Retained pre-match: **player-informed candidate**. Retained in-play: **original model**.
+
+Selected pre-match feature set: `value`, L2 `100.0`. Candidate threshold `0.0`, original threshold `0.0`. W11 accepted identities: 5241; TM game joins: 2457/2924.
+
+### Held-out probability scores (lower is better)
+
+| Partition | Predictor | Log loss | Brier |
+| --- | --- | --- | --- |
+| Pinnacle, weeks 18–34 | before | 0.995752 | 0.592742 |
+| Pinnacle, weeks 18–34 | candidate | 0.985647 | 0.584927 |
+| Pinnacle, weeks 18–34 | retained | 0.985647 | 0.584927 |
+| Pinnacle, weeks 18–34 | market | 0.967149 | 0.573955 |
+| In-play validation | before | 0.775768 | 0.457439 |
+| In-play validation | candidate | 0.866299 | 0.487824 |
+| In-play validation | score_only_baseline | 0.772346 | 0.456493 |
+| In-play validation | retained | 0.775768 | 0.457439 |
+| All excluded tournament minute rows | before | 0.820001 | 0.485925 |
+| All excluded tournament minute rows | candidate | 0.913713 | 0.527870 |
+| All excluded tournament minute rows | score_only_baseline | 0.821761 | 0.486576 |
+| All excluded tournament minute rows | retained | 0.820001 | 0.485925 |
+
+### Polymarket checkpoint scores
+
+Same aligned cohort and three-minute information lag. Market is normalized three-way historical trade prices; executable mid/ask quotes are unavailable.
+
+| Minute | Matches | Predictor | Log loss | Brier |
+| --- | --- | --- | --- | --- |
+| 15 | 14 | before | 1.035759 | 0.621732 |
+| 15 | 14 | candidate | 0.979784 | 0.609267 |
+| 15 | 14 | retained | 1.035759 | 0.621732 |
+| 15 | 14 | market | 1.016482 | 0.639074 |
+| 30 | 14 | before | 0.975960 | 0.577464 |
+| 30 | 14 | candidate | 0.912220 | 0.544694 |
+| 30 | 14 | retained | 0.975960 | 0.577464 |
+| 30 | 14 | market | 1.130360 | 0.700035 |
+| 45 | 14 | before | 0.964061 | 0.581174 |
+| 45 | 14 | candidate | 0.914988 | 0.549491 |
+| 45 | 14 | retained | 0.964061 | 0.581174 |
+| 45 | 14 | market | 0.834078 | 0.492893 |
+| 60 | 14 | before | 0.975710 | 0.627034 |
+| 60 | 14 | candidate | 0.882199 | 0.537691 |
+| 60 | 14 | retained | 0.975710 | 0.627034 |
+| 60 | 14 | market | 0.766568 | 0.458205 |
+| 75 | 14 | before | 0.799035 | 0.524252 |
+| 75 | 14 | candidate | 0.758837 | 0.468887 |
+| 75 | 14 | retained | 0.799035 | 0.524252 |
+| 75 | 14 | market | 0.899100 | 0.569814 |
+
+### Before, candidate and retained backtests
+
+Identical stake rules, threshold-selection partition, slippage scenarios, settlement and 5,000-draw seed-2026 match-cluster bootstrap. Zero-bet evaluation matches stay in the bootstrap. Candidate results remain visible even when the original is retained. Opening odds remain payout sensitivities, not executable strategies. Pinnacle units and Polymarket dollars are separate.
+
+| Strategy | Version | Bets | P&L | ROI | ROI 95% CI | Brier |
+| --- | --- | --- | --- | --- | --- | --- |
+| pinnacle-closing-flat | before | 203 | -8.60 | -4.24% | [-31.88%, 29.28%] | 0.592742 |
+| pinnacle-closing-flat | candidate | 187 | -10.29 | -5.50% | [-25.31%, 15.76%] | 0.584927 |
+| pinnacle-closing-flat | retained | 187 | -10.29 | -5.50% | [-25.31%, 15.76%] | 0.584927 |
+| pinnacle-closing-kelly | before | 203 | -401.03 | -13.55% | [-38.98%, 17.21%] | 0.592742 |
+| pinnacle-closing-kelly | candidate | 187 | -280.98 | -8.88% | [-30.76%, 14.85%] | 0.584927 |
+| pinnacle-closing-kelly | retained | 187 | -280.98 | -8.88% | [-30.76%, 14.85%] | 0.584927 |
+| pinnacle-opening-flat | before | 203 | -10.77 | -5.31% | [-31.66%, 25.89%] | 0.592742 |
+| pinnacle-opening-flat | candidate | 187 | -12.63 | -6.75% | [-25.91%, 14.23%] | 0.584927 |
+| pinnacle-opening-flat | retained | 187 | -12.63 | -6.75% | [-25.91%, 14.23%] | 0.584927 |
+| pinnacle-opening-kelly | before | 179 | -271.61 | -8.27% | [-35.04%, 22.74%] | 0.592742 |
+| pinnacle-opening-kelly | candidate | 153 | -270.93 | -9.21% | [-35.68%, 19.32%] | 0.584927 |
+| pinnacle-opening-kelly | retained | 153 | -270.93 | -9.21% | [-35.68%, 19.32%] | 0.584927 |
+| polymarket-0c | before | 42 | +2552.65 | 60.78% | [-1.98%, 122.99%] | 0.586331 |
+| polymarket-0c | candidate | 42 | +3189.64 | 75.94% | [14.35%, 138.56%] | 0.542006 |
+| polymarket-0c | retained | 42 | +2552.65 | 60.78% | [-1.98%, 122.99%] | 0.586331 |
+| polymarket-1c | before | 42 | +2305.58 | 54.89% | [-4.89%, 113.58%] | 0.586331 |
+| polymarket-1c | candidate | 42 | +2913.19 | 69.36% | [11.02%, 128.09%] | 0.542006 |
+| polymarket-1c | retained | 42 | +2305.58 | 54.89% | [-4.89%, 113.58%] | 0.586331 |
+| polymarket-2c | before | 42 | +2080.04 | 49.52% | [-8.01%, 105.64%] | 0.586331 |
+| polymarket-2c | candidate | 42 | +2660.70 | 63.35% | [7.96%, 118.92%] | 0.542006 |
+| polymarket-2c | retained | 42 | +2080.04 | 49.52% | [-8.01%, 105.64%] | 0.586331 |
+
+### Feature coverage
+
+XI percentages use all 22 starting slots per match as denominator, including unmapped players. Live percentages additionally require a StatsBomb-to-TM identity for the starter. Entire historical competitions are shown so absent source eras cannot disappear from the denominator.
+
+| Competition | Season | Matches | TM games | XI identities | Valued XI | Live valued XI |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1. Bundesliga | 2015/2016 | 306 | 306 | 100.0% | 100.0% | 99.6% |
+| 1. Bundesliga | 2023/2024 | 34 | 34 | 100.0% | 100.0% | 100.0% |
+| African Cup of Nations | 2023 | 52 | 0 | 70.8% | 68.0% | 68.0% |
+| Champions League | 1970/1971 | 1 | 0 | 0.0% | 0.0% | 0.0% |
+| Champions League | 1971/1972 | 1 | 0 | 0.0% | 0.0% | 0.0% |
+| Champions League | 1972/1973 | 1 | 0 | 0.0% | 0.0% | 0.0% |
+| Champions League | 1999/2000 | 1 | 0 | 13.6% | 0.0% | 0.0% |
+| Champions League | 2003/2004 | 1 | 0 | 45.5% | 0.0% | 0.0% |
+| Champions League | 2004/2005 | 1 | 0 | 31.8% | 31.8% | 31.8% |
+| Champions League | 2006/2007 | 1 | 0 | 54.5% | 54.5% | 54.5% |
+| Champions League | 2008/2009 | 1 | 0 | 77.3% | 77.3% | 77.3% |
+| Champions League | 2009/2010 | 1 | 0 | 72.7% | 72.7% | 72.7% |
+| Champions League | 2010/2011 | 1 | 0 | 86.4% | 86.4% | 86.4% |
+| Champions League | 2011/2012 | 1 | 0 | 95.5% | 95.5% | 95.5% |
+| Champions League | 2012/2013 | 1 | 1 | 100.0% | 100.0% | 100.0% |
+| Champions League | 2013/2014 | 1 | 1 | 100.0% | 100.0% | 100.0% |
+| Champions League | 2014/2015 | 1 | 1 | 100.0% | 100.0% | 100.0% |
+| Champions League | 2015/2016 | 1 | 1 | 100.0% | 100.0% | 100.0% |
+| Champions League | 2016/2017 | 1 | 1 | 100.0% | 100.0% | 100.0% |
+| Champions League | 2017/2018 | 1 | 1 | 100.0% | 100.0% | 100.0% |
+| Champions League | 2018/2019 | 1 | 1 | 100.0% | 100.0% | 100.0% |
+| Copa America | 2024 | 32 | 32 | 95.3% | 94.3% | 94.3% |
+| Copa del Rey | 1977/1978 | 1 | 0 | 0.0% | 0.0% | 0.0% |
+| Copa del Rey | 1982/1983 | 1 | 0 | 0.0% | 0.0% | 0.0% |
+| Copa del Rey | 1983/1984 | 1 | 0 | 0.0% | 0.0% | 0.0% |
+| FIFA U20 World Cup | 1979 | 1 | 0 | 0.0% | 0.0% | 0.0% |
+| FIFA World Cup | 1958 | 2 | 0 | 0.0% | 0.0% | 0.0% |
+| FIFA World Cup | 1962 | 1 | 0 | 0.0% | 0.0% | 0.0% |
+| FIFA World Cup | 1970 | 6 | 0 | 0.0% | 0.0% | 0.0% |
+| FIFA World Cup | 1974 | 6 | 0 | 0.0% | 0.0% | 0.0% |
+| FIFA World Cup | 1986 | 3 | 0 | 0.0% | 0.0% | 0.0% |
+| FIFA World Cup | 1990 | 1 | 0 | 0.0% | 0.0% | 0.0% |
+| FIFA World Cup | 2018 | 64 | 64 | 87.1% | 86.6% | 86.6% |
+| FIFA World Cup | 2022 | 64 | 64 | 89.6% | 89.1% | 89.1% |
+| Indian Super league | 2021/2022 | 115 | 0 | 29.0% | 19.9% | 19.9% |
+| La Liga | 1973/1974 | 1 | 0 | 0.0% | 0.0% | 0.0% |
+| La Liga | 2004/2005 | 7 | 0 | 35.7% | 29.9% | 29.9% |
+| La Liga | 2005/2006 | 17 | 0 | 40.1% | 36.9% | 36.9% |
+| La Liga | 2006/2007 | 26 | 0 | 47.0% | 46.2% | 46.2% |
+| La Liga | 2007/2008 | 28 | 0 | 56.3% | 53.7% | 53.7% |
+| La Liga | 2008/2009 | 31 | 0 | 68.9% | 68.8% | 68.8% |
+| La Liga | 2009/2010 | 35 | 0 | 78.2% | 77.5% | 77.5% |
+| La Liga | 2010/2011 | 33 | 0 | 88.0% | 87.6% | 87.6% |
+| La Liga | 2011/2012 | 37 | 0 | 92.4% | 91.6% | 91.6% |
+| La Liga | 2012/2013 | 32 | 32 | 93.5% | 93.5% | 93.5% |
+| La Liga | 2013/2014 | 31 | 31 | 100.0% | 99.7% | 99.7% |
+| La Liga | 2014/2015 | 38 | 38 | 100.0% | 99.6% | 99.6% |
+| La Liga | 2015/2016 | 380 | 380 | 100.0% | 99.5% | 99.5% |
+| La Liga | 2016/2017 | 34 | 34 | 100.0% | 99.9% | 99.9% |
+| La Liga | 2017/2018 | 36 | 36 | 100.0% | 100.0% | 100.0% |
+| La Liga | 2018/2019 | 34 | 34 | 99.5% | 99.5% | 99.5% |
+| La Liga | 2019/2020 | 33 | 33 | 100.0% | 100.0% | 99.9% |
+| La Liga | 2020/2021 | 35 | 35 | 100.0% | 100.0% | 100.0% |
+| Liga Profesional | 1981 | 1 | 0 | 0.0% | 0.0% | 0.0% |
+| Liga Profesional | 1997/1998 | 1 | 0 | 0.0% | 0.0% | 0.0% |
+| Ligue 1 | 2015/2016 | 377 | 377 | 100.0% | 99.5% | 99.5% |
+| Ligue 1 | 2021/2022 | 26 | 26 | 100.0% | 100.0% | 100.0% |
+| Ligue 1 | 2022/2023 | 32 | 32 | 100.0% | 99.9% | 99.9% |
+| Major League Soccer | 2023 | 6 | 0 | 80.3% | 79.5% | 79.5% |
+| North American League | 1977 | 1 | 0 | 0.0% | 0.0% | 0.0% |
+| Premier League | 2003/2004 | 38 | 0 | 23.1% | 0.0% | 0.0% |
+| Premier League | 2015/2016 | 380 | 380 | 100.0% | 99.6% | 99.6% |
+| Serie A | 1986/1987 | 1 | 0 | 0.0% | 0.0% | 0.0% |
+| Serie A | 2015/2016 | 380 | 380 | 100.0% | 100.0% | 99.7% |
+| UEFA Euro | 2020 | 51 | 51 | 92.0% | 91.6% | 91.6% |
+| UEFA Euro | 2024 | 51 | 51 | 91.7% | 91.2% | 91.2% |
+| UEFA Europa League | 1988/1989 | 3 | 0 | 0.0% | 0.0% | 0.0% |
+
+### Limitations and integration
+
+Valuations are noisy estimates, not player ability or transfer prices. Historical rows were downloaded today and may have been retrospectively revised; strict dates do not establish archived publication vintages. W11 matching confidence is a heuristic, not a calibrated probability. Incomplete identities and valuations can bias summed strengths downward. The 80% live coverage guard limits but does not eliminate this. Missing history is not evidence of no international experience or no absences. First observed club appearances are not verified signing dates. Current lifetime caps are deliberately excluded.
+
+The game-state model and its API are unchanged; the optional quantile experiment was not run. No claim of improved pinball loss or coverage is made. The same small selected Polymarket cohort, retrospective goal alignment and unproven fills remain material limitations. No new profitability conclusion can rely on paper P&L alone.
+
+The requested additive `comparison` and `model_versions` fields live in the strict backtest schema. All old fields and market response shapes remain. W12 writes served artifacts under `data/processed/backtest/w12/`; the new route prefers them. This prevents the old shared process from reading a payload its older strict schema rejects. The orchestrator must merge and reload the API to expose W12 on :8000. W12 does not restart it. The two authorized backend golden snapshots are regenerated; fixtures/ remains orchestrator-owned and needs the corresponding additive update.
+
+Reproduce: `DATA_DIR=/home/ubuntu/hackathon/data uv run --group models python -m matchmind.backtest squads`, then `python -m matchmind.backtest.squad_report`. The immutable `w12_before/` snapshot preserves original scores, predictions, strategy results and model bundle. Candidate predictions, candidate backtests, complete join/coverage audits and model JSON cards remain beside it. Models and data are gitignored.
+
+Verification is recorded in `data/processed/backtest/w12/verification.json`; run the full suite plus `pytest matchmind/backtest/test_squads.py`. Use :8050 for acceptance and stop it afterwards.
+
+Executed acceptance: 101 passed, 4 dependency deprecation warnings; owned-file lint/format passed; 80 market responses and 1154 series points verified on :8050. 81 original served artifacts remain byte-identical. Acceptance server stopped; shared :8000 never restarted.

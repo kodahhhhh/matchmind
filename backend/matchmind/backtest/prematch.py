@@ -213,9 +213,13 @@ def train() -> None:
     print("Prematch frozen parameters", best, "threshold", selected, flush=True)
 
 
-def run() -> tuple[list[dict], dict]:
-    rows = json.loads((output() / "prematch_predictions.json").read_text())
-    selection = json.loads((output() / "prematch_selection.json").read_text())
+def run(
+    predictions_file: str = "prematch_predictions.json",
+    selection_file: str = "prematch_selection.json",
+    publish: bool = True,
+) -> tuple[list[dict], dict]:
+    rows = json.loads((output() / predictions_file).read_text())
+    selection = json.loads((output() / selection_file).read_text())
     rows = [r for r in rows if r["round"] >= 18]
     y = np.array([r["result"] for r in rows])
     p = np.array([r["model"] for r in rows])
@@ -301,5 +305,6 @@ def run() -> tuple[list[dict], dict]:
                 "brier_market": metrics["market"]["brier"],
             }
         )
-    save(output() / "prematch_metrics.json", metrics)
+    if publish:
+        save(output() / "prematch_metrics.json", metrics)
     return strategies, metrics
