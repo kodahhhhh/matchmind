@@ -161,59 +161,59 @@
         ],
         "count": 3,
         "evidence_labels": {
-          "ev:sb:3869685:2951": "81' Upamecano pass",
-          "ev:sb:3869685:1166": "36' Molina pass",
-          "ev:sb:3869685:4068": "108' Lloris keeper action",
-          "ev:sb:3869685:4070": "108' Messi goal",
-          "ev:sb:3869685:1174": "36' Álvarez pass",
-          "ev:sb:3869685:4055": "108' Montiel carry",
-          "seq:sb:3869685:s52": "36' Argentina sequence",
-          "ev:sb:3869685:2982": "81' Mbappé pass",
-          "ev:sb:3869685:4071": "108' Lloris keeper action",
-          "ev:sb:3869685:1171": "36' Messi pass",
-          "ev:sb:3869685:1173": "36' Álvarez carry",
-          "ev:sb:3869685:1168": "36' MacAllister pass",
-          "ev:sb:3869685:2958": "81' Thuram pass",
-          "ev:sb:3869685:2960": "81' Camavinga carry",
-          "ev:sb:3869685:2985": "81' Thuram pass",
-          "ev:sb:3869685:2974": "81' Coman tackle",
           "ev:sb:3869685:2964": "81' Upamecano pass",
-          "ev:sb:3869685:4051": "108' Paredes recovery",
-          "ev:sb:3869685:2975": "81' Coman carry",
-          "ev:sb:3869685:4058": "108' Martínez pass",
-          "ev:sb:3869685:2987": "81' Mbappé goal",
-          "ev:sb:3869685:2956": "81' Thuram carry",
-          "seq:sb:3869685:s165": "81' France sequence",
-          "ev:sb:3869685:4063": "108' Fernandez carry",
-          "ev:sb:3869685:2988": "81' Martínez keeper action",
           "ev:sb:3869685:4061": "108' Messi pass",
-          "ev:sb:3869685:2979": "81' Rabiot pass",
-          "ev:sb:3869685:4066": "108' Martínez carry",
-          "ev:sb:3869685:4056": "108' Montiel pass",
-          "ev:sb:3869685:1176": "36' MacAllister pass",
-          "ev:sb:3869685:4069": "108' Messi recovery",
-          "ev:sb:3869685:2963": "81' Upamecano carry",
-          "ev:sb:3869685:4060": "108' Messi carry",
-          "ev:sb:3869685:4064": "108' Fernandez pass",
+          "ev:sb:3869685:4055": "108' Montiel carry",
+          "ev:sb:3869685:2956": "81' Thuram carry",
           "ev:sb:3869685:2976": "81' Coman pass",
-          "ev:sb:3869685:2971": "81' Messi carry",
-          "ev:sb:3869685:1178": "36' Di María goal",
-          "ev:sb:3869685:2949": "81' Koundé throw in",
+          "ev:sb:3869685:4056": "108' Montiel pass",
+          "ev:sb:3869685:2954": "81' Camavinga pass",
+          "ev:sb:3869685:4058": "108' Martínez pass",
+          "ev:sb:3869685:4064": "108' Fernandez pass",
+          "ev:sb:3869685:4051": "108' Paredes recovery",
           "ev:sb:3869685:2953": "81' Camavinga carry",
-          "ev:sb:3869685:2973": "81' Messi dispossessed",
-          "ev:sb:3869685:2965": "81' Romero pass",
-          "ev:sb:3869685:2967": "81' Camavinga pass",
+          "ev:sb:3869685:2985": "81' Thuram pass",
+          "ev:sb:3869685:2960": "81' Camavinga carry",
+          "ev:sb:3869685:2958": "81' Thuram pass",
+          "ev:sb:3869685:2949": "81' Koundé throw in",
+          "ev:sb:3869685:4063": "108' Fernandez carry",
+          "ev:sb:3869685:2963": "81' Upamecano carry",
+          "ev:sb:3869685:2951": "81' Upamecano pass",
           "ev:sb:3869685:2970": "81' Messi recovery",
           "ev:sb:3869685:1179": "36' Lloris keeper action",
-          "ev:sb:3869685:1170": "36' Messi carry",
-          "seq:sb:3869685:s228": "108' Argentina sequence",
           "ev:sb:3869685:4067": "108' Martínez shot",
-          "ev:sb:3869685:4052": "108' Paredes carry",
-          "ev:sb:3869685:2984": "81' Thuram carry",
-          "ev:sb:3869685:2978": "81' Rabiot carry",
-          "ev:sb:3869685:2954": "81' Camavinga pass",
+          "ev:sb:3869685:4069": "108' Messi recovery",
+          "ev:sb:3869685:4071": "108' Lloris keeper action",
+          "ev:sb:3869685:2971": "81' Messi carry",
+          "ev:sb:3869685:2975": "81' Coman carry",
+          "ev:sb:3869685:1166": "36' Molina pass",
+          "ev:sb:3869685:1178": "36' Di María goal",
           "ev:sb:3869685:4053": "108' Paredes pass",
-          "ev:sb:3869685:2961": "81' Camavinga pass"
+          "ev:sb:3869685:2967": "81' Camavinga pass",
+          "ev:sb:3869685:2984": "81' Thuram carry",
+          "ev:sb:3869685:1170": "36' Messi carry",
+          "ev:sb:3869685:2978": "81' Rabiot carry",
+          "ev:sb:3869685:1171": "36' Messi pass",
+          "seq:sb:3869685:s52": "36' Argentina sequence",
+          "ev:sb:3869685:4070": "108' Messi goal",
+          "ev:sb:3869685:1176": "36' MacAllister pass",
+          "ev:sb:3869685:2979": "81' Rabiot pass",
+          "ev:sb:3869685:2974": "81' Coman tackle",
+          "ev:sb:3869685:4066": "108' Martínez carry",
+          "ev:sb:3869685:2973": "81' Messi dispossessed",
+          "ev:sb:3869685:1174": "36' Álvarez pass",
+          "ev:sb:3869685:4052": "108' Paredes carry",
+          "ev:sb:3869685:2987": "81' Mbappé goal",
+          "ev:sb:3869685:2982": "81' Mbappé pass",
+          "ev:sb:3869685:1168": "36' MacAllister pass",
+          "ev:sb:3869685:2988": "81' Martínez keeper action",
+          "ev:sb:3869685:2961": "81' Camavinga pass",
+          "ev:sb:3869685:4068": "108' Lloris keeper action",
+          "seq:sb:3869685:s228": "108' Argentina sequence",
+          "ev:sb:3869685:2965": "81' Romero pass",
+          "ev:sb:3869685:4060": "108' Messi carry",
+          "seq:sb:3869685:s165": "81' France sequence",
+          "ev:sb:3869685:1173": "36' Álvarez carry"
         },
         "match": {
           "teams": {
@@ -331,7 +331,7 @@
       }
     }
   ],
-  "text": "The top 3 sequences by threat gained all ended in goals.\n\n- **France, 81':** Coman won the ball from Messi, then Rabiot, Mbappé and Thuram combined before Mbappé scored. [[seq:sb:3869685:s165]]\n- **Argentina, 36':** Messi and Álvarez helped move the ball forward, Mac Allister supplied the final pass, and Di María finished. [[seq:sb:3869685:s52]]\n- **Argentina, 108':** A move involving Messi and Fernández led to Martínez’s shot, followed by Messi recovering the ball and scoring. [[seq:sb:3869685:s228]]\n\nThis ranking uses a threat-gain proxy, not simply the chance of scoring from the final shot.",
+  "text": "The top 3 sequences by attacking impact all ended in goals, ranked by threat gained rather than chance quality.\n\n- **France, 81':** Coman won possession from Messi, then Mbappé combined with Thuram before scoring. [[seq:sb:3869685:s165]]\n- **Argentina, 36':** A flowing move through Messi and Álvarez released Mac Allister, whose pass set up Di María’s finish. The attack took just 11 seconds. [[seq:sb:3869685:s52]]\n- **Argentina, 108':** A move involving Messi and Fernández led to Martínez’s shot. Lloris stopped it, but Messi recovered the ball and scored. [[seq:sb:3869685:s228]]",
   "rejections": [],
   "chunks": [
     {
@@ -349,23 +349,27 @@
     },
     {
       "type": "text",
-      "delta": "The top 3 sequences by threat gained all ended i"
+      "delta": "The top 3 sequences by attacking impact all ende"
     },
     {
       "type": "text",
-      "delta": "n goals.\n\n"
+      "delta": "d in goals, ranked by threat gained rather than "
     },
     {
       "type": "text",
-      "delta": "- **France, 81':** Coman won the ball from Messi"
+      "delta": "chance quality.\n\n"
     },
     {
       "type": "text",
-      "delta": ", then Rabiot, Mbappé and Thuram combined before"
+      "delta": "- **France, 81':** Coman won possession from Mes"
     },
     {
       "type": "text",
-      "delta": " Mbappé scored. "
+      "delta": "si, then Mbappé combined with Thuram before scor"
+    },
+    {
+      "type": "text",
+      "delta": "ing. "
     },
     {
       "type": "text",
@@ -373,15 +377,19 @@
     },
     {
       "type": "text",
-      "delta": "- **Argentina, 36':** Messi and Álvarez helped m"
+      "delta": "- **Argentina, 36':** A flowing move through Mes"
     },
     {
       "type": "text",
-      "delta": "ove the ball forward, Mac Allister supplied the "
+      "delta": "si and Álvarez released Mac Allister, whose pass"
     },
     {
       "type": "text",
-      "delta": "final pass, and Di María finished. "
+      "delta": " set up Di María’s finish. "
+    },
+    {
+      "type": "text",
+      "delta": "The attack took just 11 seconds. "
     },
     {
       "type": "text",
@@ -393,27 +401,19 @@
     },
     {
       "type": "text",
-      "delta": "d Fernández led to Martínez’s shot, followed by "
+      "delta": "d Fernández led to Martínez’s shot. "
     },
     {
       "type": "text",
-      "delta": "Messi recovering the ball and scoring. "
+      "delta": "Lloris stopped it, but Messi recovered the ball "
     },
     {
       "type": "text",
-      "delta": "[[seq:sb:3869685:s228]]\n"
+      "delta": "and scored. "
     },
     {
       "type": "text",
-      "delta": "\n"
-    },
-    {
-      "type": "text",
-      "delta": "This ranking uses a threat-gain proxy, not simpl"
-    },
-    {
-      "type": "text",
-      "delta": "y the chance of scoring from the final shot."
+      "delta": "[[seq:sb:3869685:s228]]"
     },
     {
       "type": "citation",
@@ -434,8 +434,8 @@
       "type": "done"
     }
   ],
-  "first_text_seconds": 4.247,
-  "total_seconds": 5.912,
+  "first_text_seconds": 2.911,
+  "total_seconds": 4.587,
   "grounding": {
     "unsupported_numbers": [],
     "unsupported_citations": [],

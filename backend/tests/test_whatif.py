@@ -217,3 +217,24 @@ def test_response_uses_trained_bands_and_observed_analog_summary() -> None:
         )
     assert all(point["modelled"] is None for point in response["series"])
     assert all(0 <= row["similarity"] <= 1 for row in response["analogs"])
+
+
+def test_outcome_probabilities_add_up_and_follow_the_score() -> None:
+    from matchmind.models.goals import outcome_probs
+
+    probs = outcome_probs(
+        np.array([0.3, 0.3, 0.0]), np.array([0.3, 0.3, 0.0]), np.array([1.0, 0.0, 0.0])
+    )
+    np.testing.assert_allclose(probs.sum(1), 1, atol=1e-9)
+    assert probs[0, 0] > probs[1, 0]  # leading beats level
+    np.testing.assert_allclose(probs[1, 0], probs[1, 2])  # symmetric rates
+    np.testing.assert_allclose(probs[2], [0, 1, 0])  # no time left: score stands
+
+
+def test_removing_the_equaliser_makes_argentina_favourites() -> None:
+    response = run_counterfactual(FINAL, "sb:3869685:2987", "remove_goal")
+    outcome = response["result"]
+    assert outcome["score"]["modelled"] == {"home": 2, "away": 1}
+    assert outcome["level_means"] == "extra_time"
+    assert outcome["modelled"]["home"] > outcome["factual"]["home"] + 0.3
+    assert not response["negligible"]

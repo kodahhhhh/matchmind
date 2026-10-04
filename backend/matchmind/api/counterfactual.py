@@ -142,6 +142,7 @@ def run_counterfactual(match_id: str, event_id: str, change: str) -> dict:
         changed = intervene(factual, anchor, context, change, ratings)
         predictions = predict(changed)
         baseline = predict(factual)
+        outlook = result_outlook(b, marker, change, factual, changed, match)
         metadata = model_metadata()
         focus = 0 if marker["team"] == "home" else 1
         neighbours = training_analogs().nearest(changed.iloc[[focus]], match_id)
@@ -169,6 +170,31 @@ def run_counterfactual(match_id: str, event_id: str, change: str) -> dict:
         goals,
         factual=baseline,
         lineup_change=lineup_change(b, context, event_id, ratings),
+        outlook=outlook,
+    )
+
+
+def result_outlook(
+    b: dict,
+    marker: dict,
+    change: str,
+    factual: pd.DataFrame,
+    changed: pd.DataFrame,
+    match: dict,
+) -> dict:
+    """Score at the anchor (with and without the change) and the goals model's view."""
+    from matchmind.models.goals import knockout, outlook
+
+    index = int(marker["event_id"].split(":")[2])
+    score = {"home": 0, "away": 0}
+    for m in b["match"]["markers"]:
+        if m["type"] == "goal" and int(m["event_id"].split(":")[2]) <= index:
+            score[m["team"]] += 1
+    changed_score = dict(score)
+    if change == "remove_goal":
+        changed_score[marker["team"]] -= 1
+    return outlook(
+        factual, changed, marker["period"], score, changed_score, knockout(match)
     )
 
 

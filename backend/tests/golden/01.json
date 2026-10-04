@@ -165,12 +165,12 @@
           }
         ],
         "evidence_labels": {
-          "ev:sb:3869685:3037": "84' Fernandez shot",
-          "ev:sb:3869685:4199": "116' Mbappé shot",
+          "ev:sb:3869685:2987": "81' Mbappé goal",
           "ev:sb:3869685:1178": "36' Di María goal",
+          "ev:sb:3869685:4199": "116' Mbappé shot",
           "ev:sb:3869685:2928": "80' Mbappé penalty goal",
-          "ev:sb:3869685:4203": "118' Mbappé penalty goal",
-          "ev:sb:3869685:2987": "81' Mbappé goal"
+          "ev:sb:3869685:3037": "84' Fernandez shot",
+          "ev:sb:3869685:4203": "118' Mbappé penalty goal"
         },
         "match": {
           "teams": {
@@ -411,7 +411,7 @@
       }
     }
   ],
-  "text": "The clearest turning point was Mbappé’s quick double at 80' and 81', which brought France back into the contest. Before that burst, France had little attacking threat; afterward, they took control of territory and produced much better chances. [[ev:sb:3869685:2928]] [[ev:sb:3869685:2987]]\n\nThe biggest measured momentum swing came later, in extra time: Argentina went from creating chances to recording no shots in the following window, while France threatened through Mbappé and his 118' penalty. That was the final major reversal. [[ev:sb:3869685:4199]] [[ev:sb:3869685:4203]]",
+  "text": "The biggest measured turning point was France’s late extra-time surge, capped by Mbappé’s penalty at 118'. [[ev:sb:3869685:4203]] Before that swing, Argentina had produced 3 shots and France 0; afterward, France had 2 and Argentina 0. The pressure had flipped toward France. [[ev:sb:3869685:4199]] [[ev:sb:3869685:4203]]\n\nThe earlier, match-transforming swing was Mbappé’s penalty at 80' followed by his goal at 81'. Across that window, France went from limited attacking threat to controlling the dangerous territory, pulling Argentina into a much more precarious contest. [[ev:sb:3869685:2928]] [[ev:sb:3869685:2987]]",
   "rejections": [],
   "chunks": [
     {
@@ -427,31 +427,35 @@
     },
     {
       "type": "text",
-      "delta": "The clearest turning point was Mbappé’s quick do"
+      "delta": "The biggest measured turning point was France’s "
     },
     {
       "type": "text",
-      "delta": "uble at 80' and 81', which brought France back i"
+      "delta": "late extra-time surge, capped by Mbappé’s penalt"
     },
     {
       "type": "text",
-      "delta": "nto the contest. "
+      "delta": "y at 118'. "
     },
     {
       "type": "text",
-      "delta": "Before that burst, France had little attacking t"
+      "delta": "[[ev:sb:3869685:4203]] Before that swing, Argent"
     },
     {
       "type": "text",
-      "delta": "hreat; afterward, they took control of territory"
+      "delta": "ina had produced 3 shots and France 0; afterward"
     },
     {
       "type": "text",
-      "delta": " and produced much better chances. "
+      "delta": ", France had 2 and Argentina 0. "
     },
     {
       "type": "text",
-      "delta": "[[ev:sb:3869685:2928]] [[ev:sb:3869685:2987]]\n"
+      "delta": "The pressure had flipped toward France. "
+    },
+    {
+      "type": "text",
+      "delta": "[[ev:sb:3869685:4199]] [[ev:sb:3869685:4203]]\n"
     },
     {
       "type": "text",
@@ -459,31 +463,41 @@
     },
     {
       "type": "text",
-      "delta": "The biggest measured momentum swing came later, "
+      "delta": "The earlier, match-transforming swing was Mbappé"
     },
     {
       "type": "text",
-      "delta": "in extra time: Argentina went from creating chan"
+      "delta": "’s penalty at 80' followed by his goal at 81'. "
     },
     {
       "type": "text",
-      "delta": "ces to recording no shots in the following windo"
+      "delta": "Across that window, France went from limited att"
     },
     {
       "type": "text",
-      "delta": "w, while France threatened through Mbappé and hi"
+      "delta": "acking threat to controlling the dangerous terri"
     },
     {
       "type": "text",
-      "delta": "s 118' penalty. "
+      "delta": "tory, pulling Argentina into a much more precari"
     },
     {
       "type": "text",
-      "delta": "That was the final major reversal. "
+      "delta": "ous contest. "
     },
     {
       "type": "text",
-      "delta": "[[ev:sb:3869685:4199]] [[ev:sb:3869685:4203]]"
+      "delta": "[[ev:sb:3869685:2928]] [[ev:sb:3869685:2987]]"
+    },
+    {
+      "type": "citation",
+      "ref": "ev:sb:3869685:4203",
+      "label": "118' Mbappé penalty goal"
+    },
+    {
+      "type": "citation",
+      "ref": "ev:sb:3869685:4199",
+      "label": "116' Mbappé shot"
     },
     {
       "type": "citation",
@@ -496,21 +510,11 @@
       "label": "81' Mbappé goal"
     },
     {
-      "type": "citation",
-      "ref": "ev:sb:3869685:4199",
-      "label": "116' Mbappé shot"
-    },
-    {
-      "type": "citation",
-      "ref": "ev:sb:3869685:4203",
-      "label": "118' Mbappé penalty goal"
-    },
-    {
       "type": "done"
     }
   ],
-  "first_text_seconds": 5.279,
-  "total_seconds": 6.578,
+  "first_text_seconds": 4.176,
+  "total_seconds": 6.449,
   "grounding": {
     "unsupported_numbers": [],
     "unsupported_citations": [],

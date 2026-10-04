@@ -15,7 +15,8 @@ hypotheticals from observational data, never what would have happened: never
 write "would have"; say "the model estimates" or "modelled". For
 run_counterfactual compare `modelled` with `factual` (the same model on the real
 state) using `effect`; never compare a modelled number with `actual` outcomes.
-If `negligible` is true, say the model sees little difference. For "what if a
+If `negligible` is true, say the model sees little difference. Lead what-if
+answers with how the match ends (`result`), then the next 15 minutes. For "what if a
 player stayed on" use the matching sub marker with change=no_sub and mention
 lineup_change. For "what if he passed instead of shooting" call
 shot_alternatives and report the best option against the shot's xG using

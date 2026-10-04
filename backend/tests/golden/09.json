@@ -10,7 +10,7 @@
         ],
         "team": "away",
         "from_minute": 115,
-        "limit": 30
+        "limit": 20
       },
       "result": {
         "events": [
@@ -58,9 +58,9 @@
         "n_events": 3,
         "n_markers": 0,
         "evidence_labels": {
+          "seq:sb:3869685:s245": "120+3' France sequence",
           "ev:sb:3869685:4199": "116' Mbappé shot",
           "seq:sb:3869685:s237": "116' France sequence",
-          "seq:sb:3869685:s245": "120+3' France sequence",
           "ev:sb:3869685:4337": "120+3' Kolo shot",
           "ev:sb:3869685:4203": "118' Mbappé penalty goal"
         },
@@ -362,7 +362,7 @@
       }
     }
   ],
-  "text": "The model favours a pass to Mbappé, but shooting was still a reasonable decision. It estimates a 28% chance of scoring through that pass, allowing for the risk of interception, versus 19% for Kolo Muani’s shot. [[ev:sb:3869685:4337]]\n\nThe catch is that the pass had only a 49% estimated chance of reaching Mbappé. The hypothetical also assumes a clean reception and an immediate finish, with defenders reacting differently in reality. So passing looks better in the model, not a guaranteed missed winner. [[ev:sb:3869685:4337]]",
+  "text": "The model favours a pass to Mbappé, but shooting was still a defensible choice. After allowing for the risk of the pass failing, that option offered a modelled 28% chance of scoring, compared with 19% for Kolo Muani’s shot. [[ev:sb:3869685:4337]]\n\nThe catch is that the pass had only a 49% chance of reaching Mbappé. The comparison also assumes a clean reception and an immediate finish, while defenders could react. So passing looks better in the model, not like a guaranteed goal Kolo Muani threw away. [[ev:sb:3869685:4337]]",
   "rejections": [],
   "chunks": [
     {
@@ -374,7 +374,7 @@
         ],
         "team": "away",
         "from_minute": 115,
-        "limit": 30
+        "limit": 20
       }
     },
     {
@@ -402,19 +402,19 @@
     },
     {
       "type": "text",
-      "delta": " was still a reasonable decision. "
+      "delta": " was still a defensible choice. "
     },
     {
       "type": "text",
-      "delta": "It estimates a 28% chance of scoring through tha"
+      "delta": "After allowing for the risk of the pass failing,"
     },
     {
       "type": "text",
-      "delta": "t pass, allowing for the risk of interception, v"
+      "delta": " that option offered a modelled 28% chance of sc"
     },
     {
       "type": "text",
-      "delta": "ersus 19% for Kolo Muani’s shot. "
+      "delta": "oring, compared with 19% for Kolo Muani’s shot. "
     },
     {
       "type": "text",
@@ -426,31 +426,31 @@
     },
     {
       "type": "text",
-      "delta": "The catch is that the pass had only a 49% estima"
+      "delta": "The catch is that the pass had only a 49% chance"
     },
     {
       "type": "text",
-      "delta": "ted chance of reaching Mbappé. "
+      "delta": " of reaching Mbappé. "
     },
     {
       "type": "text",
-      "delta": "The hypothetical also assumes a clean reception "
+      "delta": "The comparison also assumes a clean reception an"
     },
     {
       "type": "text",
-      "delta": "and an immediate finish, with defenders reacting"
+      "delta": "d an immediate finish, while defenders could rea"
     },
     {
       "type": "text",
-      "delta": " differently in reality. "
+      "delta": "ct. "
     },
     {
       "type": "text",
-      "delta": "So passing looks better in the model, not a guar"
+      "delta": "So passing looks better in the model, not like a"
     },
     {
       "type": "text",
-      "delta": "anteed missed winner. "
+      "delta": " guaranteed goal Kolo Muani threw away. "
     },
     {
       "type": "text",
@@ -465,8 +465,8 @@
       "type": "done"
     }
   ],
-  "first_text_seconds": 4.711,
-  "total_seconds": 5.984,
+  "first_text_seconds": 4.891,
+  "total_seconds": 6.375,
   "grounding": {
     "unsupported_numbers": [],
     "unsupported_citations": [],

@@ -86,8 +86,11 @@ TOOLS = [
     ),
     tool_schema(
         "run_counterfactual",
-        "Modelled hypothetical for a goal, substitution or red card. Compare "
-        "`modelled` (changed state) with `factual` (same model, real state); "
+        "Modelled hypothetical for a goal, substitution or red card. Lead with "
+        "`result`: probabilities of how normal time (or extra time) ends, real "
+        "state (`factual`) versus changed (`modelled`), from an actual-goals "
+        "model; `scoring_chance` is each side's chance to score in the next 15 "
+        "minutes. For chance quality compare `modelled` with `factual`; "
         "`effect` is their median difference and `negligible` flags no real "
         "change. lineup_change names the player put back and both ratings. "
         "Never compare `modelled` with `actual`. Not causal certainty.",
@@ -353,6 +356,19 @@ def summarize(name: str, args: dict, result: dict) -> str:
     if name == "run_counterfactual":
         if result.get("negligible"):
             return "Ran the what-if model: it sees almost no difference."
+        outcome = result.get("result")
+        if outcome:
+            side = max(
+                ("home", "away"),
+                key=lambda k: outcome["modelled"][k] - outcome["factual"][k],
+            )
+            team = result.get("match", {}).get("teams", {}).get(side, side)
+            before = round(outcome["factual"][side] * 100)
+            after = round(outcome["modelled"][side] * 100)
+            return (
+                f"Ran the what-if model: {team}'s chance of winning goes from "
+                f"{before}% to {after}%."
+            )
         return "Ran the what-if model with and without that moment."
     if name == "shot_alternatives":
         options = result.get("options", [])

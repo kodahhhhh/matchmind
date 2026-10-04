@@ -69,9 +69,9 @@
         "n_events": 2,
         "n_markers": 2,
         "evidence_labels": {
+          "ev:sb:3869685:2987": "81' Mbappé goal",
           "ev:sb:3869685:2928": "80' Mbappé penalty goal",
-          "seq:sb:3869685:s165": "81' France sequence",
-          "ev:sb:3869685:2987": "81' Mbappé goal"
+          "seq:sb:3869685:s165": "81' France sequence"
         },
         "match": {
           "teams": {
@@ -245,6 +245,40 @@
           }
         },
         "negligible": false,
+        "result": {
+          "block": "normal_time",
+          "level_means": "extra_time",
+          "score": {
+            "factual": {
+              "home": 2,
+              "away": 1
+            },
+            "modelled": {
+              "home": 2,
+              "away": 0
+            }
+          },
+          "factual": {
+            "home": 0.8714,
+            "level": 0.116,
+            "away": 0.0125
+          },
+          "modelled": {
+            "home": 0.9875,
+            "level": 0.0117,
+            "away": 0.0008
+          }
+        },
+        "scoring_chance": {
+          "factual": {
+            "home": 0.3276,
+            "away": 0.2167
+          },
+          "modelled": {
+            "home": 0.3279,
+            "away": 0.2167
+          }
+        },
         "lineup_change": null,
         "series": [
           {
@@ -476,7 +510,7 @@
           }
         ],
         "n_analogs": 40,
-        "caveat": "Learned from observational data: teams change their approach because of the score, so effects are confounded. Shown as a range next to real comparable situations, not a prediction.",
+        "caveat": "Estimated from what usually happened next in similar real matches. Goals, substitutions and red cards don't happen at random, so treat this as a guide to the odds, not a certainty.",
         "evidence_labels": {
           "ev:sb:3869685:2928": "80' Mbappé penalty goal"
         },
@@ -513,12 +547,18 @@
           "0.00",
           "0.000",
           "0.0000",
+          "0.0008",
+          "0.001",
           "0.009",
           "0.0091",
           "0.0095",
           "0.009508403022830946",
           "0.01",
           "0.010",
+          "0.0117",
+          "0.012",
+          "0.0125",
+          "0.013",
           "0.0139",
           "0.01392131032542251",
           "0.014",
@@ -559,6 +599,9 @@
           "0.088",
           "0.09",
           "0.1",
+          "0.1%",
+          "0.116",
+          "0.1160",
           "0.12",
           "0.121",
           "0.121252061659478",
@@ -584,6 +627,8 @@
           "0.210",
           "0.2103",
           "0.21032920621953846",
+          "0.2167",
+          "0.217",
           "0.22",
           "0.222",
           "0.22207184902998361",
@@ -613,6 +658,10 @@
           "0.287",
           "0.29",
           "0.3",
+          "0.3276",
+          "0.3279",
+          "0.328",
+          "0.33",
           "0.38",
           "0.38197164020053453",
           "0.382",
@@ -674,6 +723,9 @@
           "0.798",
           "0.8",
           "0.80",
+          "0.87",
+          "0.871",
+          "0.8714",
           "0.8786920067076579",
           "0.8787",
           "0.879",
@@ -688,14 +740,19 @@
           "0.9815936525968798",
           "0.9816",
           "0.982",
+          "0.9875",
+          "0.988",
+          "0.99",
           "1",
           "1%",
           "1.0",
           "1.0%",
+          "1.2%",
           "1.4%",
           "1.6%",
           "10",
           "11",
+          "11.6%",
           "12",
           "12%",
           "12.1%",
@@ -716,6 +773,7 @@
           "20.8%",
           "21%",
           "21.0%",
+          "21.7%",
           "22%",
           "22.2%",
           "22.8%",
@@ -732,6 +790,8 @@
           "2924",
           "3",
           "3%",
+          "32.8%",
+          "33%",
           "38%",
           "38.2%",
           "38.8%",
@@ -781,6 +841,8 @@
           "8",
           "8.8%",
           "80%",
+          "87%",
+          "87.1%",
           "87.9%",
           "88%",
           "9",
@@ -788,12 +850,14 @@
           "93%",
           "93.1%",
           "98%",
-          "98.2%"
+          "98.2%",
+          "98.8%",
+          "99%"
         ]
       }
     }
   ],
-  "text": "Missing the penalty leaves Argentina in a stronger position, but the model does not establish that they win. It removes Mbappé’s penalty goal without assuming France’s comeback disappears. [[ev:sb:3869685:2928]]\n\nOver the next 15 minutes, compared with the same model’s estimate with the goal scored, the model estimates slightly better chance quality for Argentina and essentially unchanged chance quality for France. Mbappé’s subsequent goal shows why France remained dangerous, but that moment cannot simply be assumed to recur after a miss. This is a modelled hypothetical, not a prediction of the final result. [[ev:sb:3869685:2987]]",
+  "text": "Argentina become overwhelming favourites to win in normal time: the model estimates a 99% chance if Mbappé misses, compared with 87% with the penalty scored. Removing that goal leaves France further behind and makes extra time much less likely. [[ev:sb:3869685:2928]]\n\nOver the next 15 minutes, France’s estimated chance of scoring stays at 22% in both scenarios. So the main difference is the missing goal, not a predicted collapse in France’s attacking threat. This is a modelled hypothetical based on observational data, not a certainty about how the match plays out. [[ev:sb:3869685:2928]]",
   "rejections": [],
   "chunks": [
     {
@@ -826,28 +890,32 @@
     {
       "type": "tool_result",
       "name": "run_counterfactual",
-      "summary": "Ran the what-if model with and without that moment.",
+      "summary": "Ran the what-if model: Argentina's chance of winning goes from 87% to 99%.",
       "ok": true
     },
     {
       "type": "text",
-      "delta": "Missing the penalty leaves Argentina in a strong"
+      "delta": "Argentina become overwhelming favourites to win "
     },
     {
       "type": "text",
-      "delta": "er position, but the model does not establish th"
+      "delta": "in normal time: the model estimates a 99% chance"
     },
     {
       "type": "text",
-      "delta": "at they win. "
+      "delta": " if Mbappé misses, compared with 87% with the pe"
     },
     {
       "type": "text",
-      "delta": "It removes Mbappé’s penalty goal without assumin"
+      "delta": "nalty scored. "
     },
     {
       "type": "text",
-      "delta": "g France’s comeback disappears. "
+      "delta": "Removing that goal leaves France further behind "
+    },
+    {
+      "type": "text",
+      "delta": "and makes extra time much less likely. "
     },
     {
       "type": "text",
@@ -859,47 +927,39 @@
     },
     {
       "type": "text",
-      "delta": "Over the next 15 minutes, compared with the same"
+      "delta": "Over the next 15 minutes, France’s estimated cha"
     },
     {
       "type": "text",
-      "delta": " model’s estimate with the goal scored, the mode"
+      "delta": "nce of scoring stays at 22% in both scenarios. "
     },
     {
       "type": "text",
-      "delta": "l estimates slightly better chance quality for A"
+      "delta": "So the main difference is the missing goal, not "
     },
     {
       "type": "text",
-      "delta": "rgentina and essentially unchanged chance qualit"
+      "delta": "a predicted collapse in France’s attacking threa"
     },
     {
       "type": "text",
-      "delta": "y for France. "
+      "delta": "t. "
     },
     {
       "type": "text",
-      "delta": "Mbappé’s subsequent goal shows why France remain"
+      "delta": "This is a modelled hypothetical based on observa"
     },
     {
       "type": "text",
-      "delta": "ed dangerous, but that moment cannot simply be a"
+      "delta": "tional data, not a certainty about how the match"
     },
     {
       "type": "text",
-      "delta": "ssumed to recur after a miss. "
+      "delta": " plays out. "
     },
     {
       "type": "text",
-      "delta": "This is a modelled hypothetical, not a predictio"
-    },
-    {
-      "type": "text",
-      "delta": "n of the final result. "
-    },
-    {
-      "type": "text",
-      "delta": "[[ev:sb:3869685:2987]]"
+      "delta": "[[ev:sb:3869685:2928]]"
     },
     {
       "type": "citation",
@@ -907,16 +967,11 @@
       "label": "80' Mbappé penalty goal"
     },
     {
-      "type": "citation",
-      "ref": "ev:sb:3869685:2987",
-      "label": "81' Mbappé goal"
-    },
-    {
       "type": "done"
     }
   ],
-  "first_text_seconds": 8.503,
-  "total_seconds": 10.057,
+  "first_text_seconds": 6.619,
+  "total_seconds": 7.959,
   "grounding": {
     "unsupported_numbers": [],
     "unsupported_citations": [],

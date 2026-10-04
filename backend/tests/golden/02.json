@@ -6,7 +6,7 @@
       "name": "get_player_rankings",
       "args": {
         "sort": "progression",
-        "limit": 5
+        "limit": 6
       },
       "result": {
         "players": [
@@ -184,25 +184,63 @@
               "sb:3869685:615",
               "sb:3869685:2806"
             ]
+          },
+          {
+            "player_id": 3099,
+            "name": "Hugo Lloris",
+            "short_name": "Lloris",
+            "jersey": 1,
+            "team": "away",
+            "position": "Goalkeeper",
+            "starter": true,
+            "minutes": 141,
+            "vaep": -0.0299,
+            "vaep_off": 0.1108,
+            "vaep_def": -0.1208,
+            "vaep_per90": -0.019,
+            "passes": 22,
+            "pass_pct": 0.727,
+            "progression": {
+              "passes": 3,
+              "carries": 0,
+              "distance": 154.6
+            },
+            "defending": {
+              "tackle": 0,
+              "interception": 0,
+              "clearance": 0,
+              "recovery": 2,
+              "block": 0
+            },
+            "shots": 0,
+            "xg": 0.0,
+            "event_ids": [
+              "sb:3869685:3574",
+              "sb:3869685:3103",
+              "sb:3869685:3368"
+            ]
           }
         ],
         "ranking": "progression",
-        "count": 5,
+        "count": 6,
         "evidence_labels": {
-          "ev:sb:3869685:615": "18' Varane pass",
-          "ev:sb:3869685:4369": "120+4' Tchouaméni pass",
-          "ev:sb:3869685:3425": "90+9' Messi pass",
-          "ev:sb:3869685:3771": "99' Tchouaméni pass",
+          "ev:sb:3869685:3368": "90+7' Lloris pass",
           "ev:sb:3869685:4351": "120+3' Messi pass",
-          "ev:sb:3869685:4087": "111' Varane pass",
-          "ev:sb:3869685:2349": "64' Tchouaméni pass",
-          "ev:sb:3869685:2583": "69' Mbappé pass",
-          "ev:sb:3869685:2806": "75' Varane carry",
-          "ev:sb:3869685:88": "3' Messi pass",
-          "ev:sb:3869685:2922": "79' Mbappé pass",
           "ev:sb:3869685:2148": "57' Koundé carry",
+          "ev:sb:3869685:615": "18' Varane pass",
+          "ev:sb:3869685:2349": "64' Tchouaméni pass",
+          "ev:sb:3869685:2922": "79' Mbappé pass",
           "ev:sb:3869685:3315": "90+6' Mbappé carry",
+          "ev:sb:3869685:3425": "90+9' Messi pass",
+          "ev:sb:3869685:4087": "111' Varane pass",
+          "ev:sb:3869685:3771": "99' Tchouaméni pass",
+          "ev:sb:3869685:4369": "120+4' Tchouaméni pass",
+          "ev:sb:3869685:88": "3' Messi pass",
           "ev:sb:3869685:1497": "45' Koundé carry",
+          "ev:sb:3869685:2583": "69' Mbappé pass",
+          "ev:sb:3869685:3574": "94' Lloris pass",
+          "ev:sb:3869685:2806": "75' Varane carry",
+          "ev:sb:3869685:3103": "86' Lloris pass",
           "ev:sb:3869685:4184": "115' Koundé pass"
         },
         "match": {
@@ -226,6 +264,18 @@
           "vaep": "Model VAEP when populated; threat-gain proxy fallback"
         },
         "display_numbers": [
+          "-0",
+          "-0.0",
+          "-0.019",
+          "-0.0190",
+          "-0.02",
+          "-0.0299",
+          "-0.03",
+          "-0.030",
+          "-0.1",
+          "-0.12",
+          "-0.1208",
+          "-0.121",
           "0",
           "0%",
           "0.0",
@@ -267,6 +317,9 @@
           "0.08",
           "0.080",
           "0.1",
+          "0.11",
+          "0.1108",
+          "0.111",
           "0.1288",
           "0.129",
           "0.13",
@@ -278,6 +331,9 @@
           "0.72",
           "0.7219",
           "0.722",
+          "0.727",
+          "0.7270",
+          "0.73",
           "0.77",
           "0.770",
           "0.7700",
@@ -322,11 +378,18 @@
           "1.8520",
           "1.9",
           "10",
+          "11%",
+          "11.1%",
           "12.9%",
           "13%",
           "130",
           "138",
           "141",
+          "154.6",
+          "154.60",
+          "154.600",
+          "154.6000",
+          "155",
           "182",
           "182.3",
           "182.30",
@@ -345,6 +408,7 @@
           "2",
           "2%",
           "2.3%",
+          "22",
           "24",
           "249",
           "249.2",
@@ -383,6 +447,8 @@
           "71%",
           "72%",
           "72.2%",
+          "72.7%",
+          "73%",
           "77%",
           "77.0%",
           "79%",
@@ -401,7 +467,7 @@
       }
     }
   ],
-  "text": "Messi was the main ball-progressor, comfortably ahead of everyone else. He recorded 567.1 metres of progressive distance, mainly through his passing, with 25 progressive passes. His forward distribution is illustrated by these passes. [[ev:sb:3869685:88]] [[ev:sb:3869685:3425]]\n\nFor France, Mbappé led with 249.2 metres, bringing more of a carrying threat. [[ev:sb:3869685:3315]] Koundé, Tchouaméni and Varane followed him in the progression rankings, so France’s supporting forward movement also came from deeper positions. [[ev:sb:3869685:4184]] [[ev:sb:3869685:2349]] [[ev:sb:3869685:2806]]",
+  "text": "Messi was the main ball-progressor, while Mbappé led France’s forward movement. Messi recorded 25 progressive passes and 8 progressive carries, so his contribution was much more about moving Argentina forward through passing. [[ev:sb:3869685:88]] [[ev:sb:3869685:3425]]\n\nMbappé’s progression leaned more towards running with the ball, with 9 progressive carries. Behind him, Koundé and Tchouaméni were France’s leading supporting progressors by forward distance. That measures advancing the ball, not necessarily creating the best chances. [[ev:sb:3869685:3315]] [[ev:sb:3869685:2148]] [[ev:sb:3869685:2349]]",
   "rejections": [],
   "chunks": [
     {
@@ -409,7 +475,7 @@
       "name": "get_player_rankings",
       "args": {
         "sort": "progression",
-        "limit": 5
+        "limit": 6
       }
     },
     {
@@ -420,31 +486,27 @@
     },
     {
       "type": "text",
-      "delta": "Messi was the main ball-progressor, comfortably "
+      "delta": "Messi was the main ball-progressor, while Mbappé"
     },
     {
       "type": "text",
-      "delta": "ahead of everyone else. "
+      "delta": " led France’s forward movement. "
     },
     {
       "type": "text",
-      "delta": "He recorded 567.1 metres of progressive distance"
+      "delta": "Messi recorded 25 progressive passes and 8 progr"
     },
     {
       "type": "text",
-      "delta": ", mainly through his passing, with 25 progressiv"
+      "delta": "essive carries, so his contribution was much mor"
     },
     {
       "type": "text",
-      "delta": "e passes. "
+      "delta": "e about moving Argentina forward through passing"
     },
     {
       "type": "text",
-      "delta": "His forward distribution is illustrated by these"
-    },
-    {
-      "type": "text",
-      "delta": " passes. "
+      "delta": ". "
     },
     {
       "type": "text",
@@ -456,35 +518,39 @@
     },
     {
       "type": "text",
-      "delta": "For France, Mbappé led with 249.2 metres, bringi"
+      "delta": "Mbappé’s progression leaned more towards running"
     },
     {
       "type": "text",
-      "delta": "ng more of a carrying threat. "
+      "delta": " with the ball, with 9 progressive carries. "
     },
     {
       "type": "text",
-      "delta": "[[ev:sb:3869685:3315]] Koundé, Tchouaméni and Va"
+      "delta": "Behind him, Koundé and Tchouaméni were France’s "
     },
     {
       "type": "text",
-      "delta": "rane followed him in the progression rankings, s"
+      "delta": "leading supporting progressors by forward distan"
     },
     {
       "type": "text",
-      "delta": "o France’s supporting forward movement also came"
+      "delta": "ce. "
     },
     {
       "type": "text",
-      "delta": " from deeper positions. "
+      "delta": "That measures advancing the ball, not necessaril"
     },
     {
       "type": "text",
-      "delta": "[[ev:sb:3869685:4184]] [[ev:sb:3869685:2349]] [["
+      "delta": "y creating the best chances. "
     },
     {
       "type": "text",
-      "delta": "ev:sb:3869685:2806]]"
+      "delta": "[[ev:sb:3869685:3315]] [[ev:sb:3869685:2148]] [["
+    },
+    {
+      "type": "text",
+      "delta": "ev:sb:3869685:2349]]"
     },
     {
       "type": "citation",
@@ -503,8 +569,8 @@
     },
     {
       "type": "citation",
-      "ref": "ev:sb:3869685:4184",
-      "label": "115' Koundé pass"
+      "ref": "ev:sb:3869685:2148",
+      "label": "57' Koundé carry"
     },
     {
       "type": "citation",
@@ -512,16 +578,11 @@
       "label": "64' Tchouaméni pass"
     },
     {
-      "type": "citation",
-      "ref": "ev:sb:3869685:2806",
-      "label": "75' Varane carry"
-    },
-    {
       "type": "done"
     }
   ],
-  "first_text_seconds": 3.237,
-  "total_seconds": 5.273,
+  "first_text_seconds": 2.798,
+  "total_seconds": 4.509,
   "grounding": {
     "unsupported_numbers": [],
     "unsupported_citations": [],

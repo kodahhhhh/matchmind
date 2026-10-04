@@ -8,7 +8,7 @@
         "types": [
           "goal"
         ],
-        "limit": 5
+        "limit": 10
       },
       "result": {
         "events": [
@@ -76,6 +76,19 @@
             "xg": 0.5083,
             "vaep": 0.8668,
             "sequence_id": "sb:3869685:s228"
+          },
+          {
+            "id": "sb:3869685:4203",
+            "period": 4,
+            "minute": 117,
+            "second": 5,
+            "team": "away",
+            "player": "Mbappé",
+            "type": "shot_penalty",
+            "result": "goal",
+            "xg": 0.8413,
+            "vaep": 0.1878,
+            "sequence_id": "sb:3869685:s238"
           }
         ],
         "markers": [
@@ -133,19 +146,31 @@
             "event_id": "sb:3869685:4070",
             "player_id": 5503,
             "detail": null
+          },
+          {
+            "period": 4,
+            "minute": 117,
+            "second": 5,
+            "t": 8063.0,
+            "team": "away",
+            "type": "goal",
+            "event_id": "sb:3869685:4203",
+            "player_id": 3009,
+            "detail": "penalty"
           }
         ],
         "n_events": 6,
         "n_markers": 6,
         "evidence_labels": {
-          "ev:sb:3869685:771": "23' Messi penalty goal",
           "ev:sb:3869685:1178": "36' Di María goal",
-          "ev:sb:3869685:2928": "80' Mbappé penalty goal",
-          "ev:sb:3869685:4070": "108' Messi goal",
-          "seq:sb:3869685:s52": "36' Argentina sequence",
           "ev:sb:3869685:2987": "81' Mbappé goal",
+          "ev:sb:3869685:2928": "80' Mbappé penalty goal",
+          "ev:sb:3869685:771": "23' Messi penalty goal",
+          "seq:sb:3869685:s52": "36' Argentina sequence",
           "seq:sb:3869685:s228": "108' Argentina sequence",
-          "seq:sb:3869685:s165": "81' France sequence"
+          "ev:sb:3869685:4070": "108' Messi goal",
+          "seq:sb:3869685:s165": "81' France sequence",
+          "ev:sb:3869685:4203": "118' Mbappé penalty goal"
         },
         "match": {
           "teams": {
@@ -173,6 +198,8 @@
           "0.056",
           "0.06",
           "0.1",
+          "0.1878",
+          "0.188",
           "0.19",
           "0.1909",
           "0.191",
@@ -197,6 +224,7 @@
           "0.84",
           "0.841",
           "0.8410",
+          "0.8413",
           "0.8668",
           "0.867",
           "0.87",
@@ -205,11 +233,13 @@
           "0.9",
           "1",
           "107",
+          "117",
           "1344",
           "1344.0",
           "1344.00",
           "1344.000",
           "1344.0000",
+          "18.8%",
           "19%",
           "19.1%",
           "19.2%",
@@ -226,6 +256,7 @@
           "32.4%",
           "35",
           "4",
+          "5",
           "5.6%",
           "50.8%",
           "51%",
@@ -252,6 +283,11 @@
           "77%",
           "79",
           "80",
+          "8063",
+          "8063.0",
+          "8063.00",
+          "8063.000",
+          "8063.0000",
           "83%",
           "83.0%",
           "84%",
@@ -265,10 +301,10 @@
     {
       "name": "search_moments",
       "args": {
-        "query": "Di María Dembélé foul Messi opening penalty goal"
+        "query": "Messi opening penalty Di Maria Dembele foul"
       },
       "result": {
-        "query": "Di María Dembélé foul Messi opening penalty goal",
+        "query": "Messi opening penalty Di Maria Dembele foul",
         "results": [
           {
             "sequence_id": "sb:3869685:s39",
@@ -288,81 +324,13 @@
             }
           },
           {
-            "sequence_id": "sb:3869685:s54",
-            "match_id": "sb:3869685",
-            "minute": 37,
-            "label": "38'",
-            "team": "away",
-            "text": "Tchouaméni’s free kick finds Dembélé on the right wing, but Dembélé is dispossessed.",
-            "score": 0.016129,
-            "match": {
-              "home": "Argentina",
-              "away": "France",
-              "competition": "FIFA World Cup",
-              "season": "2022",
-              "home_color": "#7CB9E8",
-              "away_color": "#E5484D"
-            }
-          },
-          {
-            "sequence_id": "sb:3869685:s43",
-            "match_id": "sb:3869685",
-            "minute": 29,
-            "label": "30'",
-            "team": "away",
-            "text": "Koundé finds Dembélé in central midfield, but Dembélé’s pass toward Griezmann is incomplete.",
-            "score": 0.015873,
-            "match": {
-              "home": "Argentina",
-              "away": "France",
-              "competition": "FIFA World Cup",
-              "season": "2022",
-              "home_color": "#7CB9E8",
-              "away_color": "#E5484D"
-            }
-          },
-          {
-            "sequence_id": "sb:3869685:s60",
-            "match_id": "sb:3869685",
-            "minute": 39,
-            "label": "40'",
-            "team": "home",
-            "text": "Otamendi’s long pass finds Di María, who is fouled by Koundé.",
-            "score": 0.015625,
-            "match": {
-              "home": "Argentina",
-              "away": "France",
-              "competition": "FIFA World Cup",
-              "season": "2022",
-              "home_color": "#7CB9E8",
-              "away_color": "#E5484D"
-            }
-          },
-          {
-            "sequence_id": "sb:3869685:s31",
-            "match_id": "sb:3869685",
-            "minute": 19,
-            "label": "20'",
-            "team": "home",
-            "text": "Di María carries into the box, where Dembélé fouls him.",
-            "score": 0.015385,
-            "match": {
-              "home": "Argentina",
-              "away": "France",
-              "competition": "FIFA World Cup",
-              "season": "2022",
-              "home_color": "#7CB9E8",
-              "away_color": "#E5484D"
-            }
-          },
-          {
             "sequence_id": "sb:3869685:s159",
             "match_id": "sb:3869685",
             "minute": 76,
             "label": "77'",
             "team": "home",
             "text": "Messi finds De Paul on the right wing, where De Paul carries under pressure before being fouled.",
-            "score": 0.015152,
+            "score": 0.016129,
             "match": {
               "home": "Argentina",
               "away": "France",
@@ -379,7 +347,7 @@
             "label": "23'",
             "team": "home",
             "text": "Messi converts the penalty to put Argentina 1–0 ahead.",
-            "score": 0.014925,
+            "score": 0.015873,
             "match": {
               "home": "Argentina",
               "away": "France",
@@ -396,41 +364,7 @@
             "label": "3'",
             "team": "home",
             "text": "Messi finds De Paul at the edge of the box, but his pass to Álvarez is ruled offside.",
-            "score": 0.014706,
-            "match": {
-              "home": "Argentina",
-              "away": "France",
-              "competition": "FIFA World Cup",
-              "season": "2022",
-              "home_color": "#7CB9E8",
-              "away_color": "#E5484D"
-            }
-          },
-          {
-            "sequence_id": "sb:3869685:s35",
-            "match_id": "sb:3869685",
-            "minute": 24,
-            "label": "25'",
-            "team": "home",
-            "text": "MacAllister finds Tagliafico in their own half, but Dembélé blocks Tagliafico’s pass.",
-            "score": 0.014493,
-            "match": {
-              "home": "Argentina",
-              "away": "France",
-              "competition": "FIFA World Cup",
-              "season": "2022",
-              "home_color": "#7CB9E8",
-              "away_color": "#E5484D"
-            }
-          },
-          {
-            "sequence_id": "sb:3869685:s195",
-            "match_id": "sb:3869685",
-            "minute": 98,
-            "label": "90+9'",
-            "team": "home",
-            "text": "Messi carries into the box and finds De Paul, but De Paul’s pass back to Messi is incomplete.",
-            "score": 0.014286,
+            "score": 0.015625,
             "match": {
               "home": "Argentina",
               "away": "France",
@@ -447,126 +381,7 @@
             "label": "122'",
             "team": "home",
             "text": "Messi scores a shootout penalty for Argentina.",
-            "score": 0.014085,
-            "match": {
-              "home": "Argentina",
-              "away": "France",
-              "competition": "FIFA World Cup",
-              "season": "2022",
-              "home_color": "#7CB9E8",
-              "away_color": "#E5484D"
-            }
-          },
-          {
-            "sequence_id": "sb:3869685:s7",
-            "match_id": "sb:3869685",
-            "minute": 1,
-            "label": "2'",
-            "team": "away",
-            "text": "Koundé finds Dembélé in own half, where Dembélé’s touch lets him down.",
-            "score": 0.013889,
-            "match": {
-              "home": "Argentina",
-              "away": "France",
-              "competition": "FIFA World Cup",
-              "season": "2022",
-              "home_color": "#7CB9E8",
-              "away_color": "#E5484D"
-            }
-          },
-          {
-            "sequence_id": "sb:3869685:s116",
-            "match_id": "sb:3869685",
-            "minute": 59,
-            "label": "60'",
-            "team": "home",
-            "text": "Di María finds Messi in the box, and Messi carries under pressure before firing a right-footed shot off target.",
-            "score": 0.013699,
-            "match": {
-              "home": "Argentina",
-              "away": "France",
-              "competition": "FIFA World Cup",
-              "season": "2022",
-              "home_color": "#7CB9E8",
-              "away_color": "#E5484D"
-            }
-          },
-          {
-            "sequence_id": "sb:3869685:s251",
-            "match_id": "sb:3869685",
-            "minute": 122,
-            "label": "123'",
-            "team": "home",
-            "text": "Dybala scores his shootout penalty for Argentina, keeping the in-play score level at 3–3.",
-            "score": 0.013514,
-            "match": {
-              "home": "Argentina",
-              "away": "France",
-              "competition": "FIFA World Cup",
-              "season": "2022",
-              "home_color": "#7CB9E8",
-              "away_color": "#E5484D"
-            }
-          },
-          {
-            "sequence_id": "sb:3869685:s119",
-            "match_id": "sb:3869685",
-            "minute": 61,
-            "label": "62'",
-            "team": "home",
-            "text": "Fernandez plays to De Paul, who carries before sending a pass toward Messi on the right wing that goes out.",
-            "score": 0.013333,
-            "match": {
-              "home": "Argentina",
-              "away": "France",
-              "competition": "FIFA World Cup",
-              "season": "2022",
-              "home_color": "#7CB9E8",
-              "away_color": "#E5484D"
-            }
-          },
-          {
-            "sequence_id": "sb:3869685:s40",
-            "match_id": "sb:3869685",
-            "minute": 26,
-            "label": "27'",
-            "team": "away",
-            "text": "Griezmann’s free kick into the box is incomplete, and Romero clears before Hernández fouls Messi.",
-            "score": 0.013158,
-            "match": {
-              "home": "Argentina",
-              "away": "France",
-              "competition": "FIFA World Cup",
-              "season": "2022",
-              "home_color": "#7CB9E8",
-              "away_color": "#E5484D"
-            }
-          },
-          {
-            "sequence_id": "sb:3869685:s52",
-            "match_id": "sb:3869685",
-            "minute": 35,
-            "label": "36'",
-            "team": "home",
-            "text": "Álvarez finds MacAllister, who plays Di María into the box; Di María scores to make it 2-0.",
-            "score": 0.012987,
-            "match": {
-              "home": "Argentina",
-              "away": "France",
-              "competition": "FIFA World Cup",
-              "season": "2022",
-              "home_color": "#7CB9E8",
-              "away_color": "#E5484D"
-            }
-          },
-          {
-            "sequence_id": "sb:3869685:s244",
-            "match_id": "sb:3869685",
-            "minute": 121,
-            "label": "120+2'",
-            "team": "home",
-            "text": "Messi's pass toward Martínez is ruled offside.",
-            "score": 0.012821,
+            "score": 0.015385,
             "match": {
               "home": "Argentina",
               "away": "France",
@@ -583,6 +398,227 @@
             "label": "93'",
             "team": "away",
             "text": "Camavinga wins the tackle in own half, then Messi fouls him.",
+            "score": 0.015152,
+            "match": {
+              "home": "Argentina",
+              "away": "France",
+              "competition": "FIFA World Cup",
+              "season": "2022",
+              "home_color": "#7CB9E8",
+              "away_color": "#E5484D"
+            }
+          },
+          {
+            "sequence_id": "sb:3869685:s195",
+            "match_id": "sb:3869685",
+            "minute": 98,
+            "label": "90+9'",
+            "team": "home",
+            "text": "Messi carries into the box and finds De Paul, but De Paul’s pass back to Messi is incomplete.",
+            "score": 0.014925,
+            "match": {
+              "home": "Argentina",
+              "away": "France",
+              "competition": "FIFA World Cup",
+              "season": "2022",
+              "home_color": "#7CB9E8",
+              "away_color": "#E5484D"
+            }
+          },
+          {
+            "sequence_id": "sb:3869685:s60",
+            "match_id": "sb:3869685",
+            "minute": 39,
+            "label": "40'",
+            "team": "home",
+            "text": "Otamendi’s long pass finds Di María, who is fouled by Koundé.",
+            "score": 0.014706,
+            "match": {
+              "home": "Argentina",
+              "away": "France",
+              "competition": "FIFA World Cup",
+              "season": "2022",
+              "home_color": "#7CB9E8",
+              "away_color": "#E5484D"
+            }
+          },
+          {
+            "sequence_id": "sb:3869685:s40",
+            "match_id": "sb:3869685",
+            "minute": 26,
+            "label": "27'",
+            "team": "away",
+            "text": "Griezmann’s free kick into the box is incomplete, and Romero clears before Hernández fouls Messi.",
+            "score": 0.014493,
+            "match": {
+              "home": "Argentina",
+              "away": "France",
+              "competition": "FIFA World Cup",
+              "season": "2022",
+              "home_color": "#7CB9E8",
+              "away_color": "#E5484D"
+            }
+          },
+          {
+            "sequence_id": "sb:3869685:s116",
+            "match_id": "sb:3869685",
+            "minute": 59,
+            "label": "60'",
+            "team": "home",
+            "text": "Di María finds Messi in the box, and Messi carries under pressure before firing a right-footed shot off target.",
+            "score": 0.014286,
+            "match": {
+              "home": "Argentina",
+              "away": "France",
+              "competition": "FIFA World Cup",
+              "season": "2022",
+              "home_color": "#7CB9E8",
+              "away_color": "#E5484D"
+            }
+          },
+          {
+            "sequence_id": "sb:3869685:s244",
+            "match_id": "sb:3869685",
+            "minute": 121,
+            "label": "120+2'",
+            "team": "home",
+            "text": "Messi's pass toward Martínez is ruled offside.",
+            "score": 0.014085,
+            "match": {
+              "home": "Argentina",
+              "away": "France",
+              "competition": "FIFA World Cup",
+              "season": "2022",
+              "home_color": "#7CB9E8",
+              "away_color": "#E5484D"
+            }
+          },
+          {
+            "sequence_id": "sb:3869685:s10",
+            "match_id": "sb:3869685",
+            "minute": 3,
+            "label": "4'",
+            "team": "home",
+            "text": "Romero sends a long ball toward central midfield, then Upamecano fouls Messi.",
+            "score": 0.013889,
+            "match": {
+              "home": "Argentina",
+              "away": "France",
+              "competition": "FIFA World Cup",
+              "season": "2022",
+              "home_color": "#7CB9E8",
+              "away_color": "#E5484D"
+            }
+          },
+          {
+            "sequence_id": "sb:3869685:s31",
+            "match_id": "sb:3869685",
+            "minute": 19,
+            "label": "20'",
+            "team": "home",
+            "text": "Di María carries into the box, where Dembélé fouls him.",
+            "score": 0.013699,
+            "match": {
+              "home": "Argentina",
+              "away": "France",
+              "competition": "FIFA World Cup",
+              "season": "2022",
+              "home_color": "#7CB9E8",
+              "away_color": "#E5484D"
+            }
+          },
+          {
+            "sequence_id": "sb:3869685:s54",
+            "match_id": "sb:3869685",
+            "minute": 37,
+            "label": "38'",
+            "team": "away",
+            "text": "Tchouaméni’s free kick finds Dembélé on the right wing, but Dembélé is dispossessed.",
+            "score": 0.013514,
+            "match": {
+              "home": "Argentina",
+              "away": "France",
+              "competition": "FIFA World Cup",
+              "season": "2022",
+              "home_color": "#7CB9E8",
+              "away_color": "#E5484D"
+            }
+          },
+          {
+            "sequence_id": "sb:3869685:s23",
+            "match_id": "sb:3869685",
+            "minute": 13,
+            "label": "14'",
+            "team": "home",
+            "text": "Messi’s pass toward Álvarez is incomplete, and Tagliafico’s pass toward Di María is flagged offside.",
+            "score": 0.013333,
+            "match": {
+              "home": "Argentina",
+              "away": "France",
+              "competition": "FIFA World Cup",
+              "season": "2022",
+              "home_color": "#7CB9E8",
+              "away_color": "#E5484D"
+            }
+          },
+          {
+            "sequence_id": "sb:3869685:s223",
+            "match_id": "sb:3869685",
+            "minute": 105,
+            "label": "106'",
+            "team": "home",
+            "text": "Messi finds Montiel on the right wing, and Montiel sends a long cross into the box that goes out.",
+            "score": 0.013158,
+            "match": {
+              "home": "Argentina",
+              "away": "France",
+              "competition": "FIFA World Cup",
+              "season": "2022",
+              "home_color": "#7CB9E8",
+              "away_color": "#E5484D"
+            }
+          },
+          {
+            "sequence_id": "sb:3869685:s219",
+            "match_id": "sb:3869685",
+            "minute": 105,
+            "label": "105+1'",
+            "team": "home",
+            "text": "Messi takes a corner to Fernandez on the right wing, but Fernandez has a bad touch.",
+            "score": 0.012987,
+            "match": {
+              "home": "Argentina",
+              "away": "France",
+              "competition": "FIFA World Cup",
+              "season": "2022",
+              "home_color": "#7CB9E8",
+              "away_color": "#E5484D"
+            }
+          },
+          {
+            "sequence_id": "sb:3869685:s119",
+            "match_id": "sb:3869685",
+            "minute": 61,
+            "label": "62'",
+            "team": "home",
+            "text": "Fernandez plays to De Paul, who carries before sending a pass toward Messi on the right wing that goes out.",
+            "score": 0.012821,
+            "match": {
+              "home": "Argentina",
+              "away": "France",
+              "competition": "FIFA World Cup",
+              "season": "2022",
+              "home_color": "#7CB9E8",
+              "away_color": "#E5484D"
+            }
+          },
+          {
+            "sequence_id": "sb:3869685:s35",
+            "match_id": "sb:3869685",
+            "minute": 24,
+            "label": "25'",
+            "team": "home",
+            "text": "MacAllister finds Tagliafico in their own half, but Dembélé blocks Tagliafico’s pass.",
             "score": 0.012658,
             "match": {
               "home": "Argentina",
@@ -594,12 +630,12 @@
             }
           },
           {
-            "sequence_id": "sb:3869685:s247",
+            "sequence_id": "sb:3869685:s68",
             "match_id": "sb:3869685",
-            "minute": 123,
-            "label": "120+4'",
-            "team": "away",
-            "text": "Fernandez's tackle inside the box is unsuccessful before Dybala clears.",
+            "minute": 45,
+            "label": "45+1'",
+            "team": "home",
+            "text": "Otamendi finds Tagliafico in own half, whose long ball toward Di María inside the box is incomplete.",
             "score": 0.0125,
             "match": {
               "home": "Argentina",
@@ -612,26 +648,26 @@
           }
         ],
         "evidence_labels": {
-          "seq:sb:3869685:s43": "30' France sequence",
-          "seq:sb:3869685:s159": "77' Argentina sequence",
-          "seq:sb:3869685:s60": "40' Argentina sequence",
-          "seq:sb:3869685:s52": "36' Argentina sequence",
-          "seq:sb:3869685:s119": "62' Argentina sequence",
-          "seq:sb:3869685:s31": "20' Argentina sequence",
-          "seq:sb:3869685:s7": "2' France sequence",
-          "seq:sb:3869685:s244": "120+2' Argentina sequence",
-          "seq:sb:3869685:s39": "26' Argentina sequence",
           "seq:sb:3869685:s54": "38' France sequence",
-          "seq:sb:3869685:s116": "60' Argentina sequence",
-          "seq:sb:3869685:s35": "25' Argentina sequence",
           "seq:sb:3869685:s195": "90+9' Argentina sequence",
-          "seq:sb:3869685:s247": "120+4' France sequence",
+          "seq:sb:3869685:s39": "26' Argentina sequence",
+          "seq:sb:3869685:s35": "25' Argentina sequence",
+          "seq:sb:3869685:s60": "40' Argentina sequence",
           "seq:sb:3869685:s8": "3' Argentina sequence",
+          "seq:sb:3869685:s119": "62' Argentina sequence",
+          "seq:sb:3869685:s68": "45+1' Argentina sequence",
+          "seq:sb:3869685:s244": "120+2' Argentina sequence",
+          "seq:sb:3869685:s10": "4' Argentina sequence",
+          "seq:sb:3869685:s223": "106' Argentina sequence",
+          "seq:sb:3869685:s31": "20' Argentina sequence",
+          "seq:sb:3869685:s116": "60' Argentina sequence",
+          "seq:sb:3869685:s23": "14' Argentina sequence",
+          "seq:sb:3869685:s159": "77' Argentina sequence",
           "seq:sb:3869685:s32": "23' Argentina sequence",
           "seq:sb:3869685:s249": "122' Argentina sequence",
-          "seq:sb:3869685:s251": "123' Argentina sequence",
+          "seq:sb:3869685:s203": "93' France sequence",
           "seq:sb:3869685:s40": "27' France sequence",
-          "seq:sb:3869685:s203": "93' France sequence"
+          "seq:sb:3869685:s219": "105+1' Argentina sequence"
         },
         "match": {
           "teams": {
@@ -701,16 +737,15 @@
           "0.016393",
           "0.0164",
           "0.02",
-          "1",
           "1%",
           "1.2%",
           "1.3%",
           "1.4%",
           "1.5%",
           "1.6%",
+          "105",
           "121",
-          "122",
-          "123",
+          "13",
           "19",
           "2",
           "2%",
@@ -718,12 +753,11 @@
           "24",
           "25",
           "26",
-          "29",
           "3",
-          "35",
           "37",
           "39",
           "4",
+          "45",
           "59",
           "61",
           "76",
@@ -733,7 +767,7 @@
       }
     }
   ],
-  "text": "Messi opened the scoring with a penalty in the 23' after Di María carried into the box and was fouled by Dembélé. [[seq:sb:3869685:s31]] [[ev:sb:3869685:771]]\n\nFrance’s nearby attacking moves then broke down: Dembélé lost possession on the right, and Griezmann’s free kick into the box was incomplete before Romero cleared. Argentina’s lead remained intact. [[seq:sb:3869685:s54]] [[seq:sb:3869685:s40]]",
+  "text": "Messi opened the scoring with a penalty at 23', after Di María carried into the box and was fouled by Dembélé. [[seq:sb:3869685:s31]] [[ev:sb:3869685:771]]\n\nFrance’s immediate response brought no breakthrough: Griezmann’s free kick into the box failed to find a teammate, Romero cleared, and Hernández then fouled Messi. [[seq:sb:3869685:s40]]",
   "rejections": [],
   "chunks": [
     {
@@ -743,7 +777,7 @@
         "types": [
           "goal"
         ],
-        "limit": 5
+        "limit": 10
       }
     },
     {
@@ -756,7 +790,7 @@
       "type": "tool",
       "name": "search_moments",
       "args": {
-        "query": "Di María Dembélé foul Messi opening penalty goal"
+        "query": "Messi opening penalty Di Maria Dembele foul"
       }
     },
     {
@@ -767,15 +801,15 @@
     },
     {
       "type": "text",
-      "delta": "Messi opened the scoring with a penalty in the 2"
+      "delta": "Messi opened the scoring with a penalty at 23', "
     },
     {
       "type": "text",
-      "delta": "3' after Di María carried into the box and was f"
+      "delta": "after Di María carried into the box and was foul"
     },
     {
       "type": "text",
-      "delta": "ouled by Dembélé. "
+      "delta": "ed by Dembélé. "
     },
     {
       "type": "text",
@@ -787,27 +821,23 @@
     },
     {
       "type": "text",
-      "delta": "France’s nearby attacking moves then broke down:"
+      "delta": "France’s immediate response brought no breakthro"
     },
     {
       "type": "text",
-      "delta": " Dembélé lost possession on the right, and Griez"
+      "delta": "ugh: Griezmann’s free kick into the box failed t"
     },
     {
       "type": "text",
-      "delta": "mann’s free kick into the box was incomplete bef"
+      "delta": "o find a teammate, Romero cleared, and Hernández"
     },
     {
       "type": "text",
-      "delta": "ore Romero cleared. "
+      "delta": " then fouled Messi. "
     },
     {
       "type": "text",
-      "delta": "Argentina’s lead remained intact. "
-    },
-    {
-      "type": "text",
-      "delta": "[[seq:sb:3869685:s54]] [[seq:sb:3869685:s40]]"
+      "delta": "[[seq:sb:3869685:s40]]"
     },
     {
       "type": "citation",
@@ -821,11 +851,6 @@
     },
     {
       "type": "citation",
-      "ref": "seq:sb:3869685:s54",
-      "label": "38' France sequence"
-    },
-    {
-      "type": "citation",
       "ref": "seq:sb:3869685:s40",
       "label": "27' France sequence"
     },
@@ -833,8 +858,8 @@
       "type": "done"
     }
   ],
-  "first_text_seconds": 5.807,
-  "total_seconds": 6.717,
+  "first_text_seconds": 5.279,
+  "total_seconds": 6.031,
   "grounding": {
     "unsupported_numbers": [],
     "unsupported_citations": [],

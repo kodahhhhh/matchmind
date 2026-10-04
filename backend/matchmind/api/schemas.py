@@ -380,6 +380,35 @@ class AnalogSummary(Contract):
     away: AnalogXg
 
 
+class ResultProbs(Contract):
+    home: float
+    level: float
+    away: float
+
+
+class Score(Contract):
+    home: int
+    away: int
+
+
+class ScorePair(Contract):
+    factual: Score
+    modelled: Score
+
+
+class ResultOutlook(Contract):
+    block: Literal["normal_time", "extra_time"]
+    level_means: Literal["draw", "extra_time", "penalties"]
+    score: ScorePair
+    factual: ResultProbs
+    modelled: ResultProbs
+
+
+class ChancePair(Contract):
+    factual: Sides[float]
+    modelled: Sides[float]
+
+
 class Counterfactual(Contract):
     match_id: str
     event_id: str
@@ -396,6 +425,8 @@ class Counterfactual(Contract):
     effect: Sides[Effect]
     negligible: bool
     lineup_change: LineupChange | None
+    result: ResultOutlook
+    scoring_chance: ChancePair
     series: list[BranchPoint]
     analogs: list[Analog]
     n_analogs: int

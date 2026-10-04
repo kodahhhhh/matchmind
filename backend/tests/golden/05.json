@@ -8,13 +8,53 @@
         "types": [
           "sub",
           "goal",
-          "card"
+          "shot"
         ],
         "from_minute": 64,
-        "to_minute": 85
+        "to_minute": 85,
+        "limit": 40
       },
       "result": {
         "events": [
+          {
+            "id": "sb:3869685:2517",
+            "period": 2,
+            "minute": 67,
+            "second": 15,
+            "team": "away",
+            "player": "Kolo",
+            "type": "shot",
+            "result": "fail",
+            "xg": 0.0715,
+            "vaep": -0.1148,
+            "sequence_id": "sb:3869685:s131"
+          },
+          {
+            "id": "sb:3869685:2658",
+            "period": 2,
+            "minute": 70,
+            "second": 9,
+            "team": "away",
+            "player": "Mbappé",
+            "type": "shot",
+            "result": "fail",
+            "xg": 0.0565,
+            "vaep": -0.0351,
+            "sequence_id": "sb:3869685:s138"
+          },
+          {
+            "id": "sb:3869685:2691",
+            "period": 2,
+            "minute": 71,
+            "second": 31,
+            "team": "home",
+            "player": "Fernandez",
+            "type": "shot",
+            "result": "fail",
+            "xg": 0.0431,
+            "vaep": -0.0307,
+            "sequence_id": "sb:3869685:s139"
+          },
           {
             "id": "sb:3869685:2928",
             "period": 2,
@@ -40,6 +80,19 @@
             "xg": 0.0556,
             "vaep": 0.873,
             "sequence_id": "sb:3869685:s165"
+          },
+          {
+            "id": "sb:3869685:3037",
+            "period": 2,
+            "minute": 83,
+            "second": 23,
+            "team": "home",
+            "player": "Fernandez",
+            "type": "shot",
+            "result": "fail",
+            "xg": 0.0204,
+            "vaep": -0.0123,
+            "sequence_id": "sb:3869685:s167"
           }
         ],
         "markers": [
@@ -90,13 +143,20 @@
             "detail": null
           }
         ],
-        "n_events": 2,
+        "n_events": 6,
         "n_markers": 4,
         "evidence_labels": {
-          "ev:sb:3869685:2928": "80' Mbappé penalty goal",
-          "ev:sb:3869685:2660": "71' Camavinga on for Hernández",
           "ev:sb:3869685:2987": "81' Mbappé goal",
           "ev:sb:3869685:2661": "71' Coman on for Griezmann",
+          "seq:sb:3869685:s138": "70' France sequence",
+          "seq:sb:3869685:s139": "71' Argentina sequence",
+          "ev:sb:3869685:2517": "68' Kolo shot",
+          "ev:sb:3869685:2928": "80' Mbappé penalty goal",
+          "ev:sb:3869685:3037": "84' Fernandez shot",
+          "seq:sb:3869685:s167": "83' Argentina sequence",
+          "ev:sb:3869685:2660": "71' Camavinga on for Hernández",
+          "ev:sb:3869685:2658": "71' Mbappé shot",
+          "ev:sb:3869685:2691": "72' Fernandez shot",
           "seq:sb:3869685:s165": "81' France sequence"
         },
         "match": {
@@ -120,10 +180,37 @@
           "vaep": "Model VAEP when populated; threat-gain proxy fallback"
         },
         "display_numbers": [
+          "-0",
+          "-0.0",
+          "-0.01",
+          "-0.012",
+          "-0.0123",
+          "-0.03",
+          "-0.0307",
+          "-0.031",
+          "-0.035",
+          "-0.0351",
+          "-0.04",
+          "-0.1",
+          "-0.11",
+          "-0.1148",
+          "-0.115",
           "0",
+          "0.0",
+          "0.02",
+          "0.020",
+          "0.0204",
+          "0.04",
+          "0.043",
+          "0.0431",
           "0.0556",
           "0.056",
+          "0.0565",
+          "0.057",
           "0.06",
+          "0.07",
+          "0.071",
+          "0.0715",
           "0.1",
           "0.19",
           "0.192",
@@ -138,14 +225,21 @@
           "0.8730",
           "0.9",
           "1",
+          "15",
           "19%",
           "19.2%",
           "2",
+          "2%",
+          "2.0%",
+          "23",
           "24",
           "27",
           "29",
           "3",
+          "31",
           "4",
+          "4%",
+          "4.3%",
           "4682",
           "4682.0",
           "4682.00",
@@ -157,6 +251,7 @@
           "4684.000",
           "4684.0000",
           "5.6%",
+          "5.7%",
           "5219",
           "5219.0",
           "5219.00",
@@ -168,14 +263,21 @@
           "5314.000",
           "5314.0000",
           "59",
+          "6",
           "6%",
+          "67",
+          "7%",
+          "7.1%",
           "70",
+          "71",
           "79",
           "80",
+          "83",
           "84%",
           "84.1%",
           "87%",
-          "87.3%"
+          "87.3%",
+          "9"
         ]
       }
     },
@@ -342,12 +444,12 @@
           }
         ],
         "evidence_labels": {
-          "ev:sb:3869685:3037": "84' Fernandez shot",
-          "ev:sb:3869685:4199": "116' Mbappé shot",
+          "ev:sb:3869685:2987": "81' Mbappé goal",
           "ev:sb:3869685:1178": "36' Di María goal",
+          "ev:sb:3869685:4199": "116' Mbappé shot",
           "ev:sb:3869685:2928": "80' Mbappé penalty goal",
-          "ev:sb:3869685:4203": "118' Mbappé penalty goal",
-          "ev:sb:3869685:2987": "81' Mbappé goal"
+          "ev:sb:3869685:3037": "84' Fernandez shot",
+          "ev:sb:3869685:4203": "118' Mbappé penalty goal"
         },
         "match": {
           "teams": {
@@ -591,698 +693,13 @@
       "name": "get_window_stats",
       "args": {
         "from_minute": 64,
-        "to_minute": 74
-      },
-      "result": {
-        "from_minute": 64,
-        "to_minute": 74,
-        "period": null,
-        "stats": {
-          "home": {
-            "possession": 0.316,
-            "field_tilt": 0.273,
-            "xg": 0.043,
-            "shots": 1
-          },
-          "away": {
-            "possession": 0.684,
-            "field_tilt": 0.727,
-            "xg": 0.128,
-            "shots": 2
-          },
-          "momentum": 0.0033
-        },
-        "event_ids": [
-          "sb:3869685:2517",
-          "sb:3869685:2658",
-          "sb:3869685:2691",
-          "sb:3869685:2356"
-        ],
-        "evidence_labels": {
-          "ev:sb:3869685:2691": "72' Fernandez shot",
-          "ev:sb:3869685:2356": "65' Martínez goalkick",
-          "ev:sb:3869685:2517": "68' Kolo shot",
-          "ev:sb:3869685:2658": "71' Mbappé shot"
-        },
-        "match": {
-          "teams": {
-            "home": "Argentina",
-            "away": "France"
-          },
-          "score": {
-            "home": 3,
-            "away": 3,
-            "penalties": {
-              "home": 4,
-              "away": 2
-            }
-          },
-          "season": "2022"
-        },
-        "metric_notes": {
-          "possession": "Pass-share proxy",
-          "xg": "Model xG when populated; sb_xg fallback",
-          "vaep": "Model VAEP when populated; threat-gain proxy fallback"
-        },
-        "display_numbers": [
-          "0",
-          "0%",
-          "0.0",
-          "0.00",
-          "0.003",
-          "0.0033",
-          "0.04",
-          "0.043",
-          "0.0430",
-          "0.1",
-          "0.128",
-          "0.1280",
-          "0.13",
-          "0.27",
-          "0.273",
-          "0.2730",
-          "0.3",
-          "0.3%",
-          "0.316",
-          "0.3160",
-          "0.32",
-          "0.68",
-          "0.684",
-          "0.6840",
-          "0.7",
-          "0.727",
-          "0.7270",
-          "0.73",
-          "1",
-          "12.8%",
-          "13%",
-          "2",
-          "27%",
-          "27.3%",
-          "3",
-          "31.6%",
-          "32%",
-          "4",
-          "4%",
-          "4.3%",
-          "64",
-          "68%",
-          "68.4%",
-          "72.7%",
-          "73%",
-          "74"
-        ]
-      }
-    },
-    {
-      "name": "get_window_stats",
-      "args": {
-        "from_minute": 74,
-        "to_minute": 85
-      },
-      "result": {
-        "from_minute": 74,
-        "to_minute": 85,
-        "period": null,
-        "stats": {
-          "home": {
-            "possession": 0.584,
-            "field_tilt": 0.539,
-            "xg": 0.02,
-            "shots": 1
-          },
-          "away": {
-            "possession": 0.416,
-            "field_tilt": 0.461,
-            "xg": 0.897,
-            "shots": 2
-          },
-          "momentum": -0.1451
-        },
-        "event_ids": [
-          "sb:3869685:2928",
-          "sb:3869685:2987",
-          "sb:3869685:3037",
-          "sb:3869685:2769"
-        ],
-        "evidence_labels": {
-          "ev:sb:3869685:3037": "84' Fernandez shot",
-          "ev:sb:3869685:2769": "75' Martínez freekick",
-          "ev:sb:3869685:2928": "80' Mbappé penalty goal",
-          "ev:sb:3869685:2987": "81' Mbappé goal"
-        },
-        "match": {
-          "teams": {
-            "home": "Argentina",
-            "away": "France"
-          },
-          "score": {
-            "home": 3,
-            "away": 3,
-            "penalties": {
-              "home": 4,
-              "away": 2
-            }
-          },
-          "season": "2022"
-        },
-        "metric_notes": {
-          "possession": "Pass-share proxy",
-          "xg": "Model xG when populated; sb_xg fallback",
-          "vaep": "Model VAEP when populated; threat-gain proxy fallback"
-        },
-        "display_numbers": [
-          "-0",
-          "-0.1",
-          "-0.145",
-          "-0.1451",
-          "-0.15",
-          "0",
-          "0.0",
-          "0.02",
-          "0.020",
-          "0.0200",
-          "0.4",
-          "0.416",
-          "0.4160",
-          "0.42",
-          "0.46",
-          "0.461",
-          "0.4610",
-          "0.5",
-          "0.539",
-          "0.5390",
-          "0.54",
-          "0.58",
-          "0.584",
-          "0.5840",
-          "0.6",
-          "0.897",
-          "0.8970",
-          "0.9",
-          "0.90",
-          "1",
-          "2",
-          "2%",
-          "2.0%",
-          "3",
-          "4",
-          "41.6%",
-          "42%",
-          "46%",
-          "46.1%",
-          "53.9%",
-          "54%",
-          "58%",
-          "58.4%",
-          "74",
-          "85",
-          "89.7%",
-          "90%"
-        ]
-      }
-    },
-    {
-      "name": "search_moments",
-      "args": {
-        "query": "Argentina France Coman Messi turnover Kolo Muani Otamendi penalty Mbappe Thuram equaliser"
-      },
-      "result": {
-        "query": "Argentina France Coman Messi turnover Kolo Muani Otamendi penalty Mbappe Thuram equaliser",
-        "results": [
-          {
-            "sequence_id": "sb:3869685:s162",
-            "match_id": "sb:3869685",
-            "minute": 78,
-            "label": "79'",
-            "team": "away",
-            "text": "Mbappé finds Kolo with a pass, and Kolo carries into the box before Otamendi fouls him.",
-            "score": 0.016393,
-            "match": {
-              "home": "Argentina",
-              "away": "France",
-              "competition": "FIFA World Cup",
-              "season": "2022",
-              "home_color": "#7CB9E8",
-              "away_color": "#E5484D"
-            }
-          },
-          {
-            "sequence_id": "sb:3869685:s157",
-            "match_id": "sb:3869685",
-            "minute": 75,
-            "label": "76'",
-            "team": "home",
-            "text": "Otamendi recovers the ball in Argentina’s own half and carries under pressure, but his high pass is incomplete.",
-            "score": 0.016129,
-            "match": {
-              "home": "Argentina",
-              "away": "France",
-              "competition": "FIFA World Cup",
-              "season": "2022",
-              "home_color": "#7CB9E8",
-              "away_color": "#E5484D"
-            }
-          },
-          {
-            "sequence_id": "sb:3869685:s32",
-            "match_id": "sb:3869685",
-            "minute": 22,
-            "label": "23'",
-            "team": "home",
-            "text": "Messi converts the penalty to put Argentina 1–0 ahead.",
-            "score": 0.015873,
-            "match": {
-              "home": "Argentina",
-              "away": "France",
-              "competition": "FIFA World Cup",
-              "season": "2022",
-              "home_color": "#7CB9E8",
-              "away_color": "#E5484D"
-            }
-          },
-          {
-            "sequence_id": "sb:3869685:s183",
-            "match_id": "sb:3869685",
-            "minute": 92,
-            "label": "90+3'",
-            "team": "away",
-            "text": "Mbappé carries in from the left wing and shoots from the edge of the box; Otamendi blocks it.",
-            "score": 0.015625,
-            "match": {
-              "home": "Argentina",
-              "away": "France",
-              "competition": "FIFA World Cup",
-              "season": "2022",
-              "home_color": "#7CB9E8",
-              "away_color": "#E5484D"
-            }
-          },
-          {
-            "sequence_id": "sb:3869685:s163",
-            "match_id": "sb:3869685",
-            "minute": 79,
-            "label": "80'",
-            "team": "away",
-            "text": "Mbappé scores from the penalty spot, bringing France within one at 2-1.",
-            "score": 0.015385,
-            "match": {
-              "home": "Argentina",
-              "away": "France",
-              "competition": "FIFA World Cup",
-              "season": "2022",
-              "home_color": "#7CB9E8",
-              "away_color": "#E5484D"
-            }
-          },
-          {
-            "sequence_id": "sb:3869685:s187",
-            "match_id": "sb:3869685",
-            "minute": 94,
-            "label": "90+5'",
-            "team": "away",
-            "text": "Kolo has a bad touch in the box; Otamendi clears and recovers.",
-            "score": 0.015152,
-            "match": {
-              "home": "Argentina",
-              "away": "France",
-              "competition": "FIFA World Cup",
-              "season": "2022",
-              "home_color": "#7CB9E8",
-              "away_color": "#E5484D"
-            }
-          },
-          {
-            "sequence_id": "sb:3869685:s249",
-            "match_id": "sb:3869685",
-            "minute": 121,
-            "label": "122'",
-            "team": "home",
-            "text": "Messi scores a shootout penalty for Argentina.",
-            "score": 0.014925,
-            "match": {
-              "home": "Argentina",
-              "away": "France",
-              "competition": "FIFA World Cup",
-              "season": "2022",
-              "home_color": "#7CB9E8",
-              "away_color": "#E5484D"
-            }
-          },
-          {
-            "sequence_id": "sb:3869685:s165",
-            "match_id": "sb:3869685",
-            "minute": 80,
-            "label": "81'",
-            "team": "away",
-            "text": "Thuram finds Mbappé inside the box, and Mbappé scores to level it at 2-2.",
-            "score": 0.014706,
-            "match": {
-              "home": "Argentina",
-              "away": "France",
-              "competition": "FIFA World Cup",
-              "season": "2022",
-              "home_color": "#7CB9E8",
-              "away_color": "#E5484D"
-            }
-          },
-          {
-            "sequence_id": "sb:3869685:s250",
-            "match_id": "sb:3869685",
-            "minute": 121,
-            "label": "122'",
-            "team": "away",
-            "text": "Martínez saves Coman's shootout penalty for Argentina.",
-            "score": 0.014493,
-            "match": {
-              "home": "Argentina",
-              "away": "France",
-              "competition": "FIFA World Cup",
-              "season": "2022",
-              "home_color": "#7CB9E8",
-              "away_color": "#E5484D"
-            }
-          },
-          {
-            "sequence_id": "sb:3869685:s228",
-            "match_id": "sb:3869685",
-            "minute": 107,
-            "label": "108'",
-            "team": "home",
-            "text": "Messi recovers inside the box and scores with a right-footed half-volley, putting Argentina 3-2 ahead.",
-            "score": 0.014286,
-            "match": {
-              "home": "Argentina",
-              "away": "France",
-              "competition": "FIFA World Cup",
-              "season": "2022",
-              "home_color": "#7CB9E8",
-              "away_color": "#E5484D"
-            }
-          },
-          {
-            "sequence_id": "sb:3869685:s62",
-            "match_id": "sb:3869685",
-            "minute": 41,
-            "label": "42'",
-            "team": "home",
-            "text": "Otamendi passes to Tagliafico, who is fouled by Kolo.",
-            "score": 0.014085,
-            "match": {
-              "home": "Argentina",
-              "away": "France",
-              "competition": "FIFA World Cup",
-              "season": "2022",
-              "home_color": "#7CB9E8",
-              "away_color": "#E5484D"
-            }
-          },
-          {
-            "sequence_id": "sb:3869685:s37",
-            "match_id": "sb:3869685",
-            "minute": 24,
-            "label": "25'",
-            "team": "away",
-            "text": "Tchouaméni’s pass toward Koundé is incomplete, and Álvarez intercepts for Argentina.",
-            "score": 0.013889,
-            "match": {
-              "home": "Argentina",
-              "away": "France",
-              "competition": "FIFA World Cup",
-              "season": "2022",
-              "home_color": "#7CB9E8",
-              "away_color": "#E5484D"
-            }
-          },
-          {
-            "sequence_id": "sb:3869685:s238",
-            "match_id": "sb:3869685",
-            "minute": 117,
-            "label": "118'",
-            "team": "away",
-            "text": "Mbappé scores a penalty to level the score at 3-3.",
-            "score": 0.013699,
-            "match": {
-              "home": "Argentina",
-              "away": "France",
-              "competition": "FIFA World Cup",
-              "season": "2022",
-              "home_color": "#7CB9E8",
-              "away_color": "#E5484D"
-            }
-          },
-          {
-            "sequence_id": "sb:3869685:s254",
-            "match_id": "sb:3869685",
-            "minute": 125,
-            "label": "126'",
-            "team": "away",
-            "text": "Kolo scores his shootout penalty for France, leaving the in-play score 3–3.",
-            "score": 0.013514,
-            "match": {
-              "home": "Argentina",
-              "away": "France",
-              "competition": "FIFA World Cup",
-              "season": "2022",
-              "home_color": "#7CB9E8",
-              "away_color": "#E5484D"
-            }
-          },
-          {
-            "sequence_id": "sb:3869685:s60",
-            "match_id": "sb:3869685",
-            "minute": 39,
-            "label": "40'",
-            "team": "home",
-            "text": "Otamendi’s long pass finds Di María, who is fouled by Koundé.",
-            "score": 0.013333,
-            "match": {
-              "home": "Argentina",
-              "away": "France",
-              "competition": "FIFA World Cup",
-              "season": "2022",
-              "home_color": "#7CB9E8",
-              "away_color": "#E5484D"
-            }
-          },
-          {
-            "sequence_id": "sb:3869685:s248",
-            "match_id": "sb:3869685",
-            "minute": 120,
-            "label": "121'",
-            "team": "away",
-            "text": "Mbappé scores a shootout penalty for France.",
-            "score": 0.013158,
-            "match": {
-              "home": "Argentina",
-              "away": "France",
-              "competition": "FIFA World Cup",
-              "season": "2022",
-              "home_color": "#7CB9E8",
-              "away_color": "#E5484D"
-            }
-          },
-          {
-            "sequence_id": "sb:3869685:s237",
-            "match_id": "sb:3869685",
-            "minute": 115,
-            "label": "116'",
-            "team": "away",
-            "text": "Mbappé's right-footed shot inside the box is blocked by Montiel.",
-            "score": 0.012987,
-            "match": {
-              "home": "Argentina",
-              "away": "France",
-              "competition": "FIFA World Cup",
-              "season": "2022",
-              "home_color": "#7CB9E8",
-              "away_color": "#E5484D"
-            }
-          },
-          {
-            "sequence_id": "sb:3869685:s137",
-            "match_id": "sb:3869685",
-            "minute": 69,
-            "label": "70'",
-            "team": "home",
-            "text": "Molina plays a short pass to Romero in Argentina’s own half, but Romero’s pass is incomplete.",
-            "score": 0.012821,
-            "match": {
-              "home": "Argentina",
-              "away": "France",
-              "competition": "FIFA World Cup",
-              "season": "2022",
-              "home_color": "#7CB9E8",
-              "away_color": "#E5484D"
-            }
-          },
-          {
-            "sequence_id": "sb:3869685:s142",
-            "match_id": "sb:3869685",
-            "minute": 71,
-            "label": "72'",
-            "team": "away",
-            "text": "Camavinga completes a take-on under pressure and carries the ball back into France’s own half.",
-            "score": 0.012658,
-            "match": {
-              "home": "Argentina",
-              "away": "France",
-              "competition": "FIFA World Cup",
-              "season": "2022",
-              "home_color": "#7CB9E8",
-              "away_color": "#E5484D"
-            }
-          },
-          {
-            "sequence_id": "sb:3869685:s170",
-            "match_id": "sb:3869685",
-            "minute": 83,
-            "label": "84'",
-            "team": "away",
-            "text": "Thuram finds Mbappé on the left wing; Mbappé carries into the box, but his cross goes out.",
-            "score": 0.0125,
-            "match": {
-              "home": "Argentina",
-              "away": "France",
-              "competition": "FIFA World Cup",
-              "season": "2022",
-              "home_color": "#7CB9E8",
-              "away_color": "#E5484D"
-            }
-          }
-        ],
-        "evidence_labels": {
-          "seq:sb:3869685:s62": "42' Argentina sequence",
-          "seq:sb:3869685:s157": "76' Argentina sequence",
-          "seq:sb:3869685:s142": "72' France sequence",
-          "seq:sb:3869685:s60": "40' Argentina sequence",
-          "seq:sb:3869685:s170": "84' France sequence",
-          "seq:sb:3869685:s162": "79' France sequence",
-          "seq:sb:3869685:s228": "108' Argentina sequence",
-          "seq:sb:3869685:s237": "116' France sequence",
-          "seq:sb:3869685:s37": "25' France sequence",
-          "seq:sb:3869685:s187": "90+5' France sequence",
-          "seq:sb:3869685:s183": "90+3' France sequence",
-          "seq:sb:3869685:s165": "81' France sequence",
-          "seq:sb:3869685:s137": "70' Argentina sequence",
-          "seq:sb:3869685:s32": "23' Argentina sequence",
-          "seq:sb:3869685:s163": "80' France sequence",
-          "seq:sb:3869685:s249": "122' Argentina sequence",
-          "seq:sb:3869685:s250": "122' France sequence",
-          "seq:sb:3869685:s238": "118' France sequence",
-          "seq:sb:3869685:s254": "126' France sequence",
-          "seq:sb:3869685:s248": "121' France sequence"
-        },
-        "match": {
-          "teams": {
-            "home": "Argentina",
-            "away": "France"
-          },
-          "score": {
-            "home": 3,
-            "away": 3,
-            "penalties": {
-              "home": 4,
-              "away": 2
-            }
-          },
-          "season": "2022"
-        },
-        "metric_notes": {
-          "possession": "Pass-share proxy",
-          "xg": "Model xG when populated; sb_xg fallback",
-          "vaep": "Model VAEP when populated; threat-gain proxy fallback"
-        },
-        "display_numbers": [
-          "0",
-          "0.0",
-          "0.01",
-          "0.0125",
-          "0.012658",
-          "0.0127",
-          "0.0128",
-          "0.012821",
-          "0.012987",
-          "0.013",
-          "0.0130",
-          "0.013158",
-          "0.0132",
-          "0.0133",
-          "0.013333",
-          "0.0135",
-          "0.013514",
-          "0.013699",
-          "0.0137",
-          "0.013889",
-          "0.0139",
-          "0.014",
-          "0.014085",
-          "0.0141",
-          "0.014286",
-          "0.0143",
-          "0.014493",
-          "0.0145",
-          "0.0147",
-          "0.014706",
-          "0.0149",
-          "0.014925",
-          "0.015",
-          "0.015152",
-          "0.0152",
-          "0.015385",
-          "0.0154",
-          "0.0156",
-          "0.015625",
-          "0.015873",
-          "0.0159",
-          "0.016",
-          "0.0161",
-          "0.016129",
-          "0.016393",
-          "0.0164",
-          "0.02",
-          "1%",
-          "1.2%",
-          "1.3%",
-          "1.4%",
-          "1.5%",
-          "1.6%",
-          "107",
-          "115",
-          "117",
-          "120",
-          "121",
-          "125",
-          "2",
-          "2%",
-          "22",
-          "24",
-          "3",
-          "39",
-          "4",
-          "41",
-          "69",
-          "71",
-          "75",
-          "78",
-          "79",
-          "80",
-          "83",
-          "92",
-          "94"
-        ]
-      }
-    },
-    {
-      "name": "get_window_stats",
-      "args": {
-        "from_minute": 64,
-        "to_minute": 70
+        "to_minute": 70,
+        "period": 2
       },
       "result": {
         "from_minute": 64,
         "to_minute": 70,
-        "period": null,
+        "period": 2,
         "stats": {
           "home": {
             "possession": 0.343,
@@ -1305,10 +722,10 @@
           "sb:3869685:2359"
         ],
         "evidence_labels": {
-          "ev:sb:3869685:2356": "65' Martínez goalkick",
           "ev:sb:3869685:2359": "65' Kolo pass",
           "ev:sb:3869685:2517": "68' Kolo shot",
-          "ev:sb:3869685:2658": "71' Mbappé shot"
+          "ev:sb:3869685:2658": "71' Mbappé shot",
+          "ev:sb:3869685:2356": "65' Martínez goalkick"
         },
         "match": {
           "teams": {
@@ -1385,38 +802,39 @@
       "name": "get_window_stats",
       "args": {
         "from_minute": 71,
-        "to_minute": 78
+        "to_minute": 84,
+        "period": 2
       },
       "result": {
         "from_minute": 71,
-        "to_minute": 78,
-        "period": null,
+        "to_minute": 84,
+        "period": 2,
         "stats": {
           "home": {
-            "possession": 0.46,
-            "field_tilt": 0.623,
-            "xg": 0.043,
-            "shots": 1
+            "possession": 0.522,
+            "field_tilt": 0.533,
+            "xg": 0.064,
+            "shots": 2
           },
           "away": {
-            "possession": 0.54,
-            "field_tilt": 0.377,
-            "xg": 0.0,
-            "shots": 0
+            "possession": 0.478,
+            "field_tilt": 0.467,
+            "xg": 0.897,
+            "shots": 2
           },
-          "momentum": -0.0034
+          "momentum": -0.1194
         },
         "event_ids": [
+          "sb:3869685:2928",
+          "sb:3869685:2987",
           "sb:3869685:2691",
-          "sb:3869685:2663",
-          "sb:3869685:2665",
-          "sb:3869685:2668"
+          "sb:3869685:3037"
         ],
         "evidence_labels": {
-          "ev:sb:3869685:2691": "72' Fernandez shot",
-          "ev:sb:3869685:2665": "72' Coman carry",
-          "ev:sb:3869685:2663": "72' Koundé pass",
-          "ev:sb:3869685:2668": "72' Coman dispossessed"
+          "ev:sb:3869685:2928": "80' Mbappé penalty goal",
+          "ev:sb:3869685:3037": "84' Fernandez shot",
+          "ev:sb:3869685:2987": "81' Mbappé goal",
+          "ev:sb:3869685:2691": "72' Fernandez shot"
         },
         "match": {
           "teams": {
@@ -1440,56 +858,524 @@
         },
         "display_numbers": [
           "-0",
-          "-0.0",
-          "-0.00",
-          "-0.003",
-          "-0.0034",
+          "-0.1",
+          "-0.119",
+          "-0.1194",
+          "-0.12",
           "0",
-          "0%",
-          "0.0",
-          "0.0%",
-          "0.00",
-          "0.000",
-          "0.0000",
-          "0.04",
-          "0.043",
-          "0.0430",
-          "0.377",
-          "0.3770",
-          "0.38",
-          "0.4",
-          "0.46",
-          "0.460",
-          "0.4600",
+          "0.06",
+          "0.064",
+          "0.0640",
+          "0.1",
+          "0.467",
+          "0.4670",
+          "0.47",
+          "0.478",
+          "0.4780",
+          "0.48",
           "0.5",
-          "0.54",
-          "0.540",
-          "0.5400",
-          "0.6",
-          "0.62",
-          "0.623",
-          "0.6230",
+          "0.52",
+          "0.522",
+          "0.5220",
+          "0.53",
+          "0.533",
+          "0.5330",
+          "0.897",
+          "0.8970",
+          "0.9",
+          "0.90",
           "1",
           "2",
           "3",
-          "37.7%",
-          "38%",
           "4",
-          "4%",
-          "4.3%",
-          "46%",
-          "46.0%",
-          "54%",
-          "54.0%",
-          "62%",
-          "62.3%",
+          "46.7%",
+          "47%",
+          "47.8%",
+          "48%",
+          "52%",
+          "52.2%",
+          "53%",
+          "53.3%",
+          "6%",
+          "6.4%",
           "71",
-          "78"
+          "84",
+          "89.7%",
+          "90%"
+        ]
+      }
+    },
+    {
+      "name": "search_moments",
+      "args": {
+        "query": "Argentina France Di Maria substituted Acuna Coman Messi dispossessed Thuram Otamendi penalty Mbappe equaliser"
+      },
+      "result": {
+        "query": "Argentina France Di Maria substituted Acuna Coman Messi dispossessed Thuram Otamendi penalty Mbappe equaliser",
+        "results": [
+          {
+            "sequence_id": "sb:3869685:s60",
+            "match_id": "sb:3869685",
+            "minute": 39,
+            "label": "40'",
+            "team": "home",
+            "text": "Otamendi’s long pass finds Di María, who is fouled by Koundé.",
+            "score": 0.016393,
+            "match": {
+              "home": "Argentina",
+              "away": "France",
+              "competition": "FIFA World Cup",
+              "season": "2022",
+              "home_color": "#7CB9E8",
+              "away_color": "#E5484D"
+            }
+          },
+          {
+            "sequence_id": "sb:3869685:s32",
+            "match_id": "sb:3869685",
+            "minute": 22,
+            "label": "23'",
+            "team": "home",
+            "text": "Messi converts the penalty to put Argentina 1–0 ahead.",
+            "score": 0.016129,
+            "match": {
+              "home": "Argentina",
+              "away": "France",
+              "competition": "FIFA World Cup",
+              "season": "2022",
+              "home_color": "#7CB9E8",
+              "away_color": "#E5484D"
+            }
+          },
+          {
+            "sequence_id": "sb:3869685:s250",
+            "match_id": "sb:3869685",
+            "minute": 121,
+            "label": "122'",
+            "team": "away",
+            "text": "Martínez saves Coman's shootout penalty for Argentina.",
+            "score": 0.015873,
+            "match": {
+              "home": "Argentina",
+              "away": "France",
+              "competition": "FIFA World Cup",
+              "season": "2022",
+              "home_color": "#7CB9E8",
+              "away_color": "#E5484D"
+            }
+          },
+          {
+            "sequence_id": "sb:3869685:s165",
+            "match_id": "sb:3869685",
+            "minute": 80,
+            "label": "81'",
+            "team": "away",
+            "text": "Thuram finds Mbappé inside the box, and Mbappé scores to level it at 2-2.",
+            "score": 0.015625,
+            "match": {
+              "home": "Argentina",
+              "away": "France",
+              "competition": "FIFA World Cup",
+              "season": "2022",
+              "home_color": "#7CB9E8",
+              "away_color": "#E5484D"
+            }
+          },
+          {
+            "sequence_id": "sb:3869685:s233",
+            "match_id": "sb:3869685",
+            "minute": 112,
+            "label": "113'",
+            "team": "home",
+            "text": "Acuña's throw-in finds Martínez on the left wing, but Martínez's pass is blocked by Coman.",
+            "score": 0.015385,
+            "match": {
+              "home": "Argentina",
+              "away": "France",
+              "competition": "FIFA World Cup",
+              "season": "2022",
+              "home_color": "#7CB9E8",
+              "away_color": "#E5484D"
+            }
+          },
+          {
+            "sequence_id": "sb:3869685:s157",
+            "match_id": "sb:3869685",
+            "minute": 75,
+            "label": "76'",
+            "team": "home",
+            "text": "Otamendi recovers the ball in Argentina’s own half and carries under pressure, but his high pass is incomplete.",
+            "score": 0.015152,
+            "match": {
+              "home": "Argentina",
+              "away": "France",
+              "competition": "FIFA World Cup",
+              "season": "2022",
+              "home_color": "#7CB9E8",
+              "away_color": "#E5484D"
+            }
+          },
+          {
+            "sequence_id": "sb:3869685:s181",
+            "match_id": "sb:3869685",
+            "minute": 92,
+            "label": "90+3'",
+            "team": "home",
+            "text": "Acuña’s pass from own half is incomplete, blocked by Coman.",
+            "score": 0.014925,
+            "match": {
+              "home": "Argentina",
+              "away": "France",
+              "competition": "FIFA World Cup",
+              "season": "2022",
+              "home_color": "#7CB9E8",
+              "away_color": "#E5484D"
+            }
+          },
+          {
+            "sequence_id": "sb:3869685:s249",
+            "match_id": "sb:3869685",
+            "minute": 121,
+            "label": "122'",
+            "team": "home",
+            "text": "Messi scores a shootout penalty for Argentina.",
+            "score": 0.014706,
+            "match": {
+              "home": "Argentina",
+              "away": "France",
+              "competition": "FIFA World Cup",
+              "season": "2022",
+              "home_color": "#7CB9E8",
+              "away_color": "#E5484D"
+            }
+          },
+          {
+            "sequence_id": "sb:3869685:s183",
+            "match_id": "sb:3869685",
+            "minute": 92,
+            "label": "90+3'",
+            "team": "away",
+            "text": "Mbappé carries in from the left wing and shoots from the edge of the box; Otamendi blocks it.",
+            "score": 0.014493,
+            "match": {
+              "home": "Argentina",
+              "away": "France",
+              "competition": "FIFA World Cup",
+              "season": "2022",
+              "home_color": "#7CB9E8",
+              "away_color": "#E5484D"
+            }
+          },
+          {
+            "sequence_id": "sb:3869685:s163",
+            "match_id": "sb:3869685",
+            "minute": 79,
+            "label": "80'",
+            "team": "away",
+            "text": "Mbappé scores from the penalty spot, bringing France within one at 2-1.",
+            "score": 0.014286,
+            "match": {
+              "home": "Argentina",
+              "away": "France",
+              "competition": "FIFA World Cup",
+              "season": "2022",
+              "home_color": "#7CB9E8",
+              "away_color": "#E5484D"
+            }
+          },
+          {
+            "sequence_id": "sb:3869685:s177",
+            "match_id": "sb:3869685",
+            "minute": 90,
+            "label": "90+1'",
+            "team": "home",
+            "text": "Álvarez’s pass toward Messi is incomplete, and Upamecano’s pass to Thuram is offside.",
+            "score": 0.014085,
+            "match": {
+              "home": "Argentina",
+              "away": "France",
+              "competition": "FIFA World Cup",
+              "season": "2022",
+              "home_color": "#7CB9E8",
+              "away_color": "#E5484D"
+            }
+          },
+          {
+            "sequence_id": "sb:3869685:s71",
+            "match_id": "sb:3869685",
+            "minute": 48,
+            "label": "45+4'",
+            "team": "home",
+            "text": "Otamendi finds Di María in own half, but Di María’s take-on under pressure is incomplete.",
+            "score": 0.013889,
+            "match": {
+              "home": "Argentina",
+              "away": "France",
+              "competition": "FIFA World Cup",
+              "season": "2022",
+              "home_color": "#7CB9E8",
+              "away_color": "#E5484D"
+            }
+          },
+          {
+            "sequence_id": "sb:3869685:s64",
+            "match_id": "sb:3869685",
+            "minute": 43,
+            "label": "44'",
+            "team": "away",
+            "text": "Thuram’s take-on is incomplete, and De Paul’s tackle ends with France losing out.",
+            "score": 0.013699,
+            "match": {
+              "home": "Argentina",
+              "away": "France",
+              "competition": "FIFA World Cup",
+              "season": "2022",
+              "home_color": "#7CB9E8",
+              "away_color": "#E5484D"
+            }
+          },
+          {
+            "sequence_id": "sb:3869685:s142",
+            "match_id": "sb:3869685",
+            "minute": 71,
+            "label": "72'",
+            "team": "away",
+            "text": "Camavinga completes a take-on under pressure and carries the ball back into France’s own half.",
+            "score": 0.013514,
+            "match": {
+              "home": "Argentina",
+              "away": "France",
+              "competition": "FIFA World Cup",
+              "season": "2022",
+              "home_color": "#7CB9E8",
+              "away_color": "#E5484D"
+            }
+          },
+          {
+            "sequence_id": "sb:3869685:s193",
+            "match_id": "sb:3869685",
+            "minute": 97,
+            "label": "90+8'",
+            "team": "away",
+            "text": "Coman carries in his own half before Acuña fouls him and receives a yellow card.",
+            "score": 0.013333,
+            "match": {
+              "home": "Argentina",
+              "away": "France",
+              "competition": "FIFA World Cup",
+              "season": "2022",
+              "home_color": "#7CB9E8",
+              "away_color": "#E5484D"
+            }
+          },
+          {
+            "sequence_id": "sb:3869685:s228",
+            "match_id": "sb:3869685",
+            "minute": 107,
+            "label": "108'",
+            "team": "home",
+            "text": "Messi recovers inside the box and scores with a right-footed half-volley, putting Argentina 3-2 ahead.",
+            "score": 0.013158,
+            "match": {
+              "home": "Argentina",
+              "away": "France",
+              "competition": "FIFA World Cup",
+              "season": "2022",
+              "home_color": "#7CB9E8",
+              "away_color": "#E5484D"
+            }
+          },
+          {
+            "sequence_id": "sb:3869685:s203",
+            "match_id": "sb:3869685",
+            "minute": 92,
+            "label": "93'",
+            "team": "away",
+            "text": "Camavinga wins the tackle in own half, then Messi fouls him.",
+            "score": 0.012987,
+            "match": {
+              "home": "Argentina",
+              "away": "France",
+              "competition": "FIFA World Cup",
+              "season": "2022",
+              "home_color": "#7CB9E8",
+              "away_color": "#E5484D"
+            }
+          },
+          {
+            "sequence_id": "sb:3869685:s170",
+            "match_id": "sb:3869685",
+            "minute": 83,
+            "label": "84'",
+            "team": "away",
+            "text": "Thuram finds Mbappé on the left wing; Mbappé carries into the box, but his cross goes out.",
+            "score": 0.012821,
+            "match": {
+              "home": "Argentina",
+              "away": "France",
+              "competition": "FIFA World Cup",
+              "season": "2022",
+              "home_color": "#7CB9E8",
+              "away_color": "#E5484D"
+            }
+          },
+          {
+            "sequence_id": "sb:3869685:s68",
+            "match_id": "sb:3869685",
+            "minute": 45,
+            "label": "45+1'",
+            "team": "home",
+            "text": "Otamendi finds Tagliafico in own half, whose long ball toward Di María inside the box is incomplete.",
+            "score": 0.012658,
+            "match": {
+              "home": "Argentina",
+              "away": "France",
+              "competition": "FIFA World Cup",
+              "season": "2022",
+              "home_color": "#7CB9E8",
+              "away_color": "#E5484D"
+            }
+          },
+          {
+            "sequence_id": "sb:3869685:s37",
+            "match_id": "sb:3869685",
+            "minute": 24,
+            "label": "25'",
+            "team": "away",
+            "text": "Tchouaméni’s pass toward Koundé is incomplete, and Álvarez intercepts for Argentina.",
+            "score": 0.0125,
+            "match": {
+              "home": "Argentina",
+              "away": "France",
+              "competition": "FIFA World Cup",
+              "season": "2022",
+              "home_color": "#7CB9E8",
+              "away_color": "#E5484D"
+            }
+          }
+        ],
+        "evidence_labels": {
+          "seq:sb:3869685:s60": "40' Argentina sequence",
+          "seq:sb:3869685:s181": "90+3' Argentina sequence",
+          "seq:sb:3869685:s142": "72' France sequence",
+          "seq:sb:3869685:s68": "45+1' Argentina sequence",
+          "seq:sb:3869685:s71": "45+4' Argentina sequence",
+          "seq:sb:3869685:s64": "44' France sequence",
+          "seq:sb:3869685:s157": "76' Argentina sequence",
+          "seq:sb:3869685:s37": "25' France sequence",
+          "seq:sb:3869685:s183": "90+3' France sequence",
+          "seq:sb:3869685:s177": "90+1' Argentina sequence",
+          "seq:sb:3869685:s228": "108' Argentina sequence",
+          "seq:sb:3869685:s170": "84' France sequence",
+          "seq:sb:3869685:s165": "81' France sequence",
+          "seq:sb:3869685:s32": "23' Argentina sequence",
+          "seq:sb:3869685:s250": "122' France sequence",
+          "seq:sb:3869685:s233": "113' Argentina sequence",
+          "seq:sb:3869685:s249": "122' Argentina sequence",
+          "seq:sb:3869685:s163": "80' France sequence",
+          "seq:sb:3869685:s193": "90+8' France sequence",
+          "seq:sb:3869685:s203": "93' France sequence"
+        },
+        "match": {
+          "teams": {
+            "home": "Argentina",
+            "away": "France"
+          },
+          "score": {
+            "home": 3,
+            "away": 3,
+            "penalties": {
+              "home": 4,
+              "away": 2
+            }
+          },
+          "season": "2022"
+        },
+        "metric_notes": {
+          "possession": "Pass-share proxy",
+          "xg": "Model xG when populated; sb_xg fallback",
+          "vaep": "Model VAEP when populated; threat-gain proxy fallback"
+        },
+        "display_numbers": [
+          "0",
+          "0.0",
+          "0.01",
+          "0.0125",
+          "0.012658",
+          "0.0127",
+          "0.0128",
+          "0.012821",
+          "0.012987",
+          "0.013",
+          "0.0130",
+          "0.013158",
+          "0.0132",
+          "0.0133",
+          "0.013333",
+          "0.0135",
+          "0.013514",
+          "0.013699",
+          "0.0137",
+          "0.013889",
+          "0.0139",
+          "0.014",
+          "0.014085",
+          "0.0141",
+          "0.014286",
+          "0.0143",
+          "0.014493",
+          "0.0145",
+          "0.0147",
+          "0.014706",
+          "0.0149",
+          "0.014925",
+          "0.015",
+          "0.015152",
+          "0.0152",
+          "0.015385",
+          "0.0154",
+          "0.0156",
+          "0.015625",
+          "0.015873",
+          "0.0159",
+          "0.016",
+          "0.0161",
+          "0.016129",
+          "0.016393",
+          "0.0164",
+          "0.02",
+          "1%",
+          "1.2%",
+          "1.3%",
+          "1.4%",
+          "1.5%",
+          "1.6%",
+          "107",
+          "112",
+          "121",
+          "2",
+          "2%",
+          "22",
+          "24",
+          "3",
+          "39",
+          "4",
+          "43",
+          "45",
+          "48",
+          "71",
+          "75",
+          "79",
+          "80",
+          "83",
+          "90",
+          "92",
+          "97"
         ]
       }
     }
   ],
-  "text": "Argentina lost control because they struggled to play out cleanly, then France turned that pressure into decisive attacks. France had 68% of the passes in the early part of this spell, a possession proxy, while Argentina’s exits broke down: Romero misplaced a pass and Otamendi’s attempted long outlet also failed. [[seq:sb:3869685:s137]] [[seq:sb:3869685:s157]] Camavinga and Coman added fresh options, but the before-and-after figures do not show an immediate French takeover following their introduction. [[ev:sb:3869685:2660]] [[ev:sb:3869685:2661]]\n\nThe decisive collapse came later. Mbappé released Kolo Muani into the box, forcing Otamendi into the foul that produced the penalty; Thuram then supplied Mbappé for the equaliser. [[seq:sb:3869685:s162]] [[seq:sb:3869685:s165]] Across that turning point, Argentina’s share of attacking territory fell from 58% to 28%. It was less a continuous loss of possession than a loss of defensive security, with too little attacking threat to push France back. [[ev:sb:3869685:2928]] [[ev:sb:3869685:2987]]",
+  "text": "Argentina lost control because they stopped threatening France consistently, then Mbappé turned growing pressure into a sudden comeback. Early in that spell, France had 66% of the completed passes, while Argentina produced no shots. Kolo Muani’s attempt shows France were already finding openings before the later substitutions. [[ev:sb:3869685:2517]]\n\nComan and Camavinga’s introductions gave France fresh options, but the evidence does not show uninterrupted domination afterward. Argentina recovered more of the ball without creating much danger, and Otamendi’s incomplete clearance under pressure illustrated their difficulty escaping cleanly. [[ev:sb:3869685:2661]] [[ev:sb:3869685:2660]] [[seq:sb:3869685:s157]] The decisive change came around Mbappé’s penalty and Thuram’s pass for his equaliser: France’s share of attacking territory rose from 42% before that turning point to 72% afterward. In short, Argentina’s possession stopped providing either an attacking outlet or defensive security. [[ev:sb:3869685:2928]] [[seq:sb:3869685:s165]]",
   "rejections": [],
   "chunks": [
     {
@@ -1499,16 +1385,17 @@
         "types": [
           "sub",
           "goal",
-          "card"
+          "shot"
         ],
         "from_minute": 64,
-        "to_minute": 85
+        "to_minute": 85,
+        "limit": 40
       }
     },
     {
       "type": "tool_result",
       "name": "get_events",
-      "summary": "Pulled 2 actions and 4 key moments from minutes 64 to 85.",
+      "summary": "Pulled 6 actions and 4 key moments from minutes 64 to 85.",
       "ok": true
     },
     {
@@ -1527,48 +1414,8 @@
       "name": "get_window_stats",
       "args": {
         "from_minute": 64,
-        "to_minute": 74
-      }
-    },
-    {
-      "type": "tool_result",
-      "name": "get_window_stats",
-      "summary": "Compared both teams over minutes 64 to 74.",
-      "ok": true
-    },
-    {
-      "type": "tool",
-      "name": "get_window_stats",
-      "args": {
-        "from_minute": 74,
-        "to_minute": 85
-      }
-    },
-    {
-      "type": "tool_result",
-      "name": "get_window_stats",
-      "summary": "Compared both teams over minutes 74 to 85.",
-      "ok": true
-    },
-    {
-      "type": "tool",
-      "name": "search_moments",
-      "args": {
-        "query": "Argentina France Coman Messi turnover Kolo Muani Otamendi penalty Mbappe Thuram equaliser"
-      }
-    },
-    {
-      "type": "tool_result",
-      "name": "search_moments",
-      "summary": "Searched the commentary and found 20 matching moments.",
-      "ok": true
-    },
-    {
-      "type": "tool",
-      "name": "get_window_stats",
-      "args": {
-        "from_minute": 64,
-        "to_minute": 70
+        "to_minute": 70,
+        "period": 2
       }
     },
     {
@@ -1582,66 +1429,60 @@
       "name": "get_window_stats",
       "args": {
         "from_minute": 71,
-        "to_minute": 78
+        "to_minute": 84,
+        "period": 2
       }
     },
     {
       "type": "tool_result",
       "name": "get_window_stats",
-      "summary": "Compared both teams over minutes 71 to 78.",
+      "summary": "Compared both teams over minutes 71 to 84.",
+      "ok": true
+    },
+    {
+      "type": "tool",
+      "name": "search_moments",
+      "args": {
+        "query": "Argentina France Di Maria substituted Acuna Coman Messi dispossessed Thuram Otamendi penalty Mbappe equaliser"
+      }
+    },
+    {
+      "type": "tool_result",
+      "name": "search_moments",
+      "summary": "Searched the commentary and found 20 matching moments.",
       "ok": true
     },
     {
       "type": "text",
-      "delta": "Argentina lost control because they struggled to"
+      "delta": "Argentina lost control because they stopped thre"
     },
     {
       "type": "text",
-      "delta": " play out cleanly, then France turned that press"
+      "delta": "atening France consistently, then Mbappé turned "
     },
     {
       "type": "text",
-      "delta": "ure into decisive attacks. "
+      "delta": "growing pressure into a sudden comeback. "
     },
     {
       "type": "text",
-      "delta": "France had 68% of the passes in the early part o"
+      "delta": "Early in that spell, France had 66% of the compl"
     },
     {
       "type": "text",
-      "delta": "f this spell, a possession proxy, while Argentin"
+      "delta": "eted passes, while Argentina produced no shots. "
     },
     {
       "type": "text",
-      "delta": "a’s exits broke down: Romero misplaced a pass an"
+      "delta": "Kolo Muani’s attempt shows France were already f"
     },
     {
       "type": "text",
-      "delta": "d Otamendi’s attempted long outlet also failed. "
+      "delta": "inding openings before the later substitutions. "
     },
     {
       "type": "text",
-      "delta": "[[seq:sb:3869685:s137]] [[seq:sb:3869685:s157]] "
-    },
-    {
-      "type": "text",
-      "delta": "Camavinga and Coman added fresh options, but the"
-    },
-    {
-      "type": "text",
-      "delta": " before-and-after figures do not show an immedia"
-    },
-    {
-      "type": "text",
-      "delta": "te French takeover following their introduction."
-    },
-    {
-      "type": "text",
-      "delta": " "
-    },
-    {
-      "type": "text",
-      "delta": "[[ev:sb:3869685:2660]] [[ev:sb:3869685:2661]]\n"
+      "delta": "[[ev:sb:3869685:2517]]\n"
     },
     {
       "type": "text",
@@ -1649,66 +1490,76 @@
     },
     {
       "type": "text",
-      "delta": "The decisive collapse came later. "
+      "delta": "Coman and Camavinga’s introductions gave France "
     },
     {
       "type": "text",
-      "delta": "Mbappé released Kolo Muani into the box, forcing"
+      "delta": "fresh options, but the evidence does not show un"
     },
     {
       "type": "text",
-      "delta": " Otamendi into the foul that produced the penalt"
+      "delta": "interrupted domination afterward. "
     },
     {
       "type": "text",
-      "delta": "y; Thuram then supplied Mbappé for the equaliser"
+      "delta": "Argentina recovered more of the ball without cre"
     },
     {
       "type": "text",
-      "delta": ". "
+      "delta": "ating much danger, and Otamendi’s incomplete cle"
     },
     {
       "type": "text",
-      "delta": "[[seq:sb:3869685:s162]] [[seq:sb:3869685:s165]] "
+      "delta": "arance under pressure illustrated their difficul"
     },
     {
       "type": "text",
-      "delta": "Across that turning point, Argentina’s share of "
+      "delta": "ty escaping cleanly. "
     },
     {
       "type": "text",
-      "delta": "attacking territory fell from 58% to 28%. "
+      "delta": "[[ev:sb:3869685:2661]] [[ev:sb:3869685:2660]] [["
     },
     {
       "type": "text",
-      "delta": "It was less a continuous loss of possession than"
+      "delta": "seq:sb:3869685:s157]] The decisive change came a"
     },
     {
       "type": "text",
-      "delta": " a loss of defensive security, with too little a"
+      "delta": "round Mbappé’s penalty and Thuram’s pass for his"
     },
     {
       "type": "text",
-      "delta": "ttacking threat to push France back. "
+      "delta": " equaliser: France’s share of attacking territor"
     },
     {
       "type": "text",
-      "delta": "[[ev:sb:3869685:2928]] [[ev:sb:3869685:2987]]"
+      "delta": "y rose from 42% before that turning point to 72%"
+    },
+    {
+      "type": "text",
+      "delta": " afterward. "
+    },
+    {
+      "type": "text",
+      "delta": "In short, Argentina’s possession stopped providi"
+    },
+    {
+      "type": "text",
+      "delta": "ng either an attacking outlet or defensive secur"
+    },
+    {
+      "type": "text",
+      "delta": "ity. "
+    },
+    {
+      "type": "text",
+      "delta": "[[ev:sb:3869685:2928]] [[seq:sb:3869685:s165]]"
     },
     {
       "type": "citation",
-      "ref": "seq:sb:3869685:s137",
-      "label": "70' Argentina sequence"
-    },
-    {
-      "type": "citation",
-      "ref": "seq:sb:3869685:s157",
-      "label": "76' Argentina sequence"
-    },
-    {
-      "type": "citation",
-      "ref": "ev:sb:3869685:2660",
-      "label": "71' Camavinga on for Hernández"
+      "ref": "ev:sb:3869685:2517",
+      "label": "68' Kolo shot"
     },
     {
       "type": "citation",
@@ -1717,13 +1568,13 @@
     },
     {
       "type": "citation",
-      "ref": "seq:sb:3869685:s162",
-      "label": "79' France sequence"
+      "ref": "ev:sb:3869685:2660",
+      "label": "71' Camavinga on for Hernández"
     },
     {
       "type": "citation",
-      "ref": "seq:sb:3869685:s165",
-      "label": "81' France sequence"
+      "ref": "seq:sb:3869685:s157",
+      "label": "76' Argentina sequence"
     },
     {
       "type": "citation",
@@ -1732,15 +1583,15 @@
     },
     {
       "type": "citation",
-      "ref": "ev:sb:3869685:2987",
-      "label": "81' Mbappé goal"
+      "ref": "seq:sb:3869685:s165",
+      "label": "81' France sequence"
     },
     {
       "type": "done"
     }
   ],
-  "first_text_seconds": 9.276,
-  "total_seconds": 12.395,
+  "first_text_seconds": 10.234,
+  "total_seconds": 13.468,
   "grounding": {
     "unsupported_numbers": [],
     "unsupported_citations": [],

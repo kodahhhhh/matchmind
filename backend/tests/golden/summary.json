@@ -4,7 +4,7 @@
     "tools": [
       "find_turning_points"
     ],
-    "first_text_seconds": 5.279,
+    "first_text_seconds": 4.176,
     "grounding": {
       "unsupported_numbers": [],
       "unsupported_citations": [],
@@ -18,7 +18,7 @@
     "tools": [
       "get_player_rankings"
     ],
-    "first_text_seconds": 3.237,
+    "first_text_seconds": 2.798,
     "grounding": {
       "unsupported_numbers": [],
       "unsupported_citations": [],
@@ -32,7 +32,7 @@
     "tools": [
       "get_top_sequences"
     ],
-    "first_text_seconds": 4.247,
+    "first_text_seconds": 2.911,
     "grounding": {
       "unsupported_numbers": [],
       "unsupported_citations": [],
@@ -48,11 +48,9 @@
       "get_window_stats",
       "get_window_stats",
       "get_window_stats",
-      "get_window_stats",
-      "get_window_stats",
       "get_events"
     ],
-    "first_text_seconds": 6.056,
+    "first_text_seconds": 5.523,
     "grounding": {
       "unsupported_numbers": [],
       "unsupported_citations": [],
@@ -68,11 +66,9 @@
       "find_turning_points",
       "get_window_stats",
       "get_window_stats",
-      "search_moments",
-      "get_window_stats",
-      "get_window_stats"
+      "search_moments"
     ],
-    "first_text_seconds": 9.276,
+    "first_text_seconds": 10.234,
     "grounding": {
       "unsupported_numbers": [],
       "unsupported_citations": [],
@@ -87,7 +83,7 @@
       "get_events",
       "search_moments"
     ],
-    "first_text_seconds": 5.807,
+    "first_text_seconds": 5.279,
     "grounding": {
       "unsupported_numbers": [],
       "unsupported_citations": [],
@@ -102,7 +98,7 @@
       "get_events",
       "run_counterfactual"
     ],
-    "first_text_seconds": 8.503,
+    "first_text_seconds": 6.619,
     "grounding": {
       "unsupported_numbers": [],
       "unsupported_citations": [],
@@ -120,7 +116,7 @@
       "get_window_stats",
       "get_window_stats"
     ],
-    "first_text_seconds": 6.72,
+    "first_text_seconds": 6.085,
     "grounding": {
       "unsupported_numbers": [],
       "unsupported_citations": [],
@@ -135,7 +131,7 @@
       "get_events",
       "shot_alternatives"
     ],
-    "first_text_seconds": 4.711,
+    "first_text_seconds": 4.891,
     "grounding": {
       "unsupported_numbers": [],
       "unsupported_citations": [],
@@ -149,7 +145,7 @@
     "tools": [
       "get_player_rankings"
     ],
-    "first_text_seconds": 4.115,
+    "first_text_seconds": 3.379,
     "grounding": {
       "unsupported_numbers": [],
       "unsupported_citations": [],

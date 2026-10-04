@@ -30,9 +30,9 @@ FEATURE_NAMES = (
 )
 VERSION = "analog:v1"
 CAVEAT = (
-    "Learned from observational data: teams change their approach because of "
-    "the score, so effects are confounded. Shown as a range next to real "
-    "comparable situations, not a prediction."
+    "Estimated from what usually happened next in similar real matches. Goals, "
+    "substitutions and red cards don't happen at random, so treat this as a "
+    "guide to the odds, not a certainty."
 )
 
 
@@ -303,6 +303,8 @@ class TrainingAnalogs:
 
 NEGLIGIBLE_XG = 0.02
 NEGLIGIBLE_POSSESSION = 0.01
+NEGLIGIBLE_RESULT = 0.03
+NEGLIGIBLE_CHANCE = 0.02
 
 
 def counterfactual_response(
@@ -316,8 +318,12 @@ def counterfactual_response(
     analog_goals: dict[str, list[dict]],
     factual: dict | None = None,
     lineup_change: dict | None = None,
+    outlook: dict | None = None,
 ) -> dict:
     """Keep trained 15-minute totals separate from observed analog outcomes.
+
+    `outlook` (goals.outlook) adds result and scoring-chance probabilities from
+    the actual-goals model; they dominate the `negligible` decision.
 
     `factual` is the same model's forecast for the unchanged state: the honest
     comparison for `predictions`. Effects are changed minus factual medians.
@@ -395,12 +401,34 @@ def counterfactual_response(
         "modelled": modelled,
         "factual": unchanged,
         "effect": effect,
-        # Below this the change moves neither median by a meaningful amount.
+        # Below this the change moves nothing a viewer would notice.
         "negligible": all(
             abs(effect[s]["xg"]) < NEGLIGIBLE_XG
             and abs(effect[s]["possession"]) < NEGLIGIBLE_POSSESSION
             for s in ("home", "away")
+        )
+        and (
+            outlook is None
+            or (
+                max(
+                    abs(
+                        outlook["result"]["modelled"][k]
+                        - outlook["result"]["factual"][k]
+                    )
+                    for k in ("home", "level", "away")
+                )
+                < NEGLIGIBLE_RESULT
+                and max(
+                    abs(
+                        outlook["scoring_chance"]["modelled"][k]
+                        - outlook["scoring_chance"]["factual"][k]
+                    )
+                    for k in ("home", "away")
+                )
+                < NEGLIGIBLE_CHANCE
+            )
         ),
+        **(outlook or {}),
         "lineup_change": lineup_change,
         "series": [
             {

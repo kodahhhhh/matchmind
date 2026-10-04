@@ -120,15 +120,15 @@
         "ranking": "vaep",
         "count": 3,
         "evidence_labels": {
-          "ev:sb:3869685:771": "23' Messi penalty goal",
-          "ev:sb:3869685:1178": "36' Di María goal",
           "ev:sb:3869685:1269": "39' Romero tackle",
+          "ev:sb:3869685:1178": "36' Di María goal",
+          "ev:sb:3869685:2229": "60' Di María carry",
           "ev:sb:3869685:2231": "60' Di María cross",
-          "ev:sb:3869685:4070": "108' Messi goal",
-          "ev:sb:3869685:3285": "90+4' Romero pass",
+          "ev:sb:3869685:771": "23' Messi penalty goal",
           "ev:sb:3869685:3204": "90+1' Romero pass",
+          "ev:sb:3869685:4070": "108' Messi goal",
           "ev:sb:3869685:3927": "105' Messi pass",
-          "ev:sb:3869685:2229": "60' Di María carry"
+          "ev:sb:3869685:3285": "90+4' Romero pass"
         },
         "match": {
           "teams": {
@@ -275,7 +275,7 @@
       }
     }
   ],
-  "text": "Lionel Messi was Argentina’s most valuable player by the overall impact ranking, ahead of Ángel Di María.\n\nHis contribution combined decisive finishing with involvement in Argentina’s passing game: he scored the penalty and struck again in extra time, while completing 88% of his 51 passes. Those goals were the clearest examples of his influence when Argentina needed it most. [[ev:sb:3869685:771]] [[ev:sb:3869685:4070]]",
+  "text": "Lionel Messi was Argentina’s most valuable player, topping the overall impact ranking ahead of Ángel Di María.\n\nHis contribution combined decisive scoring with sustained involvement: he scored the opening penalty and struck again in extra time, while completing 88% of his 51 passes. That blend of finishing and keeping attacks moving gives him the edge over Di María, who was also hugely influential. [[ev:sb:3869685:771]] [[ev:sb:3869685:4070]] [[ev:sb:3869685:3927]]",
   "rejections": [],
   "chunks": [
     {
@@ -299,39 +299,47 @@
     },
     {
       "type": "text",
-      "delta": "r by the overall impact ranking, ahead of Ángel "
+      "delta": "r, topping the overall impact ranking ahead of Á"
     },
     {
       "type": "text",
-      "delta": "Di María.\n\n"
+      "delta": "ngel Di María.\n\n"
     },
     {
       "type": "text",
-      "delta": "His contribution combined decisive finishing wit"
+      "delta": "His contribution combined decisive scoring with "
     },
     {
       "type": "text",
-      "delta": "h involvement in Argentina’s passing game: he sc"
+      "delta": "sustained involvement: he scored the opening pen"
     },
     {
       "type": "text",
-      "delta": "ored the penalty and struck again in extra time,"
+      "delta": "alty and struck again in extra time, while compl"
     },
     {
       "type": "text",
-      "delta": " while completing 88% of his 51 passes. "
+      "delta": "eting 88% of his 51 passes. "
     },
     {
       "type": "text",
-      "delta": "Those goals were the clearest examples of his in"
+      "delta": "That blend of finishing and keeping attacks movi"
     },
     {
       "type": "text",
-      "delta": "fluence when Argentina needed it most. "
+      "delta": "ng gives him the edge over Di María, who was als"
     },
     {
       "type": "text",
-      "delta": "[[ev:sb:3869685:771]] [[ev:sb:3869685:4070]]"
+      "delta": "o hugely influential. "
+    },
+    {
+      "type": "text",
+      "delta": "[[ev:sb:3869685:771]] [[ev:sb:3869685:4070]] [[e"
+    },
+    {
+      "type": "text",
+      "delta": "v:sb:3869685:3927]]"
     },
     {
       "type": "citation",
@@ -344,11 +352,16 @@
       "label": "108' Messi goal"
     },
     {
+      "type": "citation",
+      "ref": "ev:sb:3869685:3927",
+      "label": "105' Messi pass"
+    },
+    {
       "type": "done"
     }
   ],
-  "first_text_seconds": 4.115,
-  "total_seconds": 5.264,
+  "first_text_seconds": 3.379,
+  "total_seconds": 5.282,
   "grounding": {
     "unsupported_numbers": [],
     "unsupported_citations": [],
