@@ -80,6 +80,8 @@ class InMatch(Contract):
 
 class Profile(Contract):
     player_id: int
+    in_dataset: bool
+    sources: list[str]
     name: str
     short_name: str
     nickname: str | None
@@ -99,8 +101,8 @@ class Profile(Contract):
     caps: int | None
     match_confidence: float
     valuations: list[Valuation]
-    career: Career
-    heatmap: Heatmap
+    career: Career | None
+    heatmap: Heatmap | None
     top_moments: list[Moment]
     matches: list[PlayerMatch]
     in_match: InMatch | None
@@ -108,6 +110,7 @@ class Profile(Contract):
 
 class SearchResult(Contract):
     player_id: int
+    in_dataset: bool
     name: str
     short_name: str
     nationality: str | None

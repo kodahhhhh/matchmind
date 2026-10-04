@@ -1,0 +1,168 @@
+{
+  "name": "Erling Haaland",
+  "short_name": "Erling Haaland",
+  "nickname": null,
+  "photo_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/ba/Erling_Haaland_France_v_Norway_26_June_26-008.jpg/500px-Erling_Haaland_France_v_Norway_26_June_26-008.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "photo_credit": "Bryan Berlin",
+  "photo_license": "CC BY-SA 4.0",
+  "date_of_birth": "2000-07-21",
+  "height_cm": 195,
+  "foot": "left",
+  "position": "Centre-Forward",
+  "nationality": "Norway",
+  "current_club": "Manchester City",
+  "market_value_eur": 200000000,
+  "peak_market_value_eur": 200000000,
+  "caps": 54,
+  "match_confidence": 1.0,
+  "player_id": -418560,
+  "in_dataset": false,
+  "sources": [
+    "transfermarkt",
+    "wikidata"
+  ],
+  "transfermarkt_id": 418560,
+  "wikidata_id": "Q28967995",
+  "valuations": [
+    {
+      "date": "2016-12-18",
+      "value_eur": 200000,
+      "club": "Bryne FK"
+    },
+    {
+      "date": "2017-12-23",
+      "value_eur": 300000,
+      "club": "Molde FK"
+    },
+    {
+      "date": "2018-09-10",
+      "value_eur": 2000000,
+      "club": "Molde FK"
+    },
+    {
+      "date": "2018-12-30",
+      "value_eur": 5000000,
+      "club": "Molde FK"
+    },
+    {
+      "date": "2019-06-03",
+      "value_eur": 5000000,
+      "club": "Red Bull Salzburg"
+    },
+    {
+      "date": "2019-09-03",
+      "value_eur": 12000000,
+      "club": "Red Bull Salzburg"
+    },
+    {
+      "date": "2019-11-07",
+      "value_eur": 30000000,
+      "club": "Red Bull Salzburg"
+    },
+    {
+      "date": "2019-12-16",
+      "value_eur": 45000000,
+      "club": "Red Bull Salzburg"
+    },
+    {
+      "date": "2020-02-11",
+      "value_eur": 60000000,
+      "club": "Borussia Dortmund"
+    },
+    {
+      "date": "2020-03-11",
+      "value_eur": 80000000,
+      "club": "Borussia Dortmund"
+    },
+    {
+      "date": "2020-04-08",
+      "value_eur": 72000000,
+      "club": "Borussia Dortmund"
+    },
+    {
+      "date": "2020-09-16",
+      "value_eur": 80000000,
+      "club": "Borussia Dortmund"
+    },
+    {
+      "date": "2020-11-26",
+      "value_eur": 100000000,
+      "club": "Borussia Dortmund"
+    },
+    {
+      "date": "2021-02-10",
+      "value_eur": 110000000,
+      "club": "Borussia Dortmund"
+    },
+    {
+      "date": "2021-06-09",
+      "value_eur": 130000000,
+      "club": "Borussia Dortmund"
+    },
+    {
+      "date": "2021-10-07",
+      "value_eur": 150000000,
+      "club": "Borussia Dortmund"
+    },
+    {
+      "date": "2021-12-22",
+      "value_eur": 150000000,
+      "club": "Borussia Dortmund"
+    },
+    {
+      "date": "2022-06-09",
+      "value_eur": 150000000,
+      "club": "Borussia Dortmund"
+    },
+    {
+      "date": "2022-11-03",
+      "value_eur": 170000000,
+      "club": "Manchester City"
+    },
+    {
+      "date": "2023-06-20",
+      "value_eur": 180000000,
+      "club": "Manchester City"
+    },
+    {
+      "date": "2023-12-19",
+      "value_eur": 180000000,
+      "club": "Manchester City"
+    },
+    {
+      "date": "2024-05-27",
+      "value_eur": 180000000,
+      "club": "Manchester City"
+    },
+    {
+      "date": "2024-10-01",
+      "value_eur": 200000000,
+      "club": "Manchester City"
+    },
+    {
+      "date": "2024-12-16",
+      "value_eur": 200000000,
+      "club": "Manchester City"
+    },
+    {
+      "date": "2025-05-30",
+      "value_eur": 180000000,
+      "club": "Manchester City"
+    },
+    {
+      "date": "2025-12-09",
+      "value_eur": 200000000,
+      "club": "Manchester City"
+    },
+    {
+      "date": "2026-06-03",
+      "value_eur": 200000000,
+      "club": "Manchester City"
+    }
+  ],
+  "career": null,
+  "heatmap": null,
+  "top_moments": [],
+  "matches": [],
+  "in_match": null
+}

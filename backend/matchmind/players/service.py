@@ -32,14 +32,12 @@ def store() -> tuple[dict[int, dict], dict[int, list[dict]], dict, pd.DataFrame]
     rows = json.loads(profiles.to_json(orient="records"))
     identities = {r["sb_player_id"]: r for r in rows}
     values = pd.read_parquet(directory / "valuations.parquet")
-    histories = {
-        int(pid): json.loads(
-            group[["date", "value_eur", "club"]]
-            .sort_values("date")
-            .to_json(orient="records")
-        )
-        for pid, group in values.groupby("tm_player_id")
-    }
+    histories = {}
+    for row in json.loads(
+        values.sort_values(["tm_player_id", "date"]).to_json(orient="records")
+    ):
+        pid = row.pop("tm_player_id")
+        histories.setdefault(pid, []).append(row)
     careers = json.loads((directory / "career.json").read_text())
     matches = pd.read_parquet(directory / "matches.parquet")
     return identities, histories, careers, matches
@@ -74,8 +72,8 @@ def age_at(dob: str | None, match_date: str | None) -> int | None:
 def get_player_profile(player_id: int, match_id: str | None = None) -> dict:
     """Return the exact profile contract, optionally with historical match context."""
     profiles, histories, careers, matches = store()
-    if player_id not in profiles or str(player_id) not in careers:
-        raise PlayerNotFound(f"Player {player_id} is not in the training corpus")
+    if player_id not in profiles:
+        raise PlayerNotFound(f"Player {player_id} has no published profile")
     row = profiles[player_id]
     valuations = histories.get(row["tm_player_id"], [])
     profile = {
@@ -102,14 +100,26 @@ def get_player_profile(player_id: int, match_id: str | None = None) -> dict:
     profile.update(
         {
             "player_id": player_id,
+            "in_dataset": row["in_dataset"],
+            "sources": row["sources"],
             "transfermarkt_id": row["tm_player_id"],
             "wikidata_id": row["wikidata_qid"],
             "valuations": valuations,
-            **copy.deepcopy(careers[str(player_id)]),
+            **copy.deepcopy(
+                careers.get(
+                    str(player_id),
+                    {
+                        "career": None,
+                        "heatmap": None,
+                        "top_moments": [],
+                        "matches": [],
+                    },
+                )
+            ),
             "in_match": None,
         }
     )
-    if match_id is not None:
+    if match_id is not None and row["in_dataset"]:
         selected = matches[
             (matches.player_id == player_id) & (matches.match_id == match_id)
         ]
@@ -134,35 +144,36 @@ def get_player_profile(player_id: int, match_id: str | None = None) -> dict:
     return profile
 
 
-def search_players(query: str, limit: int = 20) -> dict:
-    """Accent-insensitive prefix/token search, then corpus exposure as tie-break."""
+@lru_cache(maxsize=1)
+def search_index() -> list[tuple[list[str], dict]]:
+    """Precompute normalized names/results ordered by dataset, then market value."""
     profiles, _, careers, _ = store()
-    query = normalise(query)
-    ranked = []
-    for pid, row in profiles.items():
-        summary = careers.get(str(pid))
-        if summary is None:
-            continue
-        names = [normalise(row[k]) for k in ("name", "short_name", "nickname")]
-        if query and not any(
-            all(token in name for token in query.split()) for name in names
-        ):
-            continue
-        relevance = (
-            0
-            if query in names
-            else 1
-            if any(name.startswith(query) for name in names)
-            else 2
+    ranked = sorted(
+        profiles.items(),
+        key=lambda pair: (
+            not pair[1]["in_dataset"],
+            -(pair[1]["market_value_eur"] or 0),
+            pair[0],
+        ),
+    )
+    results = []
+    for pid, row in ranked:
+        summary = careers.get(
+            str(pid), {"career": {"matches": 0, "vaep_per90": 0}, "matches": []}
         )
-        career = summary["career"]
-        ranked.append(
+        names = sorted(
+            {normalise(row[k]) for k in ("name", "short_name", "nickname")}
+            | {normalise(n) for n in row.get("aliases", [])}
+        )
+        teams = sorted({m["team"] for m in summary["matches"]})
+        if not row["in_dataset"] and row["current_club"]:
+            teams = [row["current_club"]]
+        results.append(
             (
-                relevance,
-                -career["minutes"],
-                pid,
+                names,
                 {
                     "player_id": pid,
+                    "in_dataset": row["in_dataset"],
                     **{
                         k: row[k]
                         for k in (
@@ -173,14 +184,53 @@ def search_players(query: str, limit: int = 20) -> dict:
                             "photo_url",
                         )
                     },
-                    "teams": sorted({m["team"] for m in summary["matches"]}),
-                    "matches": career["matches"],
-                    "vaep_per90": career["vaep_per90"],
+                    "teams": teams,
+                    "matches": summary["career"]["matches"],
+                    "vaep_per90": summary["career"]["vaep_per90"],
                 },
             )
         )
-    ranked.sort(key=lambda r: r[:3])
-    return {"results": [r[3] for r in ranked[:limit]]}
+    return results
+
+
+def search_players(query: str, limit: int = 20) -> dict:
+    """Search every profile without per-request normalization or career scans."""
+    tokens = normalise(query).split()
+    index = search_index()
+    if not tokens:
+        return {"results": [r for _, r in index[:limit]]}
+    postings = search_postings()
+    grams = {
+        token[i : i + min(3, len(token))]
+        for token in tokens
+        for i in range(max(1, len(token) - 2))
+    }
+    groups = sorted((postings.get(g, set()) for g in grams), key=len)
+    candidates = groups[0].intersection(*groups[1:])
+    results = []
+    for offset in sorted(candidates):
+        names, row = index[offset]
+        if not tokens or any(all(token in name for token in tokens) for name in names):
+            results.append(row)
+            if len(results) == limit:
+                break
+    return {"results": results}
+
+
+@lru_cache(maxsize=1)
+def search_postings() -> dict[str, set[int]]:
+    """A substring index preserves token search while bounding worst-case scans."""
+    postings = {}
+    for offset, (names, _) in enumerate(search_index()):
+        grams = {
+            name[i : i + width]
+            for name in names
+            for width in (1, 2, 3)
+            for i in range(len(name) - width + 1)
+        }
+        for gram in grams:
+            postings.setdefault(gram, set()).add(offset)
+    return postings
 
 
 def season_end(season: str) -> str:
@@ -272,8 +322,12 @@ def analyst_profile(player_id: int, match_id: str) -> dict:
             labels["seq:" + moment["sequence_id"]] = moment["match_label"]
     result["evidence_labels"] = labels
     result["metric_notes"] = {
-        "scope": "Selected StatsBomb training corpus, not full professional career",
-        "values": "Match-held-out xG and VAEP; price strictly before match day",
+        "scope": "Selected StatsBomb training corpus, not full professional career"
+        if result["in_dataset"]
+        else "Biography and valuations; no observations in the training corpus",
+        "values": "Match-held-out xG and VAEP; price strictly before match day"
+        if result["in_dataset"]
+        else "Published historical market valuations",
         "progression": (
             "Successful passes/carries gaining at least 10 metres toward goal"
         ),

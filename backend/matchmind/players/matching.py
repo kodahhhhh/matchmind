@@ -5,6 +5,7 @@ import re
 import unicodedata
 from collections import defaultdict
 from difflib import SequenceMatcher
+from functools import lru_cache
 
 import pandas as pd
 
@@ -21,6 +22,15 @@ COUNTRIES = {
     "bosnia herzegovina": "bosnia and herzegovina",
 }
 CLUBS = {
+    "udinese calcio": "udinese",
+    "societa sportiva lazio s p a": "lazio",
+    "uc sampdoria": "sampdoria",
+    "ajax amsterdam": "ajax",
+    "afc ajax": "ajax",
+    "olympique lyonnais": "lyon",
+    "olympique lyon": "lyon",
+    "real betis balompie": "real betis",
+    "olympique de marseille": "marseille",
     "psg": "paris saint germain",
     "internazionale": "inter milan",
     "inter": "inter milan",
@@ -39,12 +49,37 @@ CLUBS = {
 }
 
 
+@lru_cache(maxsize=250000)
 def normalise(value: object) -> str:
     """Accent/punctuation-insensitive name, retaining meaningful name tokens."""
     if value is None or pd.isna(value):
         return ""
-    value = unicodedata.normalize("NFKD", str(value)).encode("ascii", "ignore").decode()
-    return " ".join(re.findall(r"[a-z0-9]+", value.lower()))
+    value = str(value).translate(
+        str.maketrans(
+            {
+                "ø": "o",
+                "Ø": "O",
+                "ł": "l",
+                "Ł": "L",
+                "ß": "ss",
+                "đ": "d",
+                "Đ": "D",
+                "ð": "d",
+                "Ð": "D",
+                "þ": "th",
+                "Þ": "Th",
+                "ı": "i",
+                "æ": "ae",
+                "Æ": "Ae",
+                "œ": "oe",
+                "Œ": "Oe",
+            }
+        )
+    )
+    value = "".join(
+        c for c in unicodedata.normalize("NFKD", value) if not unicodedata.combining(c)
+    )
+    return " ".join(re.findall(r"[^\W_]+", value.casefold()))
 
 
 def country(value: object) -> str:
@@ -62,10 +97,14 @@ def club(value: object) -> str:
 def name_score(names: list[str], candidate: str) -> float:
     """Exact aliases first; only complete-token containment for shortened names."""
     target = normalise(candidate)
+    if not target:
+        return 0.0
     tokens = set(target.split())
     best = 0.0
     for name in names:
         alias = normalise(name)
+        if not alias:
+            continue
         other = set(alias.split())
         if alias == target:
             best = max(best, 1.0)
@@ -80,8 +119,12 @@ def name_score(names: list[str], candidate: str) -> float:
                     len(target.split()[0]) == 1 or len(alias.split()[0]) == 1
                 ):
                     best = max(best, 0.90)
-            similarity = SequenceMatcher(None, alias, target).ratio()
-            if similarity >= 0.94:
+            matcher = SequenceMatcher(None, alias, target)
+            if (
+                matcher.real_quick_ratio() >= 0.94
+                and matcher.quick_ratio() >= 0.94
+                and matcher.ratio() >= 0.94
+            ):
                 best = max(best, 0.92)
     return best
 
