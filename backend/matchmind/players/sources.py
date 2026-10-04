@@ -10,7 +10,9 @@ import pandas as pd
 
 from matchmind.config import get_settings
 
-USER_AGENT = "MatchMind/1.0 (StormHacks football research; cached CC0 enrichment)"
+USER_AGENT = (
+    "MatchMind/1.1 (StormHacks 2026; football identity research; cached CC0 enrichment)"
+)
 TM_ORIGIN = "https://pub-e682421888d945d684bcae8890b0ec20.r2.dev/data"
 
 
@@ -23,6 +25,7 @@ def table(name: str) -> pd.DataFrame:
         "games",
         "game_lineups",
         "clubs",
+        "transfers",
     }:
         raise ValueError("Unapproved table")
     path = get_settings().data_dir / "raw/players/transfermarkt" / f"{name}.csv.gz"
