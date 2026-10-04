@@ -54,7 +54,7 @@ def test_catalogue_upsert(database_url: str, data_dir: Path) -> None:
             conn.execute(
                 "SELECT count(*) FROM matches WHERE (meta->>'demo')::boolean"
             ).fetchone()[0]
-            == 493
+            == sum(m["demo"] for m in load.read_catalogue(data_dir))
         )
         assert (
             conn.execute(

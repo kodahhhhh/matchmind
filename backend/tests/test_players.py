@@ -358,7 +358,7 @@ def test_all_corpus_coverage_and_replay_availability() -> None:
     matches = pd.read_parquet(root / "matches.parquet")
     mapping = pd.read_parquet(root / "player_map.parquet")
     assert matches.match_id.nunique() == 2924
-    assert matches[matches.in_db].match_id.nunique() == 493
+    assert matches[matches.in_db].match_id.nunique() == 2924
     assert set(matches.player_id) <= set(mapping.sb_player_id)
     assert mapping.sb_player_id.is_unique
     assert mapping.tm_player_id.dropna().is_unique

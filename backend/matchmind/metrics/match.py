@@ -126,6 +126,16 @@ def compute_match(frame: pd.DataFrame, cat: dict, meta_raw: dict | None = None) 
     lineups = {t["team_name"]: t for t in cat["lineups"]}
     home_name, away_name = cat["home"]["name"], cat["away"]["name"]
     side = {home_name: "home", away_name: "away"}
+    # Clubs get renamed between the match list and the event/lineup files (ATK Mohun
+    # Bagan became Mohun Bagan Super Giant), so also map every source name by team ID.
+    side_by_id = {cat["home"]["id"]: "home", cat["away"]["id"]: "away"}
+    for t in cat["lineups"]:
+        if t.get("team_id") in side_by_id:
+            side.setdefault(t["team_name"], side_by_id[t["team_id"]])
+    for ev in raw:
+        for t in (ev.get("team"), ev.get("possession_team")):
+            if t and t.get("id") in side_by_id:
+                side.setdefault(t["name"], side_by_id[t["id"]])
 
     # elapsed-time offsets so t is monotonic across periods
     period_len = defaultdict(float)
