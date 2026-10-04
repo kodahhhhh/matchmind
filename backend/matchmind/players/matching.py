@@ -267,6 +267,16 @@ def build_map() -> pd.DataFrame:
     frame.loc[duplicates, ["tm_player_id", "tm_name"]] = None
     frame.loc[duplicates, "confidence"] = 0.0
     frame.loc[duplicates, "method"] = "ambiguous_duplicate"
+    cached_wikidata = output / "wikidata.json"
+    if cached_wikidata.exists():
+        bridges = json.loads(cached_wikidata.read_text())
+        frame["wikidata_qid"] = frame.tm_player_id.map(
+            lambda pid: (
+                bridges.get(str(int(pid)), {}).get("wikidata_qid")
+                if pd.notna(pid)
+                else None
+            )
+        )
     save_frame(frame, output / "player_map.parquet")
     (output / "_READY").touch()
     print(f"READY: {frame.tm_player_id.notna().sum()}/{len(frame)} mapped", flush=True)

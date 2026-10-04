@@ -10,6 +10,7 @@ import pandas as pd
 import psycopg
 
 from matchmind.config import get_settings
+from matchmind.metrics.match import clock_label
 from matchmind.players.sources import save_frame
 
 PASS_TYPES = {
@@ -195,7 +196,7 @@ def match_career(match: dict) -> tuple[list[dict], dict, dict]:
                     "match_label": (
                         f"{match['home']['name']} vs {match['away']['name']}"
                     ),
-                    "minute_label": f"{e['minute']}'",
+                    "minute_label": clock_label(e["period"], e["minute"]),
                     "event_id": f"sb:{native}:{e['index']}",
                     "sequence_id": f"sb:{native}:s{e['possession']}"
                     if e.get("possession") is not None
@@ -213,6 +214,8 @@ def aggregate(frame: pd.DataFrame) -> dict[str, Any]:
     minutes = totals["minutes"]
     totals["matches"] = int((frame.minutes > 0).sum())
     totals["vaep_per90"] = totals["vaep"] * 90 / minutes if minutes else 0.0
+    totals["vaep_off_per90"] = totals["vaep_off"] * 90 / minutes if minutes else 0.0
+    totals["vaep_def_per90"] = totals["vaep_def"] * 90 / minutes if minutes else 0.0
     totals["prog_per90"] = (
         (totals["progressive_passes"] + totals["progressive_carries"]) * 90 / minutes
         if minutes

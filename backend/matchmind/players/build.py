@@ -5,6 +5,7 @@ import html
 import json
 from urllib.parse import unquote, urlparse
 
+import httpx
 import pandas as pd
 import psycopg
 from psycopg.types.json import Jsonb
@@ -45,7 +46,13 @@ def photos(enrichment: dict[int, dict]) -> dict[int, dict]:
                 },
                 "commons",
             )
-        except Exception as exc:
+        except httpx.HTTPStatusError as exc:
+            status = exc.response.status_code
+            print(f"Commons batch {offset}: HTTP {status}", flush=True)
+            if status in {429, 403, 503}:
+                break
+            continue
+        except (httpx.HTTPError, ValueError) as exc:
             print(f"Commons batch {offset}: {type(exc).__name__}", flush=True)
             continue
         for page in data.get("query", {}).get("pages", {}).values():
@@ -61,7 +68,8 @@ def photos(enrichment: dict[int, dict]) -> dict[int, dict]:
                 not author
                 or not licence
                 or not url
-                or urlparse(url).hostname != "upload.wikimedia.org"
+                or urlparse(url).hostname
+                not in {"upload.wikimedia.org", "thumb.wikimedia.org"}
             ):
                 continue
             for pid in files.get(page["title"], []):
@@ -117,9 +125,19 @@ def build_profiles(enrich: bool = False) -> pd.DataFrame:
             if pd.notna(row["tm_player_id"])
             else {}
         )
+        tm = {key: None if pd.isna(value) else value for key, value in tm.items()}
         wd = enrichment.get(int(row["tm_player_id"]), {}) if tm else {}
         sb = lineup.get(pid, {})
-        dob = tm.get("date_of_birth") or wd.get("dob")
+        tm_dob, wd_dob = tm.get("date_of_birth"), wd.get("dob")
+        if pd.notna(tm_dob) and wd_dob and str(tm_dob)[:4] != wd_dob[:4]:
+            # A P2446 bridge with a contradictory birth year is not safe photo
+            # evidence. Keep the primary, game-matched TM identity only.
+            wd = {}
+            tm_id = int(row["tm_player_id"])
+            enrichment.pop(tm_id, None)
+            photo_data.pop(tm_id, None)
+            old[pid] = {}
+        dob = tm_dob if pd.notna(tm_dob) else wd.get("dob")
         dob = str(dob)[:10] if pd.notna(dob) else None
         positions = sb.get("positions", [])
         nickname = sb.get("player_nickname")
@@ -165,6 +183,7 @@ def build_profiles(enrich: bool = False) -> pd.DataFrame:
     ):
         frame[col] = pd.to_numeric(frame[col], errors="coerce").astype("Int64")
     save_frame(frame, output / "profiles.parquet")
+    cache.write_text(json.dumps(enrichment))
     mapping["wikidata_qid"] = mapping.tm_player_id.map(
         lambda pid: (
             enrichment.get(int(pid), {}).get("wikidata_qid") if pd.notna(pid) else None
