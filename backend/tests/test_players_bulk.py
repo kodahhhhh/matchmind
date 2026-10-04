@@ -229,11 +229,16 @@ def test_index_matches_scan_and_ranks_dataset_then_market_value() -> None:
         ]
         expected = (primary + alias)[:20]
         assert service.search_players(query)["results"] == expected
-        keys = [
-            (not r["in_dataset"], -(profiles[r["player_id"]]["market_value_eur"] or 0))
-            for r in expected
-        ]
-        assert keys == sorted(keys)
+        # within each group, dataset players first, then market value
+        for group in (primary[:20], alias[:20]):
+            keys = [
+                (
+                    not r["in_dataset"],
+                    -(profiles[r["player_id"]]["market_value_eur"] or 0),
+                )
+                for r in group
+            ]
+            assert keys == sorted(keys)
 
 
 def test_tm_only_tool_does_not_claim_observed_career() -> None:
