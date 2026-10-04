@@ -23,12 +23,12 @@
               "label": "120+2'"
             },
             "team_gaining": "away",
-            "magnitude": 0.2568,
+            "magnitude": 0.2845,
             "before": {
               "home": {
                 "possession": 0.604,
                 "field_tilt": 0.646,
-                "xg": 0.617,
+                "xg": 0.577,
                 "shots": 3
               },
               "away": {
@@ -37,7 +37,7 @@
                 "xg": 0.0,
                 "shots": 0
               },
-              "momentum": 0.1695
+              "momentum": 0.2039
             },
             "after": {
               "home": {
@@ -49,10 +49,10 @@
               "away": {
                 "possession": 0.467,
                 "field_tilt": 0.438,
-                "xg": 0.814,
+                "xg": 0.867,
                 "shots": 2
               },
-              "momentum": -0.0872
+              "momentum": -0.0806
             },
             "key_event_ids": [
               "sb:3869685:4203",
@@ -63,114 +63,114 @@
             "id": "sb:3869685:tp2",
             "rank": 2,
             "start": {
-              "index": 16,
-              "period": 1,
-              "minute": 18,
-              "label": "19'"
+              "index": 82,
+              "period": 2,
+              "minute": 78,
+              "label": "79'"
             },
             "end": {
-              "index": 23,
-              "period": 1,
-              "minute": 26,
-              "label": "27'"
-            },
-            "team_gaining": "home",
-            "magnitude": 0.1267,
-            "before": {
-              "home": {
-                "possession": 0.609,
-                "field_tilt": 0.601,
-                "xg": 0.107,
-                "shots": 1
-              },
-              "away": {
-                "possession": 0.391,
-                "field_tilt": 0.399,
-                "xg": 0.0,
-                "shots": 0
-              },
-              "momentum": 0.0041
-            },
-            "after": {
-              "home": {
-                "possession": 0.509,
-                "field_tilt": 0.375,
-                "xg": 0.783,
-                "shots": 1
-              },
-              "away": {
-                "possession": 0.491,
-                "field_tilt": 0.625,
-                "xg": 0.0,
-                "shots": 0
-              },
-              "momentum": 0.1308
-            },
-            "key_event_ids": [
-              "sb:3869685:771"
-            ]
-          },
-          {
-            "id": "sb:3869685:tp3",
-            "rank": 3,
-            "start": {
-              "index": 83,
+              "index": 89,
               "period": 2,
-              "minute": 79,
-              "label": "80'"
-            },
-            "end": {
-              "index": 90,
-              "period": 2,
-              "minute": 87,
-              "label": "88'"
+              "minute": 86,
+              "label": "87'"
             },
             "team_gaining": "away",
-            "magnitude": 0.1148,
+            "magnitude": 0.2181,
             "before": {
               "home": {
-                "possession": 0.46,
-                "field_tilt": 0.623,
-                "xg": 0.042,
+                "possession": 0.384,
+                "field_tilt": 0.581,
+                "xg": 0.043,
                 "shots": 1
               },
               "away": {
-                "possession": 0.54,
-                "field_tilt": 0.377,
-                "xg": 0.0,
-                "shots": 0
+                "possession": 0.615,
+                "field_tilt": 0.419,
+                "xg": 0.057,
+                "shots": 1
               },
-              "momentum": -0.0073
+              "momentum": 0.0121
             },
             "after": {
               "home": {
-                "possession": 0.463,
-                "field_tilt": 0.306,
-                "xg": 0.03,
+                "possession": 0.476,
+                "field_tilt": 0.285,
+                "xg": 0.02,
                 "shots": 1
               },
               "away": {
-                "possession": 0.537,
-                "field_tilt": 0.694,
-                "xg": 0.885,
+                "possession": 0.524,
+                "field_tilt": 0.715,
+                "xg": 0.897,
                 "shots": 2
               },
-              "momentum": -0.1221
+              "momentum": -0.206
             },
             "key_event_ids": [
               "sb:3869685:2928",
               "sb:3869685:2987",
               "sb:3869685:3037"
             ]
+          },
+          {
+            "id": "sb:3869685:tp3",
+            "rank": 3,
+            "start": {
+              "index": 31,
+              "period": 1,
+              "minute": 35,
+              "label": "36'"
+            },
+            "end": {
+              "index": 38,
+              "period": 1,
+              "minute": 42,
+              "label": "43'"
+            },
+            "team_gaining": "home",
+            "magnitude": 0.1258,
+            "before": {
+              "home": {
+                "possession": 0.776,
+                "field_tilt": 0.823,
+                "xg": 0.015,
+                "shots": 1
+              },
+              "away": {
+                "possession": 0.224,
+                "field_tilt": 0.177,
+                "xg": 0.0,
+                "shots": 0
+              },
+              "momentum": 0.0018
+            },
+            "after": {
+              "home": {
+                "possession": 0.692,
+                "field_tilt": 0.438,
+                "xg": 0.324,
+                "shots": 1
+              },
+              "away": {
+                "possession": 0.308,
+                "field_tilt": 0.562,
+                "xg": 0.0,
+                "shots": 0
+              },
+              "momentum": 0.1276
+            },
+            "key_event_ids": [
+              "sb:3869685:1178"
+            ]
           }
         ],
         "evidence_labels": {
-          "ev:sb:3869685:2987": "81' Mbappé goal",
+          "ev:sb:3869685:1178": "36' Di María goal",
+          "ev:sb:3869685:4199": "116' Mbappé shot",
           "ev:sb:3869685:2928": "80' Mbappé penalty goal",
-          "ev:sb:3869685:3037": "84' Fernandez shot",
-          "ev:sb:3869685:771": "23' Messi penalty goal",
           "ev:sb:3869685:4203": "118' Mbappé penalty goal",
-          "ev:sb:3869685:4199": "116' Mbappé shot"
+          "ev:sb:3869685:3037": "84' Fernandez shot",
+          "ev:sb:3869685:2987": "81' Mbappé goal"
         },
         "match": {
           "teams": {
@@ -194,17 +194,14 @@
         },
         "display_numbers": [
           "-0",
-          "-0.0",
-          "-0.007",
-          "-0.0073",
-          "-0.01",
-          "-0.087",
-          "-0.0872",
-          "-0.09",
+          "-0.08",
+          "-0.0806",
+          "-0.081",
           "-0.1",
-          "-0.12",
-          "-0.122",
-          "-0.1221",
+          "-0.2",
+          "-0.206",
+          "-0.2060",
+          "-0.21",
           "0",
           "0%",
           "0.0",
@@ -212,201 +209,209 @@
           "0.00",
           "0.000",
           "0.0000",
-          "0.004",
-          "0.0041",
-          "0.03",
-          "0.030",
-          "0.0300",
+          "0.0018",
+          "0.002",
+          "0.01",
+          "0.012",
+          "0.0121",
+          "0.015",
+          "0.0150",
+          "0.02",
+          "0.020",
+          "0.0200",
           "0.04",
-          "0.042",
-          "0.0420",
+          "0.043",
+          "0.0430",
+          "0.057",
+          "0.0570",
+          "0.06",
           "0.1",
-          "0.107",
-          "0.1070",
-          "0.11",
-          "0.1148",
-          "0.115",
-          "0.1267",
-          "0.127",
+          "0.1258",
+          "0.126",
+          "0.1276",
+          "0.128",
           "0.13",
-          "0.1308",
-          "0.131",
-          "0.1695",
-          "0.17",
-          "0.170",
+          "0.177",
+          "0.1770",
+          "0.18",
           "0.2",
-          "0.2568",
-          "0.257",
-          "0.26",
+          "0.2%",
+          "0.20",
+          "0.2039",
+          "0.204",
+          "0.218",
+          "0.2181",
+          "0.22",
+          "0.224",
+          "0.2240",
+          "0.28",
+          "0.284",
+          "0.2845",
+          "0.285",
+          "0.2850",
           "0.3",
-          "0.306",
-          "0.3060",
+          "0.308",
+          "0.3080",
           "0.31",
+          "0.32",
+          "0.324",
+          "0.3240",
           "0.35",
           "0.354",
           "0.3540",
-          "0.375",
-          "0.3750",
-          "0.377",
-          "0.3770",
           "0.38",
-          "0.39",
-          "0.391",
-          "0.3910",
+          "0.384",
+          "0.3840",
           "0.396",
           "0.3960",
-          "0.399",
-          "0.3990",
           "0.4",
-          "0.4%",
           "0.40",
+          "0.419",
+          "0.4190",
+          "0.42",
           "0.438",
           "0.4380",
           "0.44",
-          "0.46",
-          "0.460",
-          "0.4600",
-          "0.463",
-          "0.4630",
           "0.467",
           "0.4670",
           "0.47",
-          "0.49",
-          "0.491",
-          "0.4910",
+          "0.476",
+          "0.4760",
+          "0.48",
           "0.5",
-          "0.509",
-          "0.5090",
-          "0.51",
+          "0.52",
+          "0.524",
+          "0.5240",
           "0.53",
           "0.533",
           "0.5330",
-          "0.537",
-          "0.5370",
-          "0.54",
-          "0.540",
-          "0.5400",
           "0.56",
           "0.562",
           "0.5620",
+          "0.577",
+          "0.5770",
+          "0.58",
+          "0.581",
+          "0.5810",
           "0.6",
           "0.60",
-          "0.601",
-          "0.6010",
           "0.604",
           "0.6040",
-          "0.609",
-          "0.6090",
           "0.61",
-          "0.617",
-          "0.6170",
-          "0.62",
-          "0.623",
-          "0.6230",
-          "0.625",
-          "0.6250",
+          "0.615",
+          "0.6150",
           "0.646",
           "0.6460",
           "0.65",
           "0.69",
-          "0.694",
-          "0.6940",
+          "0.692",
+          "0.6920",
           "0.7",
+          "0.71",
+          "0.715",
+          "0.7150",
+          "0.776",
+          "0.7760",
           "0.78",
-          "0.783",
-          "0.7830",
           "0.8",
-          "0.81",
-          "0.814",
-          "0.8140",
-          "0.885",
-          "0.8850",
-          "0.89",
+          "0.82",
+          "0.823",
+          "0.8230",
+          "0.867",
+          "0.8670",
+          "0.87",
+          "0.897",
+          "0.8970",
           "0.9",
+          "0.90",
           "1",
-          "10.7%",
-          "11%",
-          "11.5%",
+          "1%",
+          "1.2%",
+          "1.5%",
           "112",
-          "12.7%",
+          "12.6%",
+          "12.8%",
           "121",
           "124",
           "13%",
-          "13.1%",
           "131",
-          "16",
-          "17%",
-          "17.0%",
-          "18",
+          "17.7%",
+          "18%",
           "2",
-          "23",
-          "25.7%",
-          "26",
-          "26%",
+          "2%",
+          "2.0%",
+          "20%",
+          "20.4%",
+          "21.8%",
+          "22%",
+          "22.4%",
+          "28%",
+          "28.4%",
+          "28.5%",
           "3",
-          "3%",
-          "3.0%",
-          "30.6%",
+          "30.8%",
+          "31",
           "31%",
+          "32%",
+          "32.4%",
+          "35",
           "35%",
           "35.4%",
-          "37.5%",
-          "37.7%",
+          "38",
           "38%",
-          "39%",
-          "39.1%",
+          "38.4%",
           "39.6%",
-          "39.9%",
           "4",
           "4%",
-          "4.2%",
+          "4.3%",
           "40%",
+          "41.9%",
+          "42",
+          "42%",
           "43.8%",
           "44%",
-          "46%",
-          "46.0%",
-          "46.3%",
           "46.7%",
           "47%",
-          "49%",
-          "49.1%",
-          "50.9%",
-          "51%",
+          "47.6%",
+          "48%",
+          "5.7%",
+          "52%",
+          "52.4%",
           "53%",
           "53.3%",
-          "53.7%",
-          "54%",
-          "54.0%",
           "56%",
           "56.2%",
+          "57.7%",
+          "58%",
+          "58.1%",
+          "6%",
           "60%",
-          "60.1%",
           "60.4%",
-          "60.9%",
-          "61%",
-          "61.7%",
+          "61.5%",
           "62%",
-          "62.3%",
-          "62.5%",
           "64.6%",
           "65%",
           "69%",
-          "69.4%",
+          "69.2%",
+          "71.5%",
+          "72%",
+          "77.6%",
+          "78",
           "78%",
-          "78.3%",
-          "79",
-          "81%",
-          "81.4%",
-          "83",
-          "87",
-          "88%",
-          "88.5%",
-          "90"
+          "82",
+          "82%",
+          "82.3%",
+          "86",
+          "86.7%",
+          "87%",
+          "89",
+          "89.7%",
+          "90%"
         ]
       }
     }
   ],
-  "text": "**The strongest detected turning point was France’s late extra-time surge**, capped by Mbappé’s 118' penalty. Before the shift, Argentina had 3 shots and 0.617 xG against France’s 0 shots; afterward, France produced 2 shots and 0.814 xG while Argentina had neither. [[ev:sb:3869685:4203]]\n\nThe earlier narrative-changing moment was Mbappé’s goals at 80' and 81'. Across that shift, France’s field tilt rose from 37.7% to 69.4%, and their xG from 0.0 to 0.885—evidence of a sharp attacking takeover, not merely a change in possession. [[ev:sb:3869685:2928]] [[ev:sb:3869685:2987]]",
+  "text": "**The defining turning point was Mbappé’s comeback burst:** his penalty at 80′ followed by his goal at 81′ transformed France’s threat. Across the detected window, France’s xG rose from 0.057 to 0.897 and field tilt from 41.9% to 71.5%—a shift in dangerous territory, not merely possession. [[ev:sb:3869685:2928]] [[ev:sb:3869685:2987]]\n\nThe detector’s **largest momentum swing** came later, in extra time: France went from 0 shots and 0.0 xG to 2 shots and 0.867 xG, capped by Mbappé’s penalty at 118′. That was the late reversal; his earlier burst was the match’s defining transformation. [[ev:sb:3869685:4199]] [[ev:sb:3869685:4203]]",
   "rejections": [],
   "chunks": [
     {
@@ -416,35 +421,35 @@
     },
     {
       "type": "text",
-      "delta": "**The strongest detected turning point was Franc"
+      "delta": "**The defining turning point was Mbappé’s comeba"
     },
     {
       "type": "text",
-      "delta": "e’s late extra-time surge**, capped by Mbappé’s "
+      "delta": "ck burst:** his penalty at 80′ followed by his g"
     },
     {
       "type": "text",
-      "delta": "118' penalty. "
+      "delta": "oal at 81′ transformed France’s threat. "
     },
     {
       "type": "text",
-      "delta": "Before the shift, Argentina had 3 shots and 0.61"
+      "delta": "Across the detected window, France’s xG rose fro"
     },
     {
       "type": "text",
-      "delta": "7 xG against France’s 0 shots; afterward, France"
+      "delta": "m 0.057 to 0.897 and field tilt from 41.9% to 71"
     },
     {
       "type": "text",
-      "delta": " produced 2 shots and 0.814 xG while Argentina h"
+      "delta": ".5%—a shift in dangerous territory, not merely p"
     },
     {
       "type": "text",
-      "delta": "ad neither. "
+      "delta": "ossession. "
     },
     {
       "type": "text",
-      "delta": "[[ev:sb:3869685:4203]]\n"
+      "delta": "[[ev:sb:3869685:2928]] [[ev:sb:3869685:2987]]\n"
     },
     {
       "type": "text",
@@ -452,36 +457,31 @@
     },
     {
       "type": "text",
-      "delta": "The earlier narrative-changing moment was Mbappé"
+      "delta": "The detector’s **largest momentum swing** came l"
     },
     {
       "type": "text",
-      "delta": "’s goals at 80' and 81'. "
+      "delta": "ater, in extra time: France went from 0 shots an"
     },
     {
       "type": "text",
-      "delta": "Across that shift, France’s field tilt rose from"
+      "delta": "d 0.0 xG to 2 shots and 0.867 xG, capped by Mbap"
     },
     {
       "type": "text",
-      "delta": " 37.7% to 69.4%, and their xG from 0.0 to 0.885—"
+      "delta": "pé’s penalty at 118′. "
     },
     {
       "type": "text",
-      "delta": "evidence of a sharp attacking takeover, not mere"
+      "delta": "That was the late reversal; his earlier burst wa"
     },
     {
       "type": "text",
-      "delta": "ly a change in possession. "
+      "delta": "s the match’s defining transformation. "
     },
     {
       "type": "text",
-      "delta": "[[ev:sb:3869685:2928]] [[ev:sb:3869685:2987]]"
-    },
-    {
-      "type": "citation",
-      "ref": "ev:sb:3869685:4203",
-      "label": "118' Mbappé penalty goal"
+      "delta": "[[ev:sb:3869685:4199]] [[ev:sb:3869685:4203]]"
     },
     {
       "type": "citation",
@@ -494,14 +494,26 @@
       "label": "81' Mbappé goal"
     },
     {
+      "type": "citation",
+      "ref": "ev:sb:3869685:4199",
+      "label": "116' Mbappé shot"
+    },
+    {
+      "type": "citation",
+      "ref": "ev:sb:3869685:4203",
+      "label": "118' Mbappé penalty goal"
+    },
+    {
       "type": "done"
     }
   ],
-  "first_text_seconds": 4.514,
-  "total_seconds": 6.592,
+  "first_text_seconds": 3.946,
+  "total_seconds": 5.854,
   "grounding": {
     "unsupported_numbers": [],
-    "unsupported_citations": []
+    "unsupported_citations": [],
+    "unsupported_units": [],
+    "forbidden_phrasing": []
   },
   "all_citations_exist": true
 }

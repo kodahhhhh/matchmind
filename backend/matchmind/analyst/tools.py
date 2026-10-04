@@ -86,7 +86,11 @@ TOOLS = [
     ),
     tool_schema(
         "run_counterfactual",
-        "Modelled hypothetical from empirical analog quantiles; not causal certainty.",
+        "Modelled hypothetical for a goal, substitution or red card. Compare "
+        "`modelled` (changed state) with `factual` (same model, real state); "
+        "`effect` is their median difference and `negligible` flags no real "
+        "change. lineup_change names the player put back and both ratings. "
+        "Never compare `modelled` with `actual`. Not causal certainty.",
         {
             "event_id": {"type": "string"},
             "change": {
@@ -95,6 +99,15 @@ TOOLS = [
             },
         },
         ["event_id", "change"],
+    ),
+    tool_schema(
+        "shot_alternatives",
+        "Modelled pass-instead-of-shot options for one non-penalty shot event: "
+        "each teammate's pass completion chance, follow-up value and the "
+        "shot's own xG, plus a Python comparison. Use get_events with "
+        "types=['shot'] first to find the shot event ID.",
+        {"event_id": {"type": "string"}},
+        ["event_id"],
     ),
     tool_schema(
         "search_moments",
@@ -146,6 +159,17 @@ def citation_registry(b: dict) -> dict[str, str]:
             f"{s['start']['label']} {b['match']['teams'][s['team']]['name']} sequence"
         )
     return registry
+
+
+def citation_exists(kind: str, ref: str, b: dict) -> bool:
+    """A cited ID is a real action, marker or possession sequence of the match.
+
+    Sequences outside the top-danger list are valid: the UI rebuilds any
+    sequence from its events.
+    """
+    if f"{kind}:{ref}" in citation_registry(b):
+        return True
+    return kind == "seq" and any(e["sequence_id"] == ref for e in b["events"])
 
 
 def _dispatch(match_id: str, name: str, args: dict) -> dict:
@@ -238,6 +262,10 @@ def _dispatch(match_id: str, name: str, args: dict) -> dict:
         result = {"turning_points": b["turning_points"]}
     elif name == "run_counterfactual":
         result = run_counterfactual(match_id, args["event_id"], args["change"])
+    elif name == "shot_alternatives":
+        from matchmind.api.shot_alternatives import shot_alternatives
+
+        result = shot_alternatives(match_id, args["event_id"])
     elif name == "search_moments":
         result = search_moments(
             args["query"], None if args.get("all_matches") else match_id

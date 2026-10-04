@@ -201,10 +201,7 @@ def test_analyst_commentary_citations() -> None:
     assert result["lines"]
     line = result["lines"][0]
     claim = line["text"] + " [[seq:" + line["sequence_id"] + "]]"
-    assert grounding_errors(claim, [result]) == {
-        "unsupported_numbers": [],
-        "unsupported_citations": [],
-    }
+    assert not any(grounding_errors(claim, [result]).values())
     assert "seq:" + line["sequence_id"] in result["evidence_labels"]
 
 

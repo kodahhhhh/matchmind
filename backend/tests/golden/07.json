@@ -1,0 +1,907 @@
+{
+  "match_id": "sb:3869685",
+  "question": "What if Mbappé's 80th-minute penalty had been missed?",
+  "tools": [
+    {
+      "name": "get_events",
+      "args": {
+        "types": [
+          "goal"
+        ],
+        "team": "away",
+        "from_minute": 78,
+        "to_minute": 82,
+        "limit": 10
+      },
+      "result": {
+        "events": [
+          {
+            "id": "sb:3869685:2928",
+            "period": 2,
+            "minute": 79,
+            "second": 24,
+            "team": "away",
+            "player": "Mbappé",
+            "type": "shot_penalty",
+            "result": "goal",
+            "xg": 0.841,
+            "vaep": 0.192,
+            "sequence_id": "sb:3869685:s163"
+          },
+          {
+            "id": "sb:3869685:2987",
+            "period": 2,
+            "minute": 80,
+            "second": 59,
+            "team": "away",
+            "player": "Mbappé",
+            "type": "shot",
+            "result": "goal",
+            "xg": 0.0556,
+            "vaep": 0.873,
+            "sequence_id": "sb:3869685:s165"
+          }
+        ],
+        "markers": [
+          {
+            "period": 2,
+            "minute": 79,
+            "second": 24,
+            "t": 5219.0,
+            "team": "away",
+            "type": "goal",
+            "event_id": "sb:3869685:2928",
+            "player_id": 3009,
+            "detail": "penalty"
+          },
+          {
+            "period": 2,
+            "minute": 80,
+            "second": 59,
+            "t": 5314.0,
+            "team": "away",
+            "type": "goal",
+            "event_id": "sb:3869685:2987",
+            "player_id": 3009,
+            "detail": null
+          }
+        ],
+        "n_events": 2,
+        "n_markers": 2,
+        "evidence_labels": {
+          "seq:sb:3869685:s165": "81' France sequence",
+          "ev:sb:3869685:2928": "80' Mbappé penalty goal",
+          "ev:sb:3869685:2987": "81' Mbappé goal"
+        },
+        "match": {
+          "teams": {
+            "home": "Argentina",
+            "away": "France"
+          },
+          "score": {
+            "home": 3,
+            "away": 3,
+            "penalties": {
+              "home": 4,
+              "away": 2
+            }
+          },
+          "season": "2022"
+        },
+        "metric_notes": {
+          "possession": "Pass-share proxy",
+          "xg": "Model xG when populated; sb_xg fallback",
+          "vaep": "Model VAEP when populated; threat-gain proxy fallback"
+        },
+        "display_numbers": [
+          "0",
+          "0.0556",
+          "0.056",
+          "0.06",
+          "0.1",
+          "0.19",
+          "0.192",
+          "0.1920",
+          "0.2",
+          "0.8",
+          "0.84",
+          "0.841",
+          "0.8410",
+          "0.87",
+          "0.873",
+          "0.8730",
+          "0.9",
+          "1",
+          "19%",
+          "19.2%",
+          "2",
+          "24",
+          "3",
+          "4",
+          "5.6%",
+          "5219",
+          "5219.0",
+          "5219.00",
+          "5219.000",
+          "5219.0000",
+          "5314",
+          "5314.0",
+          "5314.00",
+          "5314.000",
+          "5314.0000",
+          "59",
+          "6%",
+          "79",
+          "80",
+          "84%",
+          "84.1%",
+          "87%",
+          "87.3%"
+        ]
+      }
+    },
+    {
+      "name": "run_counterfactual",
+      "args": {
+        "event_id": "sb:3869685:2928",
+        "change": "remove_goal"
+      },
+      "result": {
+        "match_id": "sb:3869685",
+        "event_id": "sb:3869685:2928",
+        "change": "remove_goal",
+        "label": "Modelled hypothetical",
+        "horizon_minutes": 15,
+        "method": "trained_model",
+        "model": {
+          "name": "Game-state quantile model (LightGBM)",
+          "trained_matches": 2924,
+          "coverage_p10_p90": {
+            "xg": 0.8786920067076579,
+            "possession": 0.7978423700391281
+          },
+          "skill_vs_constant": {
+            "xg": 0.0463,
+            "possession": 0.2867
+          }
+        },
+        "anchor": {
+          "period": 2,
+          "minute": 79,
+          "label": "80'"
+        },
+        "actual": {
+          "home": {
+            "xg": 0.0204,
+            "possession": 0.4731,
+            "goals": 0
+          },
+          "away": {
+            "xg": 0.1387,
+            "possession": 0.5269,
+            "goals": 1
+          }
+        },
+        "modelled": {
+          "home": {
+            "xg": {
+              "p10": 0.01621646324211773,
+              "p50": 0.26292853850588205,
+              "p90": 0.9815936525968798
+            },
+            "possession": {
+              "p10": 0.42627629765128094,
+              "p50": 0.6205117334741976,
+              "p90": 0.7344304619075919
+            }
+          },
+          "away": {
+            "xg": {
+              "p10": 0.0,
+              "p50": 0.06465232299943685,
+              "p90": 0.5653626605883846
+            },
+            "possession": {
+              "p10": 0.260178176290349,
+              "p50": 0.38197164020053453,
+              "p90": 0.5778311384098065
+            }
+          }
+        },
+        "factual": {
+          "home": {
+            "xg": {
+              "p10": 0.01621646324211773,
+              "p50": 0.2371741622581145,
+              "p90": 0.9314132502435657
+            },
+            "possession": {
+              "p10": 0.4121804459611446,
+              "p50": 0.6114540602098164,
+              "p90": 0.7341091896956604
+            }
+          },
+          "away": {
+            "xg": {
+              "p10": 0.0,
+              "p50": 0.06465232299943685,
+              "p90": 0.5653626605883846
+            },
+            "possession": {
+              "p10": 0.26216031070150153,
+              "p50": 0.38823845656270317,
+              "p90": 0.5941791015792858
+            }
+          }
+        },
+        "effect": {
+          "home": {
+            "xg": 0.0258,
+            "possession": 0.0091
+          },
+          "away": {
+            "xg": 0.0,
+            "possession": -0.0063
+          }
+        },
+        "negligible": false,
+        "lineup_change": null,
+        "series": [
+          {
+            "offset_min": 0,
+            "actual": {
+              "home": 0.0,
+              "away": 0.0
+            },
+            "modelled": null
+          },
+          {
+            "offset_min": 1,
+            "actual": {
+              "home": 0.0,
+              "away": 0.0
+            },
+            "modelled": null
+          },
+          {
+            "offset_min": 2,
+            "actual": {
+              "home": 0.0,
+              "away": 0.0556
+            },
+            "modelled": null
+          },
+          {
+            "offset_min": 3,
+            "actual": {
+              "home": 0.0,
+              "away": 0.0556
+            },
+            "modelled": null
+          },
+          {
+            "offset_min": 4,
+            "actual": {
+              "home": 0.0204,
+              "away": 0.0556
+            },
+            "modelled": null
+          },
+          {
+            "offset_min": 5,
+            "actual": {
+              "home": 0.0204,
+              "away": 0.0556
+            },
+            "modelled": null
+          },
+          {
+            "offset_min": 6,
+            "actual": {
+              "home": 0.0204,
+              "away": 0.0556
+            },
+            "modelled": null
+          },
+          {
+            "offset_min": 7,
+            "actual": {
+              "home": 0.0204,
+              "away": 0.0556
+            },
+            "modelled": null
+          },
+          {
+            "offset_min": 8,
+            "actual": {
+              "home": 0.0204,
+              "away": 0.0556
+            },
+            "modelled": null
+          },
+          {
+            "offset_min": 9,
+            "actual": {
+              "home": 0.0204,
+              "away": 0.0556
+            },
+            "modelled": null
+          },
+          {
+            "offset_min": 10,
+            "actual": {
+              "home": 0.0204,
+              "away": 0.0556
+            },
+            "modelled": null
+          },
+          {
+            "offset_min": 11,
+            "actual": {
+              "home": 0.0204,
+              "away": 0.0556
+            },
+            "modelled": null
+          },
+          {
+            "offset_min": 12,
+            "actual": {
+              "home": 0.0204,
+              "away": 0.0556
+            },
+            "modelled": null
+          },
+          {
+            "offset_min": 13,
+            "actual": {
+              "home": 0.0204,
+              "away": 0.0556
+            },
+            "modelled": null
+          },
+          {
+            "offset_min": 14,
+            "actual": {
+              "home": 0.0204,
+              "away": 0.0876
+            },
+            "modelled": null
+          },
+          {
+            "offset_min": 15,
+            "actual": {
+              "home": 0.0204,
+              "away": 0.1387
+            },
+            "modelled": null
+          }
+        ],
+        "analog_summary": {
+          "n": 40,
+          "home": {
+            "xg": {
+              "p10": 0.009508403022830946,
+              "p50": 0.12896925691719996,
+              "p90": 0.5139610238877186
+            }
+          },
+          "away": {
+            "xg": {
+              "p10": 0.0,
+              "p50": 0.06565116449358419,
+              "p90": 0.22838302719409498
+            }
+          }
+        },
+        "analogs": [
+          {
+            "match_id": "sb:7540",
+            "competition": "FIFA World Cup",
+            "season": "2018",
+            "home": "Russia",
+            "away": "Egypt",
+            "minute": 75,
+            "score_state": "-2",
+            "similarity": 0.2285583380170215,
+            "next15": {
+              "xg_for": 0.07188682178424885,
+              "xg_against": 0.0,
+              "goals_for": 0,
+              "goals_against": 0
+            }
+          },
+          {
+            "match_id": "sb:3920390",
+            "competition": "African Cup of Nations",
+            "season": "2023",
+            "home": "Algeria",
+            "away": "Angola",
+            "minute": 70,
+            "score_state": "+0",
+            "similarity": 0.22207184902998361,
+            "next15": {
+              "xg_for": 0.02310993437873116,
+              "xg_against": 0.02026829011758316,
+              "goals_for": 0,
+              "goals_against": 0
+            }
+          },
+          {
+            "match_id": "sb:3788773",
+            "competition": "UEFA Euro",
+            "season": "2020",
+            "home": "Portugal",
+            "away": "France",
+            "minute": 60,
+            "score_state": "+0",
+            "similarity": 0.21032920621953846,
+            "next15": {
+              "xg_for": 0.01392131032542251,
+              "xg_against": 0.121252061659478,
+              "goals_for": 0,
+              "goals_against": 0
+            }
+          },
+          {
+            "match_id": "sb:3922356",
+            "competition": "African Cup of Nations",
+            "season": "2023",
+            "home": "Congo DR",
+            "away": "Guinea",
+            "minute": 65,
+            "score_state": "+1",
+            "similarity": 0.20984572999398843,
+            "next15": {
+              "xg_for": 0.0,
+              "xg_against": 0.1464352213504031,
+              "goals_for": 0,
+              "goals_against": 0
+            }
+          },
+          {
+            "match_id": "sb:3773661",
+            "competition": "La Liga",
+            "season": "2020/2021",
+            "home": "Barcelona",
+            "away": "Getafe",
+            "minute": 70,
+            "score_state": "-1",
+            "similarity": 0.20768687875019226,
+            "next15": {
+              "xg_for": 0.05322616856756892,
+              "xg_against": 0.0,
+              "goals_for": 0,
+              "goals_against": 0
+            }
+          }
+        ],
+        "n_analogs": 40,
+        "caveat": "Learned from observational data: teams change their approach because of the score, so effects are confounded. Shown as a range next to real comparable situations, not a prediction.",
+        "evidence_labels": {
+          "ev:sb:3869685:2928": "80' Mbappé penalty goal"
+        },
+        "match": {
+          "teams": {
+            "home": "Argentina",
+            "away": "France"
+          },
+          "score": {
+            "home": 3,
+            "away": 3,
+            "penalties": {
+              "home": 4,
+              "away": 2
+            }
+          },
+          "season": "2022"
+        },
+        "metric_notes": {
+          "possession": "Pass-share proxy",
+          "xg": "Model xG when populated; sb_xg fallback",
+          "vaep": "Model VAEP when populated; threat-gain proxy fallback"
+        },
+        "display_numbers": [
+          "-0",
+          "-0.0",
+          "-0.006",
+          "-0.0063",
+          "-0.01",
+          "0",
+          "0%",
+          "0.0",
+          "0.0%",
+          "0.00",
+          "0.000",
+          "0.0000",
+          "0.009",
+          "0.0091",
+          "0.0095",
+          "0.009508403022830946",
+          "0.01",
+          "0.010",
+          "0.0139",
+          "0.01392131032542251",
+          "0.014",
+          "0.016",
+          "0.0162",
+          "0.01621646324211773",
+          "0.02",
+          "0.020",
+          "0.02026829011758316",
+          "0.0203",
+          "0.0204",
+          "0.023",
+          "0.0231",
+          "0.02310993437873116",
+          "0.0258",
+          "0.026",
+          "0.03",
+          "0.046",
+          "0.0463",
+          "0.05",
+          "0.053",
+          "0.0532",
+          "0.05322616856756892",
+          "0.0556",
+          "0.056",
+          "0.06",
+          "0.06465232299943685",
+          "0.0647",
+          "0.065",
+          "0.06565116449358419",
+          "0.0657",
+          "0.066",
+          "0.07",
+          "0.07188682178424885",
+          "0.0719",
+          "0.072",
+          "0.0876",
+          "0.088",
+          "0.09",
+          "0.1",
+          "0.12",
+          "0.121",
+          "0.121252061659478",
+          "0.1213",
+          "0.12896925691719996",
+          "0.129",
+          "0.1290",
+          "0.13",
+          "0.1387",
+          "0.139",
+          "0.14",
+          "0.146",
+          "0.1464",
+          "0.1464352213504031",
+          "0.15",
+          "0.2",
+          "0.20768687875019226",
+          "0.2077",
+          "0.208",
+          "0.2098",
+          "0.20984572999398843",
+          "0.21",
+          "0.210",
+          "0.2103",
+          "0.21032920621953846",
+          "0.22",
+          "0.222",
+          "0.22207184902998361",
+          "0.2221",
+          "0.228",
+          "0.22838302719409498",
+          "0.2284",
+          "0.2285583380170215",
+          "0.2286",
+          "0.229",
+          "0.23",
+          "0.237",
+          "0.2371741622581145",
+          "0.2372",
+          "0.24",
+          "0.26",
+          "0.260",
+          "0.260178176290349",
+          "0.2602",
+          "0.262",
+          "0.26216031070150153",
+          "0.2622",
+          "0.2629",
+          "0.26292853850588205",
+          "0.263",
+          "0.2867",
+          "0.287",
+          "0.29",
+          "0.3",
+          "0.38",
+          "0.38197164020053453",
+          "0.382",
+          "0.3820",
+          "0.388",
+          "0.3882",
+          "0.38823845656270317",
+          "0.39",
+          "0.4",
+          "0.41",
+          "0.412",
+          "0.4121804459611446",
+          "0.4122",
+          "0.426",
+          "0.42627629765128094",
+          "0.4263",
+          "0.43",
+          "0.47",
+          "0.473",
+          "0.4731",
+          "0.5",
+          "0.51",
+          "0.5139610238877186",
+          "0.514",
+          "0.5140",
+          "0.5269",
+          "0.527",
+          "0.53",
+          "0.565",
+          "0.5653626605883846",
+          "0.5654",
+          "0.57",
+          "0.5778",
+          "0.5778311384098065",
+          "0.578",
+          "0.58",
+          "0.59",
+          "0.594",
+          "0.5941791015792858",
+          "0.5942",
+          "0.6",
+          "0.61",
+          "0.611",
+          "0.6114540602098164",
+          "0.6115",
+          "0.62",
+          "0.6205",
+          "0.6205117334741976",
+          "0.621",
+          "0.7",
+          "0.73",
+          "0.734",
+          "0.7341",
+          "0.7341091896956604",
+          "0.7344",
+          "0.7344304619075919",
+          "0.7978",
+          "0.7978423700391281",
+          "0.798",
+          "0.8",
+          "0.80",
+          "0.8786920067076579",
+          "0.8787",
+          "0.879",
+          "0.88",
+          "0.9",
+          "0.9%",
+          "0.93",
+          "0.931",
+          "0.9314",
+          "0.9314132502435657",
+          "0.98",
+          "0.9815936525968798",
+          "0.9816",
+          "0.982",
+          "1",
+          "1%",
+          "1.0",
+          "1.0%",
+          "1.4%",
+          "1.6%",
+          "10",
+          "11",
+          "12",
+          "12%",
+          "12.1%",
+          "12.9%",
+          "13",
+          "13%",
+          "13.9%",
+          "14",
+          "14%",
+          "14.6%",
+          "15",
+          "15%",
+          "2",
+          "2%",
+          "2.0%",
+          "2.3%",
+          "2.6%",
+          "20.8%",
+          "21%",
+          "21.0%",
+          "22%",
+          "22.2%",
+          "22.8%",
+          "22.9%",
+          "23%",
+          "23.7%",
+          "24%",
+          "26%",
+          "26.0%",
+          "26.2%",
+          "26.3%",
+          "28.7%",
+          "29%",
+          "2924",
+          "3",
+          "3%",
+          "38%",
+          "38.2%",
+          "38.8%",
+          "39%",
+          "4",
+          "4.6%",
+          "40",
+          "41%",
+          "41.2%",
+          "42.6%",
+          "43%",
+          "47%",
+          "47.3%",
+          "5",
+          "5%",
+          "5.3%",
+          "5.6%",
+          "51%",
+          "51.4%",
+          "52.7%",
+          "53%",
+          "56.5%",
+          "57%",
+          "57.8%",
+          "58%",
+          "59%",
+          "59.4%",
+          "6",
+          "6%",
+          "6.5%",
+          "6.6%",
+          "60",
+          "61%",
+          "61.1%",
+          "62%",
+          "62.1%",
+          "65",
+          "7",
+          "7%",
+          "7.2%",
+          "70",
+          "73%",
+          "73.4%",
+          "75",
+          "79",
+          "79.8%",
+          "8",
+          "8.8%",
+          "80%",
+          "87.9%",
+          "88%",
+          "9",
+          "9%",
+          "93%",
+          "93.1%",
+          "98%",
+          "98.2%"
+        ]
+      }
+    }
+  ],
+  "text": "Missing Mbappé’s 80' penalty favours Argentina—but the model estimates only a modest change in subsequent play, not a guaranteed victory. This hypothetical removes the penalty goal. [[ev:sb:3869685:2928]]\n\nOver the next 15 minutes, Argentina’s modelled median xG rises from 0.237 to 0.263, an effect of +0.026; France’s stays at 0.065. That suggests a slightly stronger Argentine position, rather than France’s attacking threat disappearing. The estimates come from observational data: they cannot establish whether Mbappé’s later goal or the eventual outcome changes. [[ev:sb:3869685:2928]] [[ev:sb:3869685:2987]]",
+  "rejections": [],
+  "chunks": [
+    {
+      "type": "tool",
+      "name": "get_events",
+      "args": {
+        "types": [
+          "goal"
+        ],
+        "team": "away",
+        "from_minute": 78,
+        "to_minute": 82,
+        "limit": 10
+      }
+    },
+    {
+      "type": "tool",
+      "name": "run_counterfactual",
+      "args": {
+        "event_id": "sb:3869685:2928",
+        "change": "remove_goal"
+      }
+    },
+    {
+      "type": "text",
+      "delta": "Missing Mbappé’s 80' penalty favours Argentina—b"
+    },
+    {
+      "type": "text",
+      "delta": "ut the model estimates only a modest change in s"
+    },
+    {
+      "type": "text",
+      "delta": "ubsequent play, not a guaranteed victory. "
+    },
+    {
+      "type": "text",
+      "delta": "This hypothetical removes the penalty goal. "
+    },
+    {
+      "type": "text",
+      "delta": "[[ev:sb:3869685:2928]]\n"
+    },
+    {
+      "type": "text",
+      "delta": "\n"
+    },
+    {
+      "type": "text",
+      "delta": "Over the next 15 minutes, Argentina’s modelled m"
+    },
+    {
+      "type": "text",
+      "delta": "edian xG rises from 0.237 to 0.263, an effect of"
+    },
+    {
+      "type": "text",
+      "delta": " +0.026; France’s stays at 0.065. "
+    },
+    {
+      "type": "text",
+      "delta": "That suggests a slightly stronger Argentine posi"
+    },
+    {
+      "type": "text",
+      "delta": "tion, rather than France’s attacking threat disa"
+    },
+    {
+      "type": "text",
+      "delta": "ppearing. "
+    },
+    {
+      "type": "text",
+      "delta": "The estimates come from observational data: they"
+    },
+    {
+      "type": "text",
+      "delta": " cannot establish whether Mbappé’s later goal or"
+    },
+    {
+      "type": "text",
+      "delta": " the eventual outcome changes. "
+    },
+    {
+      "type": "text",
+      "delta": "[[ev:sb:3869685:2928]] [[ev:sb:3869685:2987]]"
+    },
+    {
+      "type": "citation",
+      "ref": "ev:sb:3869685:2928",
+      "label": "80' Mbappé penalty goal"
+    },
+    {
+      "type": "citation",
+      "ref": "ev:sb:3869685:2987",
+      "label": "81' Mbappé goal"
+    },
+    {
+      "type": "done"
+    }
+  ],
+  "first_text_seconds": 5.914,
+  "total_seconds": 7.322,
+  "grounding": {
+    "unsupported_numbers": [],
+    "unsupported_citations": [],
+    "unsupported_units": [],
+    "forbidden_phrasing": []
+  },
+  "all_citations_exist": true
+}

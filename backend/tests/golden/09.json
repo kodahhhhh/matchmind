@@ -1,0 +1,461 @@
+{
+  "match_id": "sb:3869685",
+  "question": "Should Kolo Muani have passed instead of shooting at the end of extra time?",
+  "tools": [
+    {
+      "name": "get_events",
+      "args": {
+        "types": [
+          "shot"
+        ],
+        "team": "away",
+        "from_minute": 115,
+        "limit": 20
+      },
+      "result": {
+        "events": [
+          {
+            "id": "sb:3869685:4199",
+            "period": 4,
+            "minute": 115,
+            "second": 38,
+            "team": "away",
+            "player": "Mbappé",
+            "type": "shot",
+            "result": "fail",
+            "xg": 0.0255,
+            "vaep": -0.0076,
+            "sequence_id": "sb:3869685:s237"
+          },
+          {
+            "id": "sb:3869685:4203",
+            "period": 4,
+            "minute": 117,
+            "second": 5,
+            "team": "away",
+            "player": "Mbappé",
+            "type": "shot_penalty",
+            "result": "goal",
+            "xg": 0.8413,
+            "vaep": 0.1878,
+            "sequence_id": "sb:3869685:s238"
+          },
+          {
+            "id": "sb:3869685:4337",
+            "period": 4,
+            "minute": 122,
+            "second": 44,
+            "team": "away",
+            "player": "Kolo",
+            "type": "shot",
+            "result": "fail",
+            "xg": 0.1939,
+            "vaep": -0.0422,
+            "sequence_id": "sb:3869685:s245"
+          }
+        ],
+        "markers": [],
+        "n_events": 3,
+        "n_markers": 0,
+        "evidence_labels": {
+          "seq:sb:3869685:s237": "116' France sequence",
+          "seq:sb:3869685:s245": "120+3' France sequence",
+          "ev:sb:3869685:4199": "116' Mbappé shot",
+          "ev:sb:3869685:4203": "118' Mbappé penalty goal",
+          "ev:sb:3869685:4337": "120+3' Kolo shot"
+        },
+        "match": {
+          "teams": {
+            "home": "Argentina",
+            "away": "France"
+          },
+          "score": {
+            "home": 3,
+            "away": 3,
+            "penalties": {
+              "home": 4,
+              "away": 2
+            }
+          },
+          "season": "2022"
+        },
+        "metric_notes": {
+          "possession": "Pass-share proxy",
+          "xg": "Model xG when populated; sb_xg fallback",
+          "vaep": "Model VAEP when populated; threat-gain proxy fallback"
+        },
+        "display_numbers": [
+          "-0",
+          "-0.0",
+          "-0.0076",
+          "-0.008",
+          "-0.01",
+          "-0.04",
+          "-0.042",
+          "-0.0422",
+          "0",
+          "0.0",
+          "0.025",
+          "0.0255",
+          "0.03",
+          "0.1878",
+          "0.188",
+          "0.19",
+          "0.1939",
+          "0.194",
+          "0.2",
+          "0.8",
+          "0.84",
+          "0.841",
+          "0.8413",
+          "1",
+          "115",
+          "117",
+          "122",
+          "18.8%",
+          "19%",
+          "19.4%",
+          "2",
+          "2.5%",
+          "3",
+          "3%",
+          "38",
+          "4",
+          "44",
+          "5",
+          "84%",
+          "84.1%"
+        ]
+      }
+    },
+    {
+      "name": "shot_alternatives",
+      "args": {
+        "event_id": "sb:3869685:4337"
+      },
+      "result": {
+        "match_id": "sb:3869685",
+        "event_id": "sb:3869685:4337",
+        "label": "Modelled hypothetical",
+        "shot": {
+          "event_id": "sb:3869685:4337",
+          "team": "away",
+          "player_id": 22097,
+          "player": "Kolo",
+          "period": 4,
+          "minute": 122,
+          "label": "120+3'",
+          "x": 14.26,
+          "y": 38.34,
+          "xg": 0.1939,
+          "outcome": "Saved"
+        },
+        "options": [
+          {
+            "player_id": 3009,
+            "player": "Mbappé",
+            "x": 14.7,
+            "y": 30.69,
+            "p_complete": 0.488,
+            "xg_if_shot": 0.5677,
+            "xt": 0.0928,
+            "value": 0.2771
+          },
+          {
+            "player_id": 2972,
+            "player": "Thuram",
+            "x": 22.31,
+            "y": 33.06,
+            "p_complete": 0.8924,
+            "xg_if_shot": 0.1337,
+            "xt": 0.0327,
+            "value": 0.1194
+          },
+          {
+            "player_id": 8217,
+            "player": "Coman",
+            "x": 26.51,
+            "y": 51.43,
+            "p_complete": 0.9374,
+            "xg_if_shot": 0.1041,
+            "xt": 0.0176,
+            "value": 0.0976
+          }
+        ],
+        "comparison": "pass_higher",
+        "margin": 0.0832,
+        "model": {
+          "name": "Pass completion (LightGBM, StatsBomb 360)",
+          "trained_passes": 260025,
+          "trained_matches": 293,
+          "auc": 0.9363,
+          "brier": 0.0649,
+          "baseline_auc": 0.9012
+        },
+        "assumptions": [
+          "Pass completion from a model of 360 freeze-frame passes (lane and target defenders, offside line).",
+          "After receiving, the better of an immediate first-time shot (our xG model, same defenders and keeper) or the zone's average threat (xT).",
+          "The actual shot and every hypothetical shot use the same xG model, which never saw this match."
+        ],
+        "caveat": "Modelled hypothetical from the frozen moment of the shot: defenders would react, and the receiver's control and finish are assumed. Not what would have happened.",
+        "evidence_labels": {
+          "ev:sb:3869685:4337": "120+3' Kolo shot"
+        },
+        "match": {
+          "teams": {
+            "home": "Argentina",
+            "away": "France"
+          },
+          "score": {
+            "home": 3,
+            "away": 3,
+            "penalties": {
+              "home": 4,
+              "away": 2
+            }
+          },
+          "season": "2022"
+        },
+        "metric_notes": {
+          "possession": "Pass-share proxy",
+          "xg": "Model xG when populated; sb_xg fallback",
+          "vaep": "Model VAEP when populated; threat-gain proxy fallback"
+        },
+        "display_numbers": [
+          "0",
+          "0.0",
+          "0.0176",
+          "0.018",
+          "0.02",
+          "0.03",
+          "0.0327",
+          "0.033",
+          "0.06",
+          "0.0649",
+          "0.065",
+          "0.08",
+          "0.083",
+          "0.0832",
+          "0.09",
+          "0.0928",
+          "0.093",
+          "0.0976",
+          "0.098",
+          "0.1",
+          "0.10",
+          "0.104",
+          "0.1041",
+          "0.119",
+          "0.1194",
+          "0.12",
+          "0.13",
+          "0.1337",
+          "0.134",
+          "0.19",
+          "0.1939",
+          "0.194",
+          "0.2",
+          "0.277",
+          "0.2771",
+          "0.28",
+          "0.3",
+          "0.488",
+          "0.4880",
+          "0.49",
+          "0.5",
+          "0.5677",
+          "0.568",
+          "0.57",
+          "0.6",
+          "0.89",
+          "0.892",
+          "0.8924",
+          "0.9",
+          "0.90",
+          "0.901",
+          "0.9012",
+          "0.936",
+          "0.9363",
+          "0.937",
+          "0.9374",
+          "0.94",
+          "1",
+          "1.8%",
+          "10%",
+          "10.4%",
+          "11.9%",
+          "12%",
+          "122",
+          "13%",
+          "13.4%",
+          "14",
+          "14.26",
+          "14.260",
+          "14.2600",
+          "14.3",
+          "14.7",
+          "14.70",
+          "14.700",
+          "14.7000",
+          "15",
+          "19%",
+          "19.4%",
+          "2",
+          "2%",
+          "22",
+          "22.3",
+          "22.31",
+          "22.310",
+          "22.3100",
+          "26.5",
+          "26.51",
+          "26.510",
+          "26.5100",
+          "260025",
+          "27",
+          "27.7%",
+          "28%",
+          "293",
+          "3",
+          "3%",
+          "3.3%",
+          "30.69",
+          "30.690",
+          "30.6900",
+          "30.7",
+          "31",
+          "33",
+          "33.06",
+          "33.060",
+          "33.0600",
+          "33.1",
+          "38",
+          "38.3",
+          "38.34",
+          "38.340",
+          "38.3400",
+          "4",
+          "48.8%",
+          "49%",
+          "51",
+          "51.4",
+          "51.43",
+          "51.430",
+          "51.4300",
+          "56.8%",
+          "57%",
+          "6%",
+          "6.5%",
+          "8%",
+          "8.3%",
+          "89%",
+          "89.2%",
+          "9%",
+          "9.3%",
+          "9.8%",
+          "90%",
+          "90.1%",
+          "93.6%",
+          "93.7%",
+          "94%"
+        ]
+      }
+    }
+  ],
+  "text": "**The model favours a pass to Mbappé—but it wasn’t an obvious certainty.** For Kolo Muani’s late chance, that option has a completion probability of 48.8% and a completion-adjusted follow-up value of 0.2771, above the shot’s 0.1939 xG. [[ev:sb:3869685:4337]]\n\nThat assumes a clean reception and an immediate follow-up; defenders’ reactions and execution could change the picture. So passing looks better in this modelled hypothetical, but shooting was defensible—not a clear-cut mistake simply because it was saved. [[ev:sb:3869685:4337]]",
+  "rejections": [],
+  "chunks": [
+    {
+      "type": "tool",
+      "name": "get_events",
+      "args": {
+        "types": [
+          "shot"
+        ],
+        "team": "away",
+        "from_minute": 115,
+        "limit": 20
+      }
+    },
+    {
+      "type": "tool",
+      "name": "shot_alternatives",
+      "args": {
+        "event_id": "sb:3869685:4337"
+      }
+    },
+    {
+      "type": "text",
+      "delta": "**The model favours a pass to Mbappé—but it wasn"
+    },
+    {
+      "type": "text",
+      "delta": "’t an obvious certainty.** For Kolo Muani’s late"
+    },
+    {
+      "type": "text",
+      "delta": " chance, that option has a completion probabilit"
+    },
+    {
+      "type": "text",
+      "delta": "y of 48.8% and a completion-adjusted follow-up v"
+    },
+    {
+      "type": "text",
+      "delta": "alue of 0.2771, above the shot’s 0.1939 xG. "
+    },
+    {
+      "type": "text",
+      "delta": "[[ev:sb:3869685:4337]]\n"
+    },
+    {
+      "type": "text",
+      "delta": "\n"
+    },
+    {
+      "type": "text",
+      "delta": "That assumes a clean reception and an immediate "
+    },
+    {
+      "type": "text",
+      "delta": "follow-up; defenders’ reactions and execution co"
+    },
+    {
+      "type": "text",
+      "delta": "uld change the picture. "
+    },
+    {
+      "type": "text",
+      "delta": "So passing looks better in this modelled hypothe"
+    },
+    {
+      "type": "text",
+      "delta": "tical, but shooting was defensible—not a clear-c"
+    },
+    {
+      "type": "text",
+      "delta": "ut mistake simply because it was saved. "
+    },
+    {
+      "type": "text",
+      "delta": "[[ev:sb:3869685:4337]]"
+    },
+    {
+      "type": "citation",
+      "ref": "ev:sb:3869685:4337",
+      "label": "120+3' Kolo shot"
+    },
+    {
+      "type": "done"
+    }
+  ],
+  "first_text_seconds": 5.973,
+  "total_seconds": 7.059,
+  "grounding": {
+    "unsupported_numbers": [],
+    "unsupported_citations": [],
+    "unsupported_units": [],
+    "forbidden_phrasing": []
+  },
+  "all_citations_exist": true
+}

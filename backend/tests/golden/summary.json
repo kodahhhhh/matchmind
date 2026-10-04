@@ -4,10 +4,12 @@
     "tools": [
       "find_turning_points"
     ],
-    "first_text_seconds": 4.514,
+    "first_text_seconds": 3.946,
     "grounding": {
       "unsupported_numbers": [],
-      "unsupported_citations": []
+      "unsupported_citations": [],
+      "unsupported_units": [],
+      "forbidden_phrasing": []
     },
     "all_citations_exist": true
   },
@@ -16,10 +18,12 @@
     "tools": [
       "get_player_rankings"
     ],
-    "first_text_seconds": 2.988,
+    "first_text_seconds": 3.365,
     "grounding": {
       "unsupported_numbers": [],
-      "unsupported_citations": []
+      "unsupported_citations": [],
+      "unsupported_units": [],
+      "forbidden_phrasing": []
     },
     "all_citations_exist": true
   },
@@ -28,10 +32,12 @@
     "tools": [
       "get_top_sequences"
     ],
-    "first_text_seconds": 2.614,
+    "first_text_seconds": 3.442,
     "grounding": {
       "unsupported_numbers": [],
-      "unsupported_citations": []
+      "unsupported_citations": [],
+      "unsupported_units": [],
+      "forbidden_phrasing": []
     },
     "all_citations_exist": true
   },
@@ -45,10 +51,110 @@
       "get_window_stats",
       "get_window_stats"
     ],
-    "first_text_seconds": 6.298,
+    "first_text_seconds": 5.494,
     "grounding": {
       "unsupported_numbers": [],
-      "unsupported_citations": []
+      "unsupported_citations": [],
+      "unsupported_units": [],
+      "forbidden_phrasing": []
+    },
+    "all_citations_exist": true
+  },
+  {
+    "question": "Why did Argentina lose control between the 65th and 85th minute?",
+    "tools": [
+      "get_events",
+      "get_window_stats",
+      "get_window_stats",
+      "find_turning_points",
+      "get_events",
+      "search_moments",
+      "get_window_stats",
+      "get_window_stats"
+    ],
+    "first_text_seconds": 7.836,
+    "grounding": {
+      "unsupported_numbers": [],
+      "unsupported_citations": [],
+      "unsupported_units": [],
+      "forbidden_phrasing": []
+    },
+    "all_citations_exist": true
+  },
+  {
+    "question": "What happened around the first goal?",
+    "tools": [
+      "get_events",
+      "search_moments"
+    ],
+    "first_text_seconds": 6.027,
+    "grounding": {
+      "unsupported_numbers": [],
+      "unsupported_citations": [],
+      "unsupported_units": [],
+      "forbidden_phrasing": []
+    },
+    "all_citations_exist": true
+  },
+  {
+    "question": "What if Mbapp\u00e9's 80th-minute penalty had been missed?",
+    "tools": [
+      "get_events",
+      "run_counterfactual"
+    ],
+    "first_text_seconds": 5.914,
+    "grounding": {
+      "unsupported_numbers": [],
+      "unsupported_citations": [],
+      "unsupported_units": [],
+      "forbidden_phrasing": []
+    },
+    "all_citations_exist": true
+  },
+  {
+    "question": "What if France hadn't made their double substitution before half-time?",
+    "tools": [
+      "get_events",
+      "run_counterfactual",
+      "run_counterfactual",
+      "get_window_stats",
+      "get_window_stats"
+    ],
+    "first_text_seconds": 9.53,
+    "grounding": {
+      "unsupported_numbers": [],
+      "unsupported_citations": [],
+      "unsupported_units": [],
+      "forbidden_phrasing": []
+    },
+    "all_citations_exist": true
+  },
+  {
+    "question": "Should Kolo Muani have passed instead of shooting at the end of extra time?",
+    "tools": [
+      "get_events",
+      "shot_alternatives"
+    ],
+    "first_text_seconds": 5.973,
+    "grounding": {
+      "unsupported_numbers": [],
+      "unsupported_citations": [],
+      "unsupported_units": [],
+      "forbidden_phrasing": []
+    },
+    "all_citations_exist": true
+  },
+  {
+    "question": "Who was Argentina's most valuable player, and why?",
+    "tools": [
+      "get_player_rankings"
+    ],
+    "first_text_seconds": 49.125,
+    "grounding": {
+      "unsupported_numbers": [],
+      "unsupported_citations": [],
+      "unsupported_units": [],
+      "forbidden_phrasing": []
     },
     "all_citations_exist": true
   }

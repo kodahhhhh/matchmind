@@ -409,10 +409,7 @@ def test_analyst_profile_numbers_and_citations_are_tool_grounded() -> None:
     text = (
         f"Messi was {result['in_match']['age']} years old. [[ev:{moment['event_id']}]]"
     )
-    assert grounding_errors(text, [result]) == {
-        "unsupported_numbers": [],
-        "unsupported_citations": [],
-    }
+    assert not any(grounding_errors(text, [result]).values())
     assert result["display_numbers"]
 
 

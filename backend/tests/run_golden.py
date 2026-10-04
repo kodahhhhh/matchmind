@@ -9,7 +9,7 @@ from pydantic import TypeAdapter
 
 from matchmind.analyst.agent import ask_chunks
 from matchmind.analyst.grounding import CITATION, grounding_errors
-from matchmind.analyst.tools import citation_registry
+from matchmind.analyst.tools import citation_exists
 from matchmind.api.repository import bundle, catalogue
 from matchmind.api.schemas import AskChunk
 
@@ -18,7 +18,18 @@ QUESTIONS = [
     "Who was actually progressing the ball?",
     "Show me the three most dangerous sequences",
     "What changed after the substitutions?",
+    "Why did Argentina lose control between the 65th and 85th minute?",
+    "What happened around the first goal?",
+    "What if Mbappé's 80th-minute penalty had been missed?",
+    "What if France hadn't made their double substitution before half-time?",
+    "Should Kolo Muani have passed instead of shooting at the end of extra time?",
+    "Who was Argentina's most valuable player, and why?",
 ]
+WHAT_IF_TOOLS = {
+    7: "run_counterfactual",
+    8: "run_counterfactual",
+    9: "shot_alternatives",
+}
 
 
 async def main() -> None:
@@ -37,19 +48,19 @@ async def main() -> None:
             chunks.append(chunk)
         results = [t["result"] for t in audit["tools"]]
         errors = grounding_errors(audit["text"], results)
-        registry = citation_registry(bundle("sb:3869685"))
-        # Cross-match search citations also need to resolve to a loaded real sequence.
+        # Citations must resolve to a real event, marker or sequence, including
+        # cross-match search results and short sequences outside the top list.
         for kind, ref in CITATION.findall(audit["text"]):
-            key = f"{kind}:{ref}"
-            if key not in registry:
-                mid = ":".join(ref.split(":")[:2])
-                assert mid in catalogue()
-                assert key in citation_registry(bundle(mid))
+            mid = ":".join(ref.split(":")[:2])
+            assert mid in catalogue()
+            assert citation_exists(kind, ref, bundle(mid)), (kind, ref)
         assert chunks[-1] == {"type": "done"}
         assert audit["tools"], audit["text"]
         assert CITATION.findall(audit["text"]), audit["text"]
         assert not any(errors.values()), errors
         assert not audit["rejections"], audit["rejections"]
+        if i in WHAT_IF_TOOLS:
+            assert WHAT_IF_TOOLS[i] in [t["name"] for t in audit["tools"]]
         audit.update(
             {
                 "chunks": chunks,

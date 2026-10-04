@@ -1,0 +1,1769 @@
+{
+  "match_id": "sb:3869685",
+  "question": "What if France hadn't made their double substitution before half-time?",
+  "tools": [
+    {
+      "name": "get_events",
+      "args": {
+        "types": [
+          "sub"
+        ],
+        "team": "away",
+        "to_minute": 45,
+        "limit": 10
+      },
+      "result": {
+        "events": [],
+        "markers": [
+          {
+            "period": 1,
+            "minute": 40,
+            "second": 32,
+            "t": 2432.0,
+            "team": "away",
+            "type": "sub",
+            "event_id": "sb:3869685:1378",
+            "player_id": 22097,
+            "player_off_id": 5477,
+            "detail": "Tactical"
+          },
+          {
+            "period": 1,
+            "minute": 41,
+            "second": 1,
+            "t": 2461.0,
+            "team": "away",
+            "type": "sub",
+            "event_id": "sb:3869685:1379",
+            "player_id": 2972,
+            "player_off_id": 3604,
+            "detail": "Tactical"
+          }
+        ],
+        "n_events": 0,
+        "n_markers": 2,
+        "evidence_labels": {
+          "ev:sb:3869685:1379": "42' Thuram on for Giroud",
+          "ev:sb:3869685:1378": "41' Kolo on for Dembélé"
+        },
+        "match": {
+          "teams": {
+            "home": "Argentina",
+            "away": "France"
+          },
+          "score": {
+            "home": 3,
+            "away": 3,
+            "penalties": {
+              "home": 4,
+              "away": 2
+            }
+          },
+          "season": "2022"
+        },
+        "metric_notes": {
+          "possession": "Pass-share proxy",
+          "xg": "Model xG when populated; sb_xg fallback",
+          "vaep": "Model VAEP when populated; threat-gain proxy fallback"
+        },
+        "display_numbers": [
+          "0",
+          "1",
+          "2",
+          "2432",
+          "2432.0",
+          "2432.00",
+          "2432.000",
+          "2432.0000",
+          "2461",
+          "2461.0",
+          "2461.00",
+          "2461.000",
+          "2461.0000",
+          "3",
+          "32",
+          "4",
+          "40",
+          "41"
+        ]
+      }
+    },
+    {
+      "name": "run_counterfactual",
+      "args": {
+        "event_id": "sb:3869685:1378",
+        "change": "no_sub"
+      },
+      "result": {
+        "match_id": "sb:3869685",
+        "event_id": "sb:3869685:1378",
+        "change": "no_sub",
+        "label": "Modelled hypothetical",
+        "horizon_minutes": 15,
+        "method": "trained_model",
+        "model": {
+          "name": "Game-state quantile model (LightGBM)",
+          "trained_matches": 2924,
+          "coverage_p10_p90": {
+            "xg": 0.8786920067076579,
+            "possession": 0.7978423700391281
+          },
+          "skill_vs_constant": {
+            "xg": 0.0463,
+            "possession": 0.2867
+          }
+        },
+        "anchor": {
+          "period": 1,
+          "minute": 40,
+          "label": "41'"
+        },
+        "actual": {
+          "home": {
+            "xg": 0.0,
+            "possession": 0.4237,
+            "goals": 0
+          },
+          "away": {
+            "xg": 0.0,
+            "possession": 0.5763,
+            "goals": 0
+          }
+        },
+        "modelled": {
+          "home": {
+            "xg": {
+              "p10": 0.01621646324211773,
+              "p50": 0.20056809191391559,
+              "p90": 0.9844620440904618
+            },
+            "possession": {
+              "p10": 0.45160857445872077,
+              "p50": 0.6008152007177928,
+              "p90": 0.7391763142099277
+            }
+          },
+          "away": {
+            "xg": {
+              "p10": 0.0,
+              "p50": 0.06654458965683044,
+              "p90": 0.42685067213373273
+            },
+            "possession": {
+              "p10": 0.2651168824188824,
+              "p50": 0.40683284175231327,
+              "p90": 0.5503021383294784
+            }
+          }
+        },
+        "factual": {
+          "home": {
+            "xg": {
+              "p10": 0.01621646324211773,
+              "p50": 0.20593185834318897,
+              "p90": 0.9395773987092915
+            },
+            "possession": {
+              "p10": 0.4624756035827178,
+              "p50": 0.6012649878910395,
+              "p90": 0.744370331538836
+            }
+          },
+          "away": {
+            "xg": {
+              "p10": 0.0,
+              "p50": 0.07126785324774079,
+              "p90": 0.4648674419497558
+            },
+            "possession": {
+              "p10": 0.2579592853738496,
+              "p50": 0.4084642790625155,
+              "p90": 0.5358684229770575
+            }
+          }
+        },
+        "effect": {
+          "home": {
+            "xg": -0.0054,
+            "possession": -0.0004
+          },
+          "away": {
+            "xg": -0.0047,
+            "possession": -0.0016
+          }
+        },
+        "negligible": true,
+        "lineup_change": {
+          "restored": {
+            "player_id": 5477,
+            "name": "Dembélé",
+            "vaep_per90": 0.3096
+          },
+          "removed": {
+            "player_id": 22097,
+            "name": "Kolo",
+            "vaep_per90": 0.2067
+          }
+        },
+        "series": [
+          {
+            "offset_min": 0,
+            "actual": {
+              "home": 0.0,
+              "away": 0.0
+            },
+            "modelled": null
+          },
+          {
+            "offset_min": 1,
+            "actual": {
+              "home": 0.0,
+              "away": 0.0
+            },
+            "modelled": null
+          },
+          {
+            "offset_min": 2,
+            "actual": {
+              "home": 0.0,
+              "away": 0.0
+            },
+            "modelled": null
+          },
+          {
+            "offset_min": 3,
+            "actual": {
+              "home": 0.0,
+              "away": 0.0
+            },
+            "modelled": null
+          },
+          {
+            "offset_min": 4,
+            "actual": {
+              "home": 0.0,
+              "away": 0.0
+            },
+            "modelled": null
+          },
+          {
+            "offset_min": 5,
+            "actual": {
+              "home": 0.0,
+              "away": 0.0
+            },
+            "modelled": null
+          },
+          {
+            "offset_min": 6,
+            "actual": {
+              "home": 0.0,
+              "away": 0.0
+            },
+            "modelled": null
+          },
+          {
+            "offset_min": 7,
+            "actual": {
+              "home": 0.0,
+              "away": 0.0
+            },
+            "modelled": null
+          },
+          {
+            "offset_min": 8,
+            "actual": {
+              "home": 0.0,
+              "away": 0.0
+            },
+            "modelled": null
+          },
+          {
+            "offset_min": 9,
+            "actual": {
+              "home": 0.0,
+              "away": 0.0
+            },
+            "modelled": null
+          },
+          {
+            "offset_min": 10,
+            "actual": {
+              "home": 0.0,
+              "away": 0.0
+            },
+            "modelled": null
+          },
+          {
+            "offset_min": 11,
+            "actual": {
+              "home": 0.0,
+              "away": 0.0
+            },
+            "modelled": null
+          },
+          {
+            "offset_min": 12,
+            "actual": {
+              "home": 0.0,
+              "away": 0.0
+            },
+            "modelled": null
+          },
+          {
+            "offset_min": 13,
+            "actual": {
+              "home": 0.0,
+              "away": 0.0
+            },
+            "modelled": null
+          },
+          {
+            "offset_min": 14,
+            "actual": {
+              "home": 0.0,
+              "away": 0.0
+            },
+            "modelled": null
+          },
+          {
+            "offset_min": 15,
+            "actual": {
+              "home": 0.0,
+              "away": 0.0
+            },
+            "modelled": null
+          }
+        ],
+        "analog_summary": {
+          "n": 40,
+          "home": {
+            "xg": {
+              "p10": 0.0,
+              "p50": 0.11400064363499868,
+              "p90": 0.9849698209422298
+            }
+          },
+          "away": {
+            "xg": {
+              "p10": 0.0,
+              "p50": 0.060028477797908666,
+              "p90": 0.5300010289832431
+            }
+          }
+        },
+        "analogs": [
+          {
+            "match_id": "sb:7533",
+            "competition": "FIFA World Cup",
+            "season": "2018",
+            "home": "Brazil",
+            "away": "Switzerland",
+            "minute": 45,
+            "score_state": "-1",
+            "similarity": 0.4168533770795527,
+            "next15": {
+              "xg_for": 0.38320918538012205,
+              "xg_against": 0.2926842244018334,
+              "goals_for": 1,
+              "goals_against": 0
+            }
+          },
+          {
+            "match_id": "sb:3869151",
+            "competition": "FIFA World Cup",
+            "season": "2022",
+            "home": "Argentina",
+            "away": "Australia",
+            "minute": 40,
+            "score_state": "-1",
+            "similarity": 0.39279158360924177,
+            "next15": {
+              "xg_for": 0.0,
+              "xg_against": 0.06744568948011995,
+              "goals_for": 0,
+              "goals_against": 0
+            }
+          },
+          {
+            "match_id": "sb:3942785",
+            "competition": "Copa America",
+            "season": "2024",
+            "home": "Argentina",
+            "away": "Canada",
+            "minute": 30,
+            "score_state": "-1",
+            "similarity": 0.3883889383399297,
+            "next15": {
+              "xg_for": 0.0,
+              "xg_against": 0.5696932856796959,
+              "goals_for": 0,
+              "goals_against": 0
+            }
+          },
+          {
+            "match_id": "sb:3857300",
+            "competition": "FIFA World Cup",
+            "season": "2022",
+            "home": "Argentina",
+            "away": "Saudi Arabia",
+            "minute": 35,
+            "score_state": "-1",
+            "similarity": 0.33991370681169764,
+            "next15": {
+              "xg_for": 0.0,
+              "xg_against": 0.17773176964554357,
+              "goals_for": 0,
+              "goals_against": 0
+            }
+          },
+          {
+            "match_id": "sb:3869253",
+            "competition": "FIFA World Cup",
+            "season": "2022",
+            "home": "Brazil",
+            "away": "South Korea",
+            "minute": 45,
+            "score_state": "-4",
+            "similarity": 0.33270606024806487,
+            "next15": {
+              "xg_for": 0.18407206819104535,
+              "xg_against": 1.0876331718583483,
+              "goals_for": 0,
+              "goals_against": 0
+            }
+          }
+        ],
+        "n_analogs": 40,
+        "caveat": "Learned from observational data: teams change their approach because of the score, so effects are confounded. Shown as a range next to real comparable situations, not a prediction.",
+        "evidence_labels": {
+          "ev:sb:3869685:1378": "41' Kolo on for Dembélé"
+        },
+        "match": {
+          "teams": {
+            "home": "Argentina",
+            "away": "France"
+          },
+          "score": {
+            "home": 3,
+            "away": 3,
+            "penalties": {
+              "home": 4,
+              "away": 2
+            }
+          },
+          "season": "2022"
+        },
+        "metric_notes": {
+          "possession": "Pass-share proxy",
+          "xg": "Model xG when populated; sb_xg fallback",
+          "vaep": "Model VAEP when populated; threat-gain proxy fallback"
+        },
+        "display_numbers": [
+          "-0",
+          "-0.0",
+          "-0.00",
+          "-0.000",
+          "-0.0004",
+          "-0.0016",
+          "-0.002",
+          "-0.0047",
+          "-0.005",
+          "-0.0054",
+          "-0.01",
+          "0",
+          "0%",
+          "0.0",
+          "0.0%",
+          "0.00",
+          "0.000",
+          "0.0000",
+          "0.016",
+          "0.0162",
+          "0.01621646324211773",
+          "0.02",
+          "0.046",
+          "0.0463",
+          "0.05",
+          "0.06",
+          "0.060",
+          "0.0600",
+          "0.060028477797908666",
+          "0.0665",
+          "0.06654458965683044",
+          "0.067",
+          "0.0674",
+          "0.06744568948011995",
+          "0.07",
+          "0.071",
+          "0.07126785324774079",
+          "0.0713",
+          "0.1",
+          "0.11",
+          "0.114",
+          "0.1140",
+          "0.11400064363499868",
+          "0.1777",
+          "0.17773176964554357",
+          "0.178",
+          "0.18",
+          "0.184",
+          "0.18407206819104535",
+          "0.1841",
+          "0.2",
+          "0.20",
+          "0.20056809191391559",
+          "0.2006",
+          "0.201",
+          "0.2059",
+          "0.20593185834318897",
+          "0.206",
+          "0.2067",
+          "0.207",
+          "0.21",
+          "0.2579592853738496",
+          "0.258",
+          "0.2580",
+          "0.26",
+          "0.265",
+          "0.2651",
+          "0.2651168824188824",
+          "0.27",
+          "0.2867",
+          "0.287",
+          "0.29",
+          "0.2926842244018334",
+          "0.2927",
+          "0.293",
+          "0.3",
+          "0.3096",
+          "0.31",
+          "0.310",
+          "0.33",
+          "0.3327",
+          "0.33270606024806487",
+          "0.333",
+          "0.3399",
+          "0.33991370681169764",
+          "0.34",
+          "0.340",
+          "0.38",
+          "0.383",
+          "0.3832",
+          "0.38320918538012205",
+          "0.388",
+          "0.3883889383399297",
+          "0.3884",
+          "0.39",
+          "0.39279158360924177",
+          "0.3928",
+          "0.393",
+          "0.4",
+          "0.4068",
+          "0.40683284175231327",
+          "0.407",
+          "0.408",
+          "0.4084642790625155",
+          "0.4085",
+          "0.41",
+          "0.4168533770795527",
+          "0.4169",
+          "0.417",
+          "0.42",
+          "0.4237",
+          "0.424",
+          "0.42685067213373273",
+          "0.4269",
+          "0.427",
+          "0.43",
+          "0.45",
+          "0.4516",
+          "0.45160857445872077",
+          "0.452",
+          "0.46",
+          "0.462",
+          "0.4624756035827178",
+          "0.4625",
+          "0.4648674419497558",
+          "0.4649",
+          "0.465",
+          "0.5",
+          "0.53",
+          "0.530",
+          "0.5300",
+          "0.5300010289832431",
+          "0.5358684229770575",
+          "0.5359",
+          "0.536",
+          "0.54",
+          "0.55",
+          "0.550",
+          "0.5503",
+          "0.5503021383294784",
+          "0.5696932856796959",
+          "0.5697",
+          "0.57",
+          "0.570",
+          "0.576",
+          "0.5763",
+          "0.58",
+          "0.6",
+          "0.60",
+          "0.6008",
+          "0.6008152007177928",
+          "0.601",
+          "0.6012649878910395",
+          "0.6013",
+          "0.7",
+          "0.739",
+          "0.7391763142099277",
+          "0.7392",
+          "0.74",
+          "0.744",
+          "0.744370331538836",
+          "0.7444",
+          "0.7978",
+          "0.7978423700391281",
+          "0.798",
+          "0.8",
+          "0.80",
+          "0.8786920067076579",
+          "0.8787",
+          "0.879",
+          "0.88",
+          "0.9",
+          "0.9395773987092915",
+          "0.9396",
+          "0.94",
+          "0.940",
+          "0.98",
+          "0.984",
+          "0.9844620440904618",
+          "0.9845",
+          "0.9849698209422298",
+          "0.985",
+          "0.9850",
+          "1",
+          "1.0",
+          "1.0876",
+          "1.0876331718583483",
+          "1.088",
+          "1.09",
+          "1.1",
+          "1.6%",
+          "10",
+          "11",
+          "11%",
+          "11.4%",
+          "12",
+          "13",
+          "14",
+          "15",
+          "17.8%",
+          "18%",
+          "18.4%",
+          "2",
+          "2%",
+          "20%",
+          "20.1%",
+          "20.6%",
+          "20.7%",
+          "21%",
+          "25.8%",
+          "26%",
+          "26.5%",
+          "27%",
+          "28.7%",
+          "29%",
+          "29.3%",
+          "2924",
+          "3",
+          "30",
+          "31%",
+          "31.0%",
+          "33%",
+          "33.3%",
+          "34%",
+          "34.0%",
+          "35",
+          "38%",
+          "38.3%",
+          "38.8%",
+          "39%",
+          "39.3%",
+          "4",
+          "4.6%",
+          "40",
+          "40.7%",
+          "40.8%",
+          "41%",
+          "41.7%",
+          "42%",
+          "42.4%",
+          "42.7%",
+          "43%",
+          "45",
+          "45%",
+          "45.2%",
+          "46%",
+          "46.2%",
+          "46.5%",
+          "5",
+          "5%",
+          "53%",
+          "53.0%",
+          "53.6%",
+          "54%",
+          "55%",
+          "55.0%",
+          "57%",
+          "57.0%",
+          "57.6%",
+          "58%",
+          "6",
+          "6%",
+          "6.0%",
+          "6.7%",
+          "60%",
+          "60.1%",
+          "7",
+          "7%",
+          "7.1%",
+          "73.9%",
+          "74%",
+          "74.4%",
+          "79.8%",
+          "8",
+          "80%",
+          "87.9%",
+          "88%",
+          "9",
+          "94%",
+          "94.0%",
+          "98%",
+          "98.4%",
+          "98.5%"
+        ]
+      }
+    },
+    {
+      "name": "run_counterfactual",
+      "args": {
+        "event_id": "sb:3869685:1379",
+        "change": "no_sub"
+      },
+      "result": {
+        "match_id": "sb:3869685",
+        "event_id": "sb:3869685:1379",
+        "change": "no_sub",
+        "label": "Modelled hypothetical",
+        "horizon_minutes": 15,
+        "method": "trained_model",
+        "model": {
+          "name": "Game-state quantile model (LightGBM)",
+          "trained_matches": 2924,
+          "coverage_p10_p90": {
+            "xg": 0.8786920067076579,
+            "possession": 0.7978423700391281
+          },
+          "skill_vs_constant": {
+            "xg": 0.0463,
+            "possession": 0.2867
+          }
+        },
+        "anchor": {
+          "period": 1,
+          "minute": 41,
+          "label": "42'"
+        },
+        "actual": {
+          "home": {
+            "xg": 0.0,
+            "possession": 0.4215,
+            "goals": 0
+          },
+          "away": {
+            "xg": 0.0,
+            "possession": 0.5785,
+            "goals": 0
+          }
+        },
+        "modelled": {
+          "home": {
+            "xg": {
+              "p10": 0.01621646324211773,
+              "p50": 0.21307834440284631,
+              "p90": 0.9394344689880983
+            },
+            "possession": {
+              "p10": 0.4624756035827178,
+              "p50": 0.6012649878910395,
+              "p90": 0.744370331538836
+            }
+          },
+          "away": {
+            "xg": {
+              "p10": 0.0,
+              "p50": 0.07126785324774079,
+              "p90": 0.40581384344292337
+            },
+            "possession": {
+              "p10": 0.2579592853738496,
+              "p50": 0.4084642790625155,
+              "p90": 0.5358684229770575
+            }
+          }
+        },
+        "factual": {
+          "home": {
+            "xg": {
+              "p10": 0.01621646324211773,
+              "p50": 0.1939835481163623,
+              "p90": 0.9471684338907033
+            },
+            "possession": {
+              "p10": 0.45785284349073774,
+              "p50": 0.6007071126133944,
+              "p90": 0.7415092472909841
+            }
+          },
+          "away": {
+            "xg": {
+              "p10": 0.0,
+              "p50": 0.07126785324774079,
+              "p90": 0.5132845629250853
+            },
+            "possession": {
+              "p10": 0.2602921680912752,
+              "p50": 0.40717394716435906,
+              "p90": 0.5416058985312407
+            }
+          }
+        },
+        "effect": {
+          "home": {
+            "xg": 0.0191,
+            "possession": 0.0006
+          },
+          "away": {
+            "xg": 0.0,
+            "possession": 0.0013
+          }
+        },
+        "negligible": true,
+        "lineup_change": {
+          "restored": {
+            "player_id": 3604,
+            "name": "Giroud",
+            "vaep_per90": -0.0199
+          },
+          "removed": {
+            "player_id": 2972,
+            "name": "Thuram",
+            "vaep_per90": 0.0345
+          }
+        },
+        "series": [
+          {
+            "offset_min": 0,
+            "actual": {
+              "home": 0.0,
+              "away": 0.0
+            },
+            "modelled": null
+          },
+          {
+            "offset_min": 1,
+            "actual": {
+              "home": 0.0,
+              "away": 0.0
+            },
+            "modelled": null
+          },
+          {
+            "offset_min": 2,
+            "actual": {
+              "home": 0.0,
+              "away": 0.0
+            },
+            "modelled": null
+          },
+          {
+            "offset_min": 3,
+            "actual": {
+              "home": 0.0,
+              "away": 0.0
+            },
+            "modelled": null
+          },
+          {
+            "offset_min": 4,
+            "actual": {
+              "home": 0.0,
+              "away": 0.0
+            },
+            "modelled": null
+          },
+          {
+            "offset_min": 5,
+            "actual": {
+              "home": 0.0,
+              "away": 0.0
+            },
+            "modelled": null
+          },
+          {
+            "offset_min": 6,
+            "actual": {
+              "home": 0.0,
+              "away": 0.0
+            },
+            "modelled": null
+          },
+          {
+            "offset_min": 7,
+            "actual": {
+              "home": 0.0,
+              "away": 0.0
+            },
+            "modelled": null
+          },
+          {
+            "offset_min": 8,
+            "actual": {
+              "home": 0.0,
+              "away": 0.0
+            },
+            "modelled": null
+          },
+          {
+            "offset_min": 9,
+            "actual": {
+              "home": 0.0,
+              "away": 0.0
+            },
+            "modelled": null
+          },
+          {
+            "offset_min": 10,
+            "actual": {
+              "home": 0.0,
+              "away": 0.0
+            },
+            "modelled": null
+          },
+          {
+            "offset_min": 11,
+            "actual": {
+              "home": 0.0,
+              "away": 0.0
+            },
+            "modelled": null
+          },
+          {
+            "offset_min": 12,
+            "actual": {
+              "home": 0.0,
+              "away": 0.0
+            },
+            "modelled": null
+          },
+          {
+            "offset_min": 13,
+            "actual": {
+              "home": 0.0,
+              "away": 0.0
+            },
+            "modelled": null
+          },
+          {
+            "offset_min": 14,
+            "actual": {
+              "home": 0.0,
+              "away": 0.0
+            },
+            "modelled": null
+          },
+          {
+            "offset_min": 15,
+            "actual": {
+              "home": 0.0,
+              "away": 0.0
+            },
+            "modelled": null
+          }
+        ],
+        "analog_summary": {
+          "n": 40,
+          "home": {
+            "xg": {
+              "p10": 0.0,
+              "p50": 0.09675582066933866,
+              "p90": 0.8401345434818928
+            }
+          },
+          "away": {
+            "xg": {
+              "p10": 0.0,
+              "p50": 0.04677492147757138,
+              "p90": 0.4826473010690432
+            }
+          }
+        },
+        "analogs": [
+          {
+            "match_id": "sb:3942785",
+            "competition": "Copa America",
+            "season": "2024",
+            "home": "Argentina",
+            "away": "Canada",
+            "minute": 30,
+            "score_state": "-1",
+            "similarity": 0.3233495389631135,
+            "next15": {
+              "xg_for": 0.0,
+              "xg_against": 0.5696932856796959,
+              "goals_for": 0,
+              "goals_against": 0
+            }
+          },
+          {
+            "match_id": "sb:3857289",
+            "competition": "FIFA World Cup",
+            "season": "2022",
+            "home": "Argentina",
+            "away": "Mexico",
+            "minute": 45,
+            "score_state": "+0",
+            "similarity": 0.3036778453151818,
+            "next15": {
+              "xg_for": 0.04181653459762853,
+              "xg_against": 0.08967732880130985,
+              "goals_for": 0,
+              "goals_against": 0
+            }
+          },
+          {
+            "match_id": "sb:3857300",
+            "competition": "FIFA World Cup",
+            "season": "2022",
+            "home": "Argentina",
+            "away": "Saudi Arabia",
+            "minute": 15,
+            "score_state": "-1",
+            "similarity": 0.30332801889993555,
+            "next15": {
+              "xg_for": 0.0,
+              "xg_against": 0.02005908842708204,
+              "goals_for": 0,
+              "goals_against": 0
+            }
+          },
+          {
+            "match_id": "sb:3869253",
+            "competition": "FIFA World Cup",
+            "season": "2022",
+            "home": "Brazil",
+            "away": "South Korea",
+            "minute": 25,
+            "score_state": "-2",
+            "similarity": 0.2902374691435236,
+            "next15": {
+              "xg_for": 0.05344520829240488,
+              "xg_against": 0.6087674426875022,
+              "goals_for": 0,
+              "goals_against": 2
+            }
+          },
+          {
+            "match_id": "sb:3857300",
+            "competition": "FIFA World Cup",
+            "season": "2022",
+            "home": "Argentina",
+            "away": "Saudi Arabia",
+            "minute": 25,
+            "score_state": "-1",
+            "similarity": 0.29022334783001397,
+            "next15": {
+              "xg_for": 0.0,
+              "xg_against": 0.0,
+              "goals_for": 0,
+              "goals_against": 0
+            }
+          }
+        ],
+        "n_analogs": 40,
+        "caveat": "Learned from observational data: teams change their approach because of the score, so effects are confounded. Shown as a range next to real comparable situations, not a prediction.",
+        "evidence_labels": {
+          "ev:sb:3869685:1379": "42' Thuram on for Giroud"
+        },
+        "match": {
+          "teams": {
+            "home": "Argentina",
+            "away": "France"
+          },
+          "score": {
+            "home": 3,
+            "away": 3,
+            "penalties": {
+              "home": 4,
+              "away": 2
+            }
+          },
+          "season": "2022"
+        },
+        "metric_notes": {
+          "possession": "Pass-share proxy",
+          "xg": "Model xG when populated; sb_xg fallback",
+          "vaep": "Model VAEP when populated; threat-gain proxy fallback"
+        },
+        "display_numbers": [
+          "-0",
+          "-0.0",
+          "-0.0199",
+          "-0.02",
+          "-0.020",
+          "0",
+          "0%",
+          "0.0",
+          "0.0%",
+          "0.00",
+          "0.000",
+          "0.0000",
+          "0.0006",
+          "0.001",
+          "0.0013",
+          "0.016",
+          "0.0162",
+          "0.01621646324211773",
+          "0.019",
+          "0.0191",
+          "0.02",
+          "0.020",
+          "0.02005908842708204",
+          "0.0201",
+          "0.03",
+          "0.0345",
+          "0.035",
+          "0.04",
+          "0.0418",
+          "0.04181653459762853",
+          "0.042",
+          "0.046",
+          "0.0463",
+          "0.04677492147757138",
+          "0.0468",
+          "0.047",
+          "0.05",
+          "0.053",
+          "0.0534",
+          "0.05344520829240488",
+          "0.07",
+          "0.071",
+          "0.07126785324774079",
+          "0.0713",
+          "0.08967732880130985",
+          "0.0897",
+          "0.09",
+          "0.090",
+          "0.09675582066933866",
+          "0.0968",
+          "0.097",
+          "0.1",
+          "0.1%",
+          "0.10",
+          "0.19",
+          "0.1939835481163623",
+          "0.194",
+          "0.1940",
+          "0.2",
+          "0.21",
+          "0.213",
+          "0.21307834440284631",
+          "0.2131",
+          "0.2579592853738496",
+          "0.258",
+          "0.2580",
+          "0.26",
+          "0.260",
+          "0.2602921680912752",
+          "0.2603",
+          "0.2867",
+          "0.287",
+          "0.29",
+          "0.290",
+          "0.2902",
+          "0.29022334783001397",
+          "0.2902374691435236",
+          "0.3",
+          "0.30",
+          "0.303",
+          "0.3033",
+          "0.30332801889993555",
+          "0.3036778453151818",
+          "0.3037",
+          "0.304",
+          "0.32",
+          "0.323",
+          "0.3233",
+          "0.3233495389631135",
+          "0.4",
+          "0.4058",
+          "0.40581384344292337",
+          "0.406",
+          "0.407",
+          "0.40717394716435906",
+          "0.4072",
+          "0.408",
+          "0.4084642790625155",
+          "0.4085",
+          "0.41",
+          "0.42",
+          "0.421",
+          "0.4215",
+          "0.45785284349073774",
+          "0.4579",
+          "0.458",
+          "0.46",
+          "0.462",
+          "0.4624756035827178",
+          "0.4625",
+          "0.48",
+          "0.4826",
+          "0.4826473010690432",
+          "0.483",
+          "0.5",
+          "0.51",
+          "0.513",
+          "0.5132845629250853",
+          "0.5133",
+          "0.5358684229770575",
+          "0.5359",
+          "0.536",
+          "0.54",
+          "0.5416",
+          "0.5416058985312407",
+          "0.542",
+          "0.5696932856796959",
+          "0.5697",
+          "0.57",
+          "0.570",
+          "0.5785",
+          "0.579",
+          "0.58",
+          "0.6",
+          "0.60",
+          "0.6007",
+          "0.6007071126133944",
+          "0.601",
+          "0.6012649878910395",
+          "0.6013",
+          "0.6087674426875022",
+          "0.6088",
+          "0.609",
+          "0.61",
+          "0.7",
+          "0.74",
+          "0.7415",
+          "0.7415092472909841",
+          "0.742",
+          "0.744",
+          "0.744370331538836",
+          "0.7444",
+          "0.7978",
+          "0.7978423700391281",
+          "0.798",
+          "0.8",
+          "0.80",
+          "0.84",
+          "0.840",
+          "0.8401",
+          "0.8401345434818928",
+          "0.8786920067076579",
+          "0.8787",
+          "0.879",
+          "0.88",
+          "0.9",
+          "0.939",
+          "0.9394",
+          "0.9394344689880983",
+          "0.94",
+          "0.947",
+          "0.9471684338907033",
+          "0.9472",
+          "0.95",
+          "1",
+          "1.6%",
+          "1.9%",
+          "10",
+          "10%",
+          "11",
+          "12",
+          "13",
+          "14",
+          "15",
+          "19%",
+          "19.4%",
+          "2",
+          "2%",
+          "2.0%",
+          "21%",
+          "21.3%",
+          "25",
+          "25.8%",
+          "26%",
+          "26.0%",
+          "28.7%",
+          "29%",
+          "29.0%",
+          "2924",
+          "3",
+          "3%",
+          "3.5%",
+          "30",
+          "30%",
+          "30.3%",
+          "30.4%",
+          "32%",
+          "32.3%",
+          "4",
+          "4%",
+          "4.2%",
+          "4.6%",
+          "4.7%",
+          "40",
+          "40.6%",
+          "40.7%",
+          "40.8%",
+          "41",
+          "41%",
+          "42%",
+          "42.1%",
+          "45",
+          "45.8%",
+          "46%",
+          "46.2%",
+          "48%",
+          "48.3%",
+          "5",
+          "5%",
+          "5.3%",
+          "51%",
+          "51.3%",
+          "53.6%",
+          "54%",
+          "54.2%",
+          "57%",
+          "57.0%",
+          "57.9%",
+          "58%",
+          "6",
+          "60%",
+          "60.1%",
+          "60.9%",
+          "61%",
+          "7",
+          "7%",
+          "7.1%",
+          "74%",
+          "74.2%",
+          "74.4%",
+          "79.8%",
+          "8",
+          "80%",
+          "84%",
+          "84.0%",
+          "87.9%",
+          "88%",
+          "9",
+          "9%",
+          "9.0%",
+          "9.7%",
+          "93.9%",
+          "94%",
+          "94.7%",
+          "95%"
+        ]
+      }
+    },
+    {
+      "name": "get_window_stats",
+      "args": {
+        "from_minute": 25,
+        "to_minute": 40,
+        "period": 1
+      },
+      "result": {
+        "from_minute": 25,
+        "to_minute": 40,
+        "period": 1,
+        "stats": {
+          "home": {
+            "possession": 0.7,
+            "field_tilt": 0.572,
+            "xg": 0.339,
+            "shots": 2
+          },
+          "away": {
+            "possession": 0.3,
+            "field_tilt": 0.428,
+            "xg": 0.0,
+            "shots": 0
+          },
+          "momentum": 0.0709
+        },
+        "event_ids": [
+          "sb:3869685:1178",
+          "sb:3869685:979",
+          "sb:3869685:821",
+          "sb:3869685:823"
+        ],
+        "evidence_labels": {
+          "ev:sb:3869685:821": "26' Varane throw in",
+          "ev:sb:3869685:823": "26' Upamecano carry",
+          "ev:sb:3869685:979": "32' MacAllister shot",
+          "ev:sb:3869685:1178": "36' Di María goal"
+        },
+        "match": {
+          "teams": {
+            "home": "Argentina",
+            "away": "France"
+          },
+          "score": {
+            "home": 3,
+            "away": 3,
+            "penalties": {
+              "home": 4,
+              "away": 2
+            }
+          },
+          "season": "2022"
+        },
+        "metric_notes": {
+          "possession": "Pass-share proxy",
+          "xg": "Model xG when populated; sb_xg fallback",
+          "vaep": "Model VAEP when populated; threat-gain proxy fallback"
+        },
+        "display_numbers": [
+          "0",
+          "0%",
+          "0.0",
+          "0.0%",
+          "0.00",
+          "0.000",
+          "0.0000",
+          "0.07",
+          "0.0709",
+          "0.071",
+          "0.1",
+          "0.3",
+          "0.30",
+          "0.300",
+          "0.3000",
+          "0.339",
+          "0.3390",
+          "0.34",
+          "0.4",
+          "0.428",
+          "0.4280",
+          "0.43",
+          "0.57",
+          "0.572",
+          "0.5720",
+          "0.6",
+          "0.7",
+          "0.70",
+          "0.700",
+          "0.7000",
+          "1",
+          "2",
+          "25",
+          "3",
+          "30%",
+          "30.0%",
+          "33.9%",
+          "34%",
+          "4",
+          "40",
+          "42.8%",
+          "43%",
+          "57%",
+          "57.2%",
+          "7%",
+          "7.1%",
+          "70%",
+          "70.0%"
+        ]
+      }
+    },
+    {
+      "name": "get_window_stats",
+      "args": {
+        "from_minute": 42,
+        "to_minute": 57
+      },
+      "result": {
+        "from_minute": 42,
+        "to_minute": 57,
+        "period": null,
+        "stats": {
+          "home": {
+            "possession": 0.461,
+            "field_tilt": 0.528,
+            "xg": 0.05,
+            "shots": 1
+          },
+          "away": {
+            "possession": 0.539,
+            "field_tilt": 0.472,
+            "xg": 0.0,
+            "shots": 0
+          },
+          "momentum": 0.004
+        },
+        "event_ids": [
+          "sb:3869685:1916",
+          "sb:3869685:1398",
+          "sb:3869685:1400",
+          "sb:3869685:1401"
+        ],
+        "evidence_labels": {
+          "ev:sb:3869685:1401": "43' Otamendi pass",
+          "ev:sb:3869685:1916": "49' De Paul shot",
+          "ev:sb:3869685:1398": "43' Di María freekick",
+          "ev:sb:3869685:1400": "43' Otamendi carry"
+        },
+        "match": {
+          "teams": {
+            "home": "Argentina",
+            "away": "France"
+          },
+          "score": {
+            "home": 3,
+            "away": 3,
+            "penalties": {
+              "home": 4,
+              "away": 2
+            }
+          },
+          "season": "2022"
+        },
+        "metric_notes": {
+          "possession": "Pass-share proxy",
+          "xg": "Model xG when populated; sb_xg fallback",
+          "vaep": "Model VAEP when populated; threat-gain proxy fallback"
+        },
+        "display_numbers": [
+          "0",
+          "0%",
+          "0.0",
+          "0.0%",
+          "0.00",
+          "0.000",
+          "0.0000",
+          "0.004",
+          "0.0040",
+          "0.05",
+          "0.050",
+          "0.0500",
+          "0.1",
+          "0.4%",
+          "0.46",
+          "0.461",
+          "0.4610",
+          "0.47",
+          "0.472",
+          "0.4720",
+          "0.5",
+          "0.528",
+          "0.5280",
+          "0.53",
+          "0.539",
+          "0.5390",
+          "0.54",
+          "1",
+          "2",
+          "3",
+          "4",
+          "42",
+          "46%",
+          "46.1%",
+          "47%",
+          "47.2%",
+          "5%",
+          "5.0%",
+          "52.8%",
+          "53%",
+          "53.9%",
+          "54%",
+          "57"
+        ]
+      }
+    }
+  ],
+  "text": "**The model sees little immediate difference if France kept their original attackers.** Restoring Dembélé instead of Kolo Muani changes France’s estimated xG by -0.0047 over the next 15 minutes; restoring Giroud instead of Thuram changes it by 0.0. Both effects are flagged negligible. These are separate substitution tests—not a joint simulation of cancelling the double change. [[ev:sb:3869685:1378]] [[ev:sb:3869685:1379]]\n\nIn reality, France’s pass share rose from 30% in the pre-change window to 53.9% afterward, but they still produced 0 shots and 0.0 xG; Argentina’s xG fell from 0.339 to 0.05. That suggests improved control rather than an immediate attacking breakthrough. The observational model cannot establish that keeping Giroud and Dembélé on changes the eventual result. [[ev:sb:3869685:1178]] [[ev:sb:3869685:1916]]",
+  "rejections": [],
+  "chunks": [
+    {
+      "type": "tool",
+      "name": "get_events",
+      "args": {
+        "types": [
+          "sub"
+        ],
+        "team": "away",
+        "to_minute": 45,
+        "limit": 10
+      }
+    },
+    {
+      "type": "tool",
+      "name": "run_counterfactual",
+      "args": {
+        "event_id": "sb:3869685:1378",
+        "change": "no_sub"
+      }
+    },
+    {
+      "type": "tool",
+      "name": "run_counterfactual",
+      "args": {
+        "event_id": "sb:3869685:1379",
+        "change": "no_sub"
+      }
+    },
+    {
+      "type": "tool",
+      "name": "get_window_stats",
+      "args": {
+        "from_minute": 25,
+        "to_minute": 40,
+        "period": 1
+      }
+    },
+    {
+      "type": "tool",
+      "name": "get_window_stats",
+      "args": {
+        "from_minute": 42,
+        "to_minute": 57
+      }
+    },
+    {
+      "type": "text",
+      "delta": "**The model sees little immediate difference if "
+    },
+    {
+      "type": "text",
+      "delta": "France kept their original attackers.** Restorin"
+    },
+    {
+      "type": "text",
+      "delta": "g Dembélé instead of Kolo Muani changes France’s"
+    },
+    {
+      "type": "text",
+      "delta": " estimated xG by -0.0047 over the next 15 minute"
+    },
+    {
+      "type": "text",
+      "delta": "s; restoring Giroud instead of Thuram changes it"
+    },
+    {
+      "type": "text",
+      "delta": " by 0.0. "
+    },
+    {
+      "type": "text",
+      "delta": "Both effects are flagged negligible. "
+    },
+    {
+      "type": "text",
+      "delta": "These are separate substitution tests—not a join"
+    },
+    {
+      "type": "text",
+      "delta": "t simulation of cancelling the double change. "
+    },
+    {
+      "type": "text",
+      "delta": "[[ev:sb:3869685:1378]] [[ev:sb:3869685:1379]]\n"
+    },
+    {
+      "type": "text",
+      "delta": "\n"
+    },
+    {
+      "type": "text",
+      "delta": "In reality, France’s pass share rose from 30% in"
+    },
+    {
+      "type": "text",
+      "delta": " the pre-change window to 53.9% afterward, but t"
+    },
+    {
+      "type": "text",
+      "delta": "hey still produced 0 shots and 0.0 xG; Argentina"
+    },
+    {
+      "type": "text",
+      "delta": "’s xG fell from 0.339 to 0.05. "
+    },
+    {
+      "type": "text",
+      "delta": "That suggests improved control rather than an im"
+    },
+    {
+      "type": "text",
+      "delta": "mediate attacking breakthrough. "
+    },
+    {
+      "type": "text",
+      "delta": "The observational model cannot establish that ke"
+    },
+    {
+      "type": "text",
+      "delta": "eping Giroud and Dembélé on changes the eventual"
+    },
+    {
+      "type": "text",
+      "delta": " result. "
+    },
+    {
+      "type": "text",
+      "delta": "[[ev:sb:3869685:1178]] [[ev:sb:3869685:1916]]"
+    },
+    {
+      "type": "citation",
+      "ref": "ev:sb:3869685:1378",
+      "label": "41' Kolo on for Dembélé"
+    },
+    {
+      "type": "citation",
+      "ref": "ev:sb:3869685:1379",
+      "label": "42' Thuram on for Giroud"
+    },
+    {
+      "type": "citation",
+      "ref": "ev:sb:3869685:1178",
+      "label": "36' Di María goal"
+    },
+    {
+      "type": "citation",
+      "ref": "ev:sb:3869685:1916",
+      "label": "49' De Paul shot"
+    },
+    {
+      "type": "done"
+    }
+  ],
+  "first_text_seconds": 9.53,
+  "total_seconds": 10.47,
+  "grounding": {
+    "unsupported_numbers": [],
+    "unsupported_citations": [],
+    "unsupported_units": [],
+    "forbidden_phrasing": []
+  },
+  "all_citations_exist": true
+}

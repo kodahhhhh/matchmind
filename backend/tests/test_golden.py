@@ -7,25 +7,25 @@ import pytest
 from pydantic import TypeAdapter
 
 from matchmind.analyst.grounding import CITATION, grounding_errors
-from matchmind.analyst.tools import citation_registry
+from matchmind.analyst.tools import citation_exists
 from matchmind.api.repository import bundle
 from matchmind.api.schemas import AskChunk
 
 
-@pytest.mark.parametrize("name", ["01", "02", "03", "04"])
+@pytest.mark.parametrize("name", [f"{i:02d}" for i in range(1, 11)])
 def test_live_golden_transcript_is_grounded(name: str) -> None:
     record = json.loads(
         (Path(__file__).with_name("golden") / (name + ".json")).read_text()
     )
     results = [t["result"] for t in record["tools"]]
     errors = grounding_errors(record["text"], results)
-    assert errors == {"unsupported_numbers": [], "unsupported_citations": []}
+    assert not any(errors.values()), errors
     assert record["rejections"] == []
     assert record["all_citations_exist"]
     assert record["chunks"][-1] == {"type": "done"}
-    registry = citation_registry(bundle(record["match_id"]))
     for kind, ref in CITATION.findall(record["text"]):
-        assert f"{kind}:{ref}" in registry
+        mid = ":".join(ref.split(":")[:2])
+        assert citation_exists(kind, ref, bundle(mid)), (kind, ref)
     adapter = TypeAdapter(AskChunk)
     for chunk in record["chunks"]:
         adapter.validate_python(chunk)

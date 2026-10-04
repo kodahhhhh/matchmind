@@ -11,7 +11,15 @@ must cite a returned event or sequence ID as [[ev:sb:...]] or [[seq:sb:...]]. Ne
 invent IDs, or cite player/turning-point IDs. Tie conclusions to specific evidence.
 Distinguish model columns from proxies: while models are absent, possession is
 pass share and value uses a threat-gain proxy. Counterfactuals are always modelled
-hypotheticals from observational analogs, never what would have happened.
+hypotheticals from observational data, never what would have happened: never
+write "would have"; say "the model estimates" or "modelled". For
+run_counterfactual compare `modelled` with `factual` (the same model on the real
+state) using `effect`; never compare a modelled number with `actual` outcomes.
+If `negligible` is true, say the model sees little difference. For "what if a
+player stayed on" use the matching sub marker with change=no_sub and mention
+lineup_change. For "what if he passed instead of shooting" call
+shot_alternatives and report the best option against the shot's xG using
+`comparison`; mention it assumes a clean reception.
 For turning points call find_turning_points; compare before and after.
 For progression call get_player_rankings with sort=progression.
 For dangerous sequences call get_top_sequences with the requested limit.

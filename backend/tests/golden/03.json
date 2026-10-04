@@ -10,6 +10,106 @@
       "result": {
         "sequences": [
           {
+            "id": "sb:3869685:s165",
+            "team": "away",
+            "start": {
+              "t": 5268.0,
+              "period": 2,
+              "minute": 80,
+              "second": 13,
+              "label": "81'"
+            },
+            "end": {
+              "t": 5314.0,
+              "period": 2,
+              "minute": 80,
+              "second": 59
+            },
+            "duration": 46.0,
+            "n_events": 25,
+            "event_ids": [
+              "sb:3869685:2949",
+              "sb:3869685:2951",
+              "sb:3869685:2953",
+              "sb:3869685:2954",
+              "sb:3869685:2956",
+              "sb:3869685:2958",
+              "sb:3869685:2960",
+              "sb:3869685:2961",
+              "sb:3869685:2963",
+              "sb:3869685:2964",
+              "sb:3869685:2965",
+              "sb:3869685:2967",
+              "sb:3869685:2970",
+              "sb:3869685:2971",
+              "sb:3869685:2973",
+              "sb:3869685:2974",
+              "sb:3869685:2975",
+              "sb:3869685:2976",
+              "sb:3869685:2978",
+              "sb:3869685:2979",
+              "sb:3869685:2982",
+              "sb:3869685:2984",
+              "sb:3869685:2985",
+              "sb:3869685:2987",
+              "sb:3869685:2988"
+            ],
+            "danger": 1.0231,
+            "xg": 0.056,
+            "outcome": "goal",
+            "players": [
+              "Koundé",
+              "Upamecano",
+              "Camavinga",
+              "Thuram",
+              "Camavinga",
+              "Upamecano",
+              "Camavinga",
+              "Coman"
+            ]
+          },
+          {
+            "id": "sb:3869685:s52",
+            "team": "home",
+            "start": {
+              "t": 2112.0,
+              "period": 1,
+              "minute": 35,
+              "second": 12,
+              "label": "36'"
+            },
+            "end": {
+              "t": 2123.0,
+              "period": 1,
+              "minute": 35,
+              "second": 23
+            },
+            "duration": 11.0,
+            "n_events": 9,
+            "event_ids": [
+              "sb:3869685:1166",
+              "sb:3869685:1168",
+              "sb:3869685:1170",
+              "sb:3869685:1171",
+              "sb:3869685:1173",
+              "sb:3869685:1174",
+              "sb:3869685:1176",
+              "sb:3869685:1178",
+              "sb:3869685:1179"
+            ],
+            "danger": 1.0028,
+            "xg": 0.324,
+            "outcome": "goal",
+            "players": [
+              "Molina",
+              "MacAllister",
+              "Messi",
+              "Álvarez",
+              "MacAllister",
+              "Di María"
+            ]
+          },
+          {
             "id": "sb:3869685:s228",
             "team": "home",
             "start": {
@@ -45,8 +145,8 @@
               "sb:3869685:4070",
               "sb:3869685:4071"
             ],
-            "danger": 0.7155,
-            "xg": 0.593,
+            "danger": 0.9547,
+            "xg": 0.55,
             "outcome": "goal",
             "players": [
               "Paredes",
@@ -57,165 +157,63 @@
               "Martínez",
               "Messi"
             ]
-          },
-          {
-            "id": "sb:3869685:s52",
-            "team": "home",
-            "start": {
-              "t": 2112.0,
-              "period": 1,
-              "minute": 35,
-              "second": 12,
-              "label": "36'"
-            },
-            "end": {
-              "t": 2123.0,
-              "period": 1,
-              "minute": 35,
-              "second": 23
-            },
-            "duration": 11.0,
-            "n_events": 9,
-            "event_ids": [
-              "sb:3869685:1166",
-              "sb:3869685:1168",
-              "sb:3869685:1170",
-              "sb:3869685:1171",
-              "sb:3869685:1173",
-              "sb:3869685:1174",
-              "sb:3869685:1176",
-              "sb:3869685:1178",
-              "sb:3869685:1179"
-            ],
-            "danger": 0.4752,
-            "xg": 0.303,
-            "outcome": "goal",
-            "players": [
-              "Molina",
-              "MacAllister",
-              "Messi",
-              "Álvarez",
-              "MacAllister",
-              "Di María"
-            ]
-          },
-          {
-            "id": "sb:3869685:s218",
-            "team": "home",
-            "start": {
-              "t": 7218.0,
-              "period": 3,
-              "minute": 104,
-              "second": 5,
-              "label": "105'"
-            },
-            "end": {
-              "t": 7244.0,
-              "period": 3,
-              "minute": 104,
-              "second": 31
-            },
-            "duration": 26.0,
-            "n_events": 26,
-            "event_ids": [
-              "sb:3869685:3898",
-              "sb:3869685:3900",
-              "sb:3869685:3902",
-              "sb:3869685:3904",
-              "sb:3869685:3905",
-              "sb:3869685:3907",
-              "sb:3869685:3908",
-              "sb:3869685:3910",
-              "sb:3869685:3912",
-              "sb:3869685:3913",
-              "sb:3869685:3915",
-              "sb:3869685:3916",
-              "sb:3869685:3919",
-              "sb:3869685:3920",
-              "sb:3869685:3922",
-              "sb:3869685:3923",
-              "sb:3869685:3926",
-              "sb:3869685:3927",
-              "sb:3869685:3929",
-              "sb:3869685:3930",
-              "sb:3869685:3931",
-              "sb:3869685:3932",
-              "sb:3869685:3933",
-              "sb:3869685:3934",
-              "sb:3869685:3935",
-              "sb:3869685:3936"
-            ],
-            "danger": 0.3329,
-            "xg": 0.253,
-            "outcome": "shot",
-            "players": [
-              "MacAllister",
-              "Martínez",
-              "Fernandez",
-              "MacAllister",
-              "Acuña",
-              "Tagliafico",
-              "MacAllister",
-              "Messi"
-            ]
           }
         ],
         "count": 3,
         "evidence_labels": {
-          "ev:sb:3869685:3908": "105' MacAllister pass",
-          "ev:sb:3869685:4061": "108' Messi pass",
-          "ev:sb:3869685:4067": "108' Martínez shot",
-          "ev:sb:3869685:1178": "36' Di María goal",
-          "ev:sb:3869685:3922": "105' MacAllister carry",
-          "ev:sb:3869685:3929": "105' Martínez carry",
-          "ev:sb:3869685:4060": "108' Messi carry",
-          "ev:sb:3869685:3910": "105' Acuña pass",
-          "ev:sb:3869685:3933": "105' Montiel recovery",
-          "ev:sb:3869685:1176": "36' MacAllister pass",
+          "seq:sb:3869685:s165": "81' France sequence",
           "ev:sb:3869685:1168": "36' MacAllister pass",
-          "ev:sb:3869685:3900": "105' Martínez carry",
-          "ev:sb:3869685:1171": "36' Messi pass",
-          "ev:sb:3869685:3907": "105' MacAllister carry",
-          "ev:sb:3869685:3926": "105' Messi carry",
-          "ev:sb:3869685:4069": "108' Messi recovery",
-          "ev:sb:3869685:4063": "108' Fernandez carry",
-          "ev:sb:3869685:3913": "105' Tagliafico pass",
-          "ev:sb:3869685:3920": "105' Messi pass",
-          "ev:sb:3869685:3931": "105' Upamecano block",
-          "ev:sb:3869685:1166": "36' Molina pass",
-          "ev:sb:3869685:4066": "108' Martínez carry",
-          "ev:sb:3869685:3916": "105' MacAllister pass",
-          "ev:sb:3869685:4053": "108' Paredes pass",
-          "ev:sb:3869685:3904": "105' Fernandez carry",
-          "seq:sb:3869685:s228": "108' Argentina sequence",
-          "ev:sb:3869685:4051": "108' Paredes recovery",
-          "ev:sb:3869685:4056": "108' Montiel pass",
-          "ev:sb:3869685:4058": "108' Martínez pass",
-          "ev:sb:3869685:4071": "108' Lloris keeper action",
-          "ev:sb:3869685:1170": "36' Messi carry",
-          "ev:sb:3869685:3905": "105' Fernandez pass",
-          "ev:sb:3869685:4070": "108' Messi goal",
-          "ev:sb:3869685:3927": "105' Messi pass",
-          "ev:sb:3869685:3934": "105' Montiel shot",
-          "ev:sb:3869685:3923": "105' MacAllister pass",
-          "ev:sb:3869685:3898": "105' MacAllister pass",
-          "ev:sb:3869685:1179": "36' Lloris keeper action",
-          "ev:sb:3869685:3919": "105' Messi carry",
-          "ev:sb:3869685:3912": "105' Tagliafico carry",
-          "ev:sb:3869685:3932": "105' Lloris keeper action",
-          "ev:sb:3869685:4052": "108' Paredes carry",
+          "ev:sb:3869685:2973": "81' Messi dispossessed",
+          "ev:sb:3869685:2971": "81' Messi carry",
           "ev:sb:3869685:4064": "108' Fernandez pass",
-          "ev:sb:3869685:1173": "36' Álvarez carry",
-          "ev:sb:3869685:3930": "105' Martínez shot",
-          "ev:sb:3869685:3915": "105' MacAllister carry",
-          "ev:sb:3869685:4068": "108' Lloris keeper action",
-          "ev:sb:3869685:4055": "108' Montiel carry",
-          "ev:sb:3869685:1174": "36' Álvarez pass",
-          "seq:sb:3869685:s218": "105' Argentina sequence",
-          "ev:sb:3869685:3936": "105' Lloris keeper action",
+          "ev:sb:3869685:2964": "81' Upamecano pass",
+          "ev:sb:3869685:2970": "81' Messi recovery",
+          "ev:sb:3869685:1179": "36' Lloris keeper action",
+          "ev:sb:3869685:2987": "81' Mbappé goal",
+          "ev:sb:3869685:1171": "36' Messi pass",
+          "ev:sb:3869685:2974": "81' Coman tackle",
           "seq:sb:3869685:s52": "36' Argentina sequence",
-          "ev:sb:3869685:3902": "105' Martínez pass",
-          "ev:sb:3869685:3935": "105' Varane block"
+          "ev:sb:3869685:2956": "81' Thuram carry",
+          "ev:sb:3869685:2984": "81' Thuram carry",
+          "ev:sb:3869685:2960": "81' Camavinga carry",
+          "ev:sb:3869685:2982": "81' Mbappé pass",
+          "ev:sb:3869685:2979": "81' Rabiot pass",
+          "ev:sb:3869685:2961": "81' Camavinga pass",
+          "ev:sb:3869685:4052": "108' Paredes carry",
+          "ev:sb:3869685:2975": "81' Coman carry",
+          "ev:sb:3869685:1174": "36' Álvarez pass",
+          "ev:sb:3869685:2976": "81' Coman pass",
+          "ev:sb:3869685:1178": "36' Di María goal",
+          "ev:sb:3869685:4061": "108' Messi pass",
+          "ev:sb:3869685:4058": "108' Martínez pass",
+          "ev:sb:3869685:4051": "108' Paredes recovery",
+          "ev:sb:3869685:2967": "81' Camavinga pass",
+          "ev:sb:3869685:4069": "108' Messi recovery",
+          "ev:sb:3869685:2985": "81' Thuram pass",
+          "ev:sb:3869685:2978": "81' Rabiot carry",
+          "seq:sb:3869685:s228": "108' Argentina sequence",
+          "ev:sb:3869685:4063": "108' Fernandez carry",
+          "ev:sb:3869685:2988": "81' Martínez keeper action",
+          "ev:sb:3869685:4066": "108' Martínez carry",
+          "ev:sb:3869685:2965": "81' Romero pass",
+          "ev:sb:3869685:4070": "108' Messi goal",
+          "ev:sb:3869685:2949": "81' Koundé throw in",
+          "ev:sb:3869685:4056": "108' Montiel pass",
+          "ev:sb:3869685:4060": "108' Messi carry",
+          "ev:sb:3869685:1166": "36' Molina pass",
+          "ev:sb:3869685:4067": "108' Martínez shot",
+          "ev:sb:3869685:4053": "108' Paredes pass",
+          "ev:sb:3869685:4071": "108' Lloris keeper action",
+          "ev:sb:3869685:2958": "81' Thuram pass",
+          "ev:sb:3869685:2951": "81' Upamecano pass",
+          "ev:sb:3869685:2953": "81' Camavinga carry",
+          "ev:sb:3869685:1176": "36' MacAllister pass",
+          "ev:sb:3869685:2963": "81' Upamecano carry",
+          "ev:sb:3869685:4068": "108' Lloris keeper action",
+          "ev:sb:3869685:1173": "36' Álvarez carry",
+          "ev:sb:3869685:4055": "108' Montiel carry",
+          "ev:sb:3869685:1170": "36' Messi carry",
+          "ev:sb:3869685:2954": "81' Camavinga pass"
         },
         "match": {
           "teams": {
@@ -239,30 +237,29 @@
         },
         "display_numbers": [
           "0",
-          "0.25",
-          "0.253",
-          "0.2530",
+          "0.056",
+          "0.0560",
+          "0.06",
+          "0.1",
           "0.3",
-          "0.30",
-          "0.303",
-          "0.3030",
-          "0.33",
-          "0.3329",
-          "0.333",
-          "0.475",
-          "0.4752",
-          "0.48",
-          "0.5",
-          "0.59",
-          "0.593",
-          "0.5930",
+          "0.32",
+          "0.324",
+          "0.3240",
+          "0.55",
+          "0.550",
+          "0.5500",
           "0.6",
-          "0.7",
-          "0.7155",
-          "0.716",
-          "0.72",
+          "0.95",
+          "0.9547",
+          "0.955",
           "1",
-          "104",
+          "1.0",
+          "1.00",
+          "1.0028",
+          "1.003",
+          "1.02",
+          "1.023",
+          "1.0231",
           "107",
           "11",
           "11.0",
@@ -288,40 +285,34 @@
           "2123.000",
           "2123.0000",
           "23",
-          "25%",
-          "25.3%",
-          "26",
-          "26.0",
-          "26.00",
-          "26.000",
-          "26.0000",
+          "25",
           "3",
-          "30%",
-          "30.3%",
-          "31",
-          "33%",
-          "33.3%",
+          "32%",
+          "32.4%",
           "35",
           "4",
           "45",
-          "47.5%",
-          "48%",
-          "5",
+          "46",
+          "46.0",
+          "46.00",
+          "46.000",
+          "46.0000",
+          "5.6%",
+          "5268",
+          "5268.0",
+          "5268.00",
+          "5268.000",
+          "5268.0000",
+          "5314",
+          "5314.0",
+          "5314.00",
+          "5314.000",
+          "5314.0000",
+          "55%",
+          "55.0%",
           "58",
-          "59%",
-          "59.3%",
-          "71.5%",
-          "72%",
-          "7218",
-          "7218.0",
-          "7218.00",
-          "7218.000",
-          "7218.0000",
-          "7244",
-          "7244.0",
-          "7244.00",
-          "7244.000",
-          "7244.0000",
+          "59",
+          "6%",
           "7503",
           "7503.0",
           "7503.00",
@@ -332,12 +323,15 @@
           "7516.00",
           "7516.000",
           "7516.0000",
-          "9"
+          "80",
+          "9",
+          "95%",
+          "95.5%"
         ]
       }
     }
   ],
-  "text": "**Most dangerous sequences**, ranked by threat-gain proxy—all Argentina:\n\n- **108' — Danger 0.72; xG 0.593.** Martínez’s shot was followed by Messi’s recovery and goal. [[seq:sb:3869685:s228]]\n- **36' — Danger 0.48; xG 0.303.** Messi and Álvarez helped link the attack before MacAllister supplied Di María’s finish. [[seq:sb:3869685:s52]]\n- **105' — Danger 0.33; xG 0.253.** Sustained pressure produced Martínez’s shot, blocked by Upamecano, then a Montiel follow-up blocked by Varane. [[seq:sb:3869685:s218]]",
+  "text": "**Most dangerous sequences, ranked by positive possession value:**\n\n- **France, 81' — danger 1.0231:** Coman wins possession from Messi; the move flows through Rabiot and Thuram to Mbappé’s goal. Sequence xG: **0.056**. [[seq:sb:3869685:s165]]\n- **Argentina, 36' — danger 1.0028:** Messi, Álvarez and MacAllister combine before Di María finishes a rapid attack lasting **11 seconds**. Sequence xG: **0.324**. [[seq:sb:3869685:s52]]\n- **Argentina, 108' — danger 0.9547:** A combination involving Messi and Fernández releases Martínez for a shot; Messi follows up to score. Sequence xG: **0.55**. [[seq:sb:3869685:s228]]\n\nDanger measures accumulated positive value, using a threat-gain proxy where model value is unavailable—not simply shot quality.",
   "rejections": [],
   "chunks": [
     {
@@ -349,11 +343,11 @@
     },
     {
       "type": "text",
-      "delta": "**Most dangerous sequences**, ranked by threat-g"
+      "delta": "**Most dangerous sequences, ranked by positive p"
     },
     {
       "type": "text",
-      "delta": "ain proxy—all Argentina:\n"
+      "delta": "ossession value:**\n"
     },
     {
       "type": "text",
@@ -361,27 +355,39 @@
     },
     {
       "type": "text",
-      "delta": "- **108' — Danger 0.72; xG 0.593.** Martínez’s s"
+      "delta": "- **France, 81' — danger 1.0231:** Coman wins po"
     },
     {
       "type": "text",
-      "delta": "hot was followed by Messi’s recovery and goal. "
+      "delta": "ssession from Messi; the move flows through Rabi"
     },
     {
       "type": "text",
-      "delta": "[[seq:sb:3869685:s228]]\n"
+      "delta": "ot and Thuram to Mbappé’s goal. "
     },
     {
       "type": "text",
-      "delta": "- **36' — Danger 0.48; xG 0.303.** Messi and Álv"
+      "delta": "Sequence xG: **0.056**. "
     },
     {
       "type": "text",
-      "delta": "arez helped link the attack before MacAllister s"
+      "delta": "[[seq:sb:3869685:s165]]\n"
     },
     {
       "type": "text",
-      "delta": "upplied Di María’s finish. "
+      "delta": "- **Argentina, 36' — danger 1.0028:** Messi, Álv"
+    },
+    {
+      "type": "text",
+      "delta": "arez and MacAllister combine before Di María fin"
+    },
+    {
+      "type": "text",
+      "delta": "ishes a rapid attack lasting **11 seconds**. "
+    },
+    {
+      "type": "text",
+      "delta": "Sequence xG: **0.324**. "
     },
     {
       "type": "text",
@@ -389,28 +395,44 @@
     },
     {
       "type": "text",
-      "delta": "- **105' — Danger 0.33; xG 0.253.** Sustained pr"
+      "delta": "- **Argentina, 108' — danger 0.9547:** A combina"
     },
     {
       "type": "text",
-      "delta": "essure produced Martínez’s shot, blocked by Upam"
+      "delta": "tion involving Messi and Fernández releases Mart"
     },
     {
       "type": "text",
-      "delta": "ecano, then a Montiel follow-up blocked by Varan"
+      "delta": "ínez for a shot; Messi follows up to score. "
     },
     {
       "type": "text",
-      "delta": "e. "
+      "delta": "Sequence xG: **0.55**. "
     },
     {
       "type": "text",
-      "delta": "[[seq:sb:3869685:s218]]"
+      "delta": "[[seq:sb:3869685:s228]]\n"
+    },
+    {
+      "type": "text",
+      "delta": "\n"
+    },
+    {
+      "type": "text",
+      "delta": "Danger measures accumulated positive value, usin"
+    },
+    {
+      "type": "text",
+      "delta": "g a threat-gain proxy where model value is unava"
+    },
+    {
+      "type": "text",
+      "delta": "ilable—not simply shot quality."
     },
     {
       "type": "citation",
-      "ref": "seq:sb:3869685:s228",
-      "label": "108' Argentina sequence"
+      "ref": "seq:sb:3869685:s165",
+      "label": "81' France sequence"
     },
     {
       "type": "citation",
@@ -419,18 +441,20 @@
     },
     {
       "type": "citation",
-      "ref": "seq:sb:3869685:s218",
-      "label": "105' Argentina sequence"
+      "ref": "seq:sb:3869685:s228",
+      "label": "108' Argentina sequence"
     },
     {
       "type": "done"
     }
   ],
-  "first_text_seconds": 2.614,
-  "total_seconds": 4.512,
+  "first_text_seconds": 3.442,
+  "total_seconds": 5.914,
   "grounding": {
     "unsupported_numbers": [],
-    "unsupported_citations": []
+    "unsupported_citations": [],
+    "unsupported_units": [],
+    "forbidden_phrasing": []
   },
   "all_citations_exist": true
 }
