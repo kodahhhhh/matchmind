@@ -10,6 +10,8 @@ import { usePlayerUi } from "../../store/ui";
 import { PitchMarkings } from "../pitch/PitchMarkings";
 import { PITCH } from "../pitch/geometry";
 
+const SOURCE_NAME: Record<string, string> = { transfermarkt: "Transfermarkt", wikidata: "Wikidata", statsbomb: "StatsBomb" };
+
 export const eur = (v: number | null | undefined) =>
   v == null ? "—" : v >= 1e6 ? `€${(v / 1e6).toFixed(v >= 1e8 ? 0 : 1)}m` : v >= 1e3 ? `€${Math.round(v / 1e3)}k` : `€${v}`;
 
@@ -96,7 +98,7 @@ function Profile({ p }: { p: PlayerProfile }) {
 
         {!p.career && (
           <div className="rounded-2xl bg-surface-2 p-4 text-[13px] leading-relaxed text-ink-2 ring-1 ring-line">
-            <span className="font-semibold text-ink">Not in our match data.</span> This profile comes from {(p.sources ?? ["transfermarkt"]).filter((x) => x !== "statsbomb").join(" and ") || "public records"};
+            <span className="font-semibold text-ink">Not in our match data.</span> This profile comes from {(p.sources ?? ["transfermarkt"]).filter((x) => x !== "statsbomb").map((x) => SOURCE_NAME[x] ?? x).join(" and ") || "public records"};
             our models only have event data for the 2,924 matches in StatsBomb's open data.
           </div>
         )}
