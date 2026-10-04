@@ -1,6 +1,7 @@
 """Fixed-rule, delayed-information YES/NO paper execution with match bootstrap."""
 
 import json
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -25,14 +26,24 @@ def entry_allowed(period: int, minute: int, goals: list[dict]) -> bool:
     return 1 <= minute <= 85 and not recent_goal
 
 
-def run() -> tuple[list[dict], dict]:
+def run(
+    predictions_file: str = "inplay_predictions.parquet",
+    publish: bool = True,
+    artifact_directory: Path | None = None,
+) -> tuple[list[dict], dict]:
     from matchmind.api.repository import bundle
+
+    def write(path, value) -> None:
+        if publish:
+            save(
+                (artifact_directory / path.name) if artifact_directory else path, value
+            )
 
     discovered = json.loads((output() / "polymarket_discovery.json").read_text())
     # Excluded contract types still expose market availability, with no false curve.
     for item in sorted(discovered, key=lambda d: float(d["event"].get("volume", 0))):
         mid, event = item["match"]["match_id"], item["event"]
-        save(
+        write(
             output() / f"market_{mid.replace(':', '_')}.json",
             {
                 "match_id": mid,
@@ -46,7 +57,7 @@ def run() -> tuple[list[dict], dict]:
             },
         )
     histories = json.loads((output() / "polymarket_histories.json").read_text())
-    predictions = pd.read_parquet(output() / "inplay_predictions.parquet")
+    predictions = pd.read_parquet(output() / predictions_file)
     audits, accepted = [], []
     for item in histories:
         audit = align(item)
@@ -66,11 +77,11 @@ def run() -> tuple[list[dict], dict]:
         audits.append(audit)
         if audit["aligned"]:
             accepted.append((item, audit))
-    save(output() / "polymarket_alignment.json", audits)
+    write(output() / "polymarket_alignment.json", audits)
     # Keep unaligned matches visible as evidence, without inventing plot values.
     for item, audit in zip(histories, audits, strict=True):
         mid = item["match"]["match_id"]
-        save(
+        write(
             output() / f"market_{mid.replace(':', '_')}.json",
             {
                 "match_id": mid,
@@ -204,7 +215,7 @@ def run() -> tuple[list[dict], dict]:
                 }
             )
             if slippage == 0:
-                save(
+                write(
                     output() / f"market_{mid.replace(':', '_')}.json",
                     {
                         "match_id": mid,
@@ -258,5 +269,5 @@ def run() -> tuple[list[dict], dict]:
                 model=scores(y, np.array([s["model"] for s in samples])),
                 market=scores(y, np.array([s["market"] for s in samples])),
             )
-    save(output() / "polymarket_diagnostics.json", diagnostic)
+    write(output() / "polymarket_diagnostics.json", diagnostic)
     return strategies, diagnostic

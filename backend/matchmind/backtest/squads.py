@@ -217,6 +217,8 @@ def build() -> None:
     histories = {
         pid: g[["date", "player_club_id"]] for pid, g in club_apps.groupby("player_id")
     }
+    matches.sort(key=lambda m: (m["match_date"] or "9999", m["native_id"]))
+    sb_previous, sb_caps = defaultdict(list), defaultdict(list)
     prematch, live, coverage = [], [], []
     for index, match in enumerate(matches):
         date = pd.Timestamp(match["match_date"]) if match["match_date"] else pd.NaT
@@ -289,7 +291,9 @@ def build() -> None:
                 ]
             past = [
                 (d, ids)
-                for d, ids in previous.get(club, [])
+                for d, ids in (
+                    sb_previous[tid] if international else previous.get(club, [])
+                )
                 if pd.notna(date) and d < date
             ]
             ids = set(xi + bench + [p for _, ps in past[-5:] for p in ps]) | {
@@ -315,6 +319,11 @@ def build() -> None:
                     if pd.notna(date)
                     else 0
                 )
+                if pd.notna(date):
+                    # Conservative lower bound: overlapping sources are not summed.
+                    cap_counts[pid] = max(
+                        cap_counts[pid], sum(d < date for d in sb_caps[pid])
+                    )
                 if not international and pid in histories and pd.notna(date):
                     history = histories[pid]
                     history = history[history.date < date]
@@ -354,6 +363,25 @@ def build() -> None:
                     "international": international,
                 }
             )
+        if international and pd.notna(date):
+            for tid, lineup in starters.items():
+                xi_ids = [
+                    mapping[p["player"]["id"]]
+                    for p in lineup
+                    if p["player"]["id"] in mapping
+                ]
+                sb_previous[tid].append((date, xi_ids))
+                appeared = {p["player"]["id"] for p in lineup}
+                appeared.update(
+                    e["substitution"]["replacement"]["id"]
+                    for e in events
+                    if e["type"]["name"] == "Substitution"
+                    and e["team"]["id"] == tid
+                    and e["period"] <= 4
+                )
+                for sb_id in appeared:
+                    if sb_id in mapping:
+                        sb_caps[mapping[sb_id]].append(date)
         prematch.append(
             {"match_id": match["match_id"], **contrasts(sides["home"], sides["away"])}
         )
@@ -387,7 +415,7 @@ def build() -> None:
             "w11_ready": bool(mapping),
             "w11_mapped_players": len(mapping),
             "valuation_cutoff": "strictly earlier date; no current market values",
-            "caps": "observed prior TM international appearances, not lifetime caps",
+            "caps": "max(prior TM, prior SB) international appearances; lower bound",
             "new_signings": "prior club appearances only, never snapshot current club",
             "matched_games": len(joined),
             "matches": len(matches),

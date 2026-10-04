@@ -16,7 +16,9 @@ router = APIRouter()
 
 
 def artifact(filename: str) -> dict:
-    path = get_settings().data_dir / "processed/backtest" / filename
+    directory = get_settings().data_dir / "processed/backtest"
+    candidate = directory / "w12" / filename
+    path = candidate if candidate.is_file() else directory / filename
     if not path.is_file():
         raise HTTPException(404, "Backtest artifact is not available")
     try:

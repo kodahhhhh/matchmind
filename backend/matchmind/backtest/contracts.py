@@ -56,11 +56,32 @@ class Strategy(StrictModel):
     bets: list[Bet]
 
 
+class ComparisonMetrics(StrictModel):
+    n_bets: int
+    pnl: float
+    roi: float
+    roi_ci95: tuple[float, float]
+    brier_model: float | None
+
+
+class Comparison(StrictModel):
+    strategy_id: str
+    before: ComparisonMetrics
+    after: ComparisonMetrics
+
+
+class ModelVersions(StrictModel):
+    before: str
+    after: str
+
+
 class Backtest(StrictModel):
     generated_at: str
     sources: list[Source]
     strategies: list[Strategy]
     caveats: list[str]
+    comparison: list[Comparison] = Field(default_factory=list)
+    model_versions: ModelVersions | None = None
 
 
 class Probabilities(StrictModel):

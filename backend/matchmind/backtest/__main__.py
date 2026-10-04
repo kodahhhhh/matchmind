@@ -3,16 +3,17 @@
 import argparse
 import json
 from datetime import UTC, datetime
+from pathlib import Path
 
 from matchmind.backtest.common import output, save
 
 
-def run() -> None:
+def run(artifact_directory: Path | None = None) -> None:
     from matchmind.backtest import polymarket, prematch
     from matchmind.backtest.contracts import Backtest
 
     bookmaker, _ = prematch.run()
-    market, diagnostic = polymarket.run()
+    market, diagnostic = polymarket.run(artifact_directory=artifact_directory)
     kalshi = json.loads((output() / "kalshi_coverage.json").read_text())
     histories = json.loads((output() / "polymarket_histories.json").read_text())
     result = {
@@ -118,8 +119,31 @@ def run() -> None:
             ),
         ],
     }
+    comparison_path = output() / "w12_before/backtest.json"
+    if comparison_path.exists() and (output() / "squad_provenance.json").exists():
+        from matchmind.backtest.squad_train import AFTER, BEFORE
+
+        before = json.loads(comparison_path.read_text())
+        fields = ["n_bets", "pnl", "roi", "roi_ci95", "brier_model"]
+        old = {s["id"]: s for s in before["strategies"]}
+        result["comparison"] = [
+            {
+                "strategy_id": s["id"],
+                "before": {k: old[s["id"]][k] for k in fields},
+                "after": {k: s[k] for k in fields},
+            }
+            for s in result["strategies"]
+        ]
+        result["model_versions"] = {"before": BEFORE, "after": AFTER}
+        result["caveats"].append(
+            "W12 uses strictly prior dated valuations and announced squads. "
+            "The after version retains the incumbent wherever player features "
+            "do not improve held-out Brier and log loss. Present-day caps and "
+            "current-club snapshots are excluded. See squad model reports for "
+            "candidate scores, coverage and retention decisions."
+        )
     Backtest.model_validate(result)
-    save(output() / "backtest.json", result)
+    save((artifact_directory or output()) / "backtest.json", result)
     print(
         json.dumps(
             [
@@ -148,8 +172,13 @@ def run() -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=["fetch", "train", "run", "all"])
+    parser.add_argument("command", choices=["fetch", "train", "run", "all", "squads"])
     args = parser.parse_args()
+    if args.command == "squads":
+        from matchmind.backtest.squad_pipeline import main as squad_main
+
+        squad_main()
+        return
     if args.command in ("fetch", "all"):
         from matchmind.backtest import fetch, markets
 
