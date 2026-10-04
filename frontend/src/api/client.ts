@@ -1,6 +1,6 @@
 // The only place the frontend talks to the backend. VITE_USE_FIXTURES=1 serves fixtures/ instead.
 import type {
-  AskChunk, Backtest, CommentaryLine, Competition, LeaderboardRow, MarketSeries, PlayerHit, PlayerProfile, Counterfactual, MatchCard, MatchDetail, MatchEvent,
+  AskChunk, Backtest, CommentaryLine, Competition, LeaderboardRow, MarketSeries, PlayerHit, PlayerProfile, Counterfactual, ShotAlternatives, MatchCard, MatchDetail, MatchEvent,
   PlayerRow, SearchResult, Sequence, TimelineMinute, TurningPoint,
 } from "./types";
 
@@ -49,6 +49,12 @@ export const api = {
     if (!res.ok) throw new Error(`${res.status}: counterfactual`);
     return res.json();
   },
+
+  shotAlternatives: (id: string, eventId: string) =>
+    get<ShotAlternatives>(
+      `/matches/${enc(id)}/shots/${enc(eventId)}/alternatives`,
+      `${fixtureDir(id)}/shot-alternatives.json`,
+    ),
 
   player: (id: number, matchId?: string) =>
     get<PlayerProfile>(`/players/${id}${matchId ? `?match_id=${enc(matchId)}` : ""}`, `/fixtures/players/${id}.json`),

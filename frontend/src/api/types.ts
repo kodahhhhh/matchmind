@@ -207,11 +207,22 @@ export interface Counterfactual {
   label: string;
   horizon_minutes: number;
   method?: "trained_model" | "analogs";
-  model?: { name: string; trained_matches: number; coverage_p10_p90: { xg: number; possession: number } };
+  model?: {
+    name: string;
+    trained_matches: number;
+    coverage_p10_p90: { xg: number; possession: number };
+    skill_vs_constant?: { xg: number; possession: number };
+  };
   analog_summary?: { n: number; home: { xg: Band }; away: { xg: Band } };
   anchor: ClockRef & { label: string };
   actual: Record<Side, { xg: number; possession: number; goals: number }>;
   modelled: Record<Side, { xg: Band; possession: Band }>;
+  /** The same model on the real (unchanged) state: the like-for-like comparison. */
+  factual?: Record<Side, { xg: Band; possession: Band }>;
+  /** Changed minus factual medians. */
+  effect?: Record<Side, { xg: number; possession: number }>;
+  negligible?: boolean;
+  lineup_change?: { restored: LineupPlayer; removed: LineupPlayer | null } | null;
   series: { offset_min: number; actual: Record<Side, number>; modelled: Record<Side, Band> | null }[];
   analogs: {
     match_id: string;
@@ -225,6 +236,48 @@ export interface Counterfactual {
     next15: { xg_for: number; xg_against: number; goals_for: number; goals_against: number };
   }[];
   n_analogs: number;
+  caveat: string;
+}
+
+export interface LineupPlayer {
+  player_id: number;
+  name: string;
+  vaep_per90: number;
+}
+
+export interface PassOption {
+  player_id: number | null;
+  player: string;
+  x: number;
+  y: number;
+  p_complete: number;
+  xg_if_shot: number;
+  xt: number;
+  value: number;
+}
+
+export interface ShotAlternatives {
+  match_id: string;
+  event_id: string;
+  label: "Modelled hypothetical";
+  shot: {
+    event_id: string;
+    team: Side;
+    player_id: number | null;
+    player: string;
+    period: number;
+    minute: number;
+    label: string;
+    x: number;
+    y: number;
+    xg: number;
+    outcome: string;
+  };
+  options: PassOption[];
+  comparison: "pass_higher" | "shot_higher" | "similar" | "no_teammates";
+  margin: number | null;
+  model: { name: string; trained_passes: number; trained_matches: number; auc: number; brier: number; baseline_auc: number };
+  assumptions: string[];
   caveat: string;
 }
 
