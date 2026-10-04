@@ -115,7 +115,7 @@ function Palette({ onClose }: { onClose: () => void }) {
                 <button key={x} onClick={() => setQ(x)} className="rounded-lg bg-surface-2 px-3 py-1.5 text-[13px] text-ink-2 ring-1 ring-line transition hover:bg-surface-3 hover:text-ink">{x}</button>
               ))}
             </div>
-            <p className="mt-4 text-[12px] leading-relaxed text-ink-4">Searches GPT-6 Luna's commentary for every move in 493 matches, by meaning and by keyword.</p>
+            <p className="mt-4 text-[12px] leading-relaxed text-ink-4">Searches GPT-6 Luna's commentary for every move in 493 matches, by meaning (Qwen3 embeddings on Cloudflare Workers AI + pgvector) and by keyword.</p>
           </div>
         ) : results.length === 0 && !loading ? (
           <div className="px-4 py-10 text-center text-[13px] text-ink-3">No moments found for “{q}”.</div>
@@ -142,7 +142,7 @@ function Palette({ onClose }: { onClose: () => void }) {
       </div>
       <div className="flex items-center gap-4 border-t border-line px-5 py-2.5 text-[11px] text-ink-4">
         <span><Kbd>↑</Kbd><Kbd>↓</Kbd> navigate</span><span><Kbd>↵</Kbd> open moment</span><span><Kbd>esc</Kbd> close</span>
-        <span className="ml-auto flex items-center gap-1.5"><span className="h-1.5 w-1.5 rounded-full bg-ai" />hybrid search · pgvector + full text</span>
+        <span className="ml-auto flex items-center gap-1.5"><span className="h-1.5 w-1.5 rounded-full bg-ai" />hybrid search · Qwen3 embeddings + full text</span>
       </div>
     </div>
   );

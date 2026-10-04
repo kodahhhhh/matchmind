@@ -157,8 +157,11 @@ BEGIN
         RAISE EXCEPTION 'Existing commentary dimension differs from EMBED_DIM';
     END IF;
 END $$;
+-- Single-threaded HNSW build: parallel builds need more /dev/shm than Docker's default.
+SET max_parallel_maintenance_workers = 0;
 CREATE INDEX IF NOT EXISTS commentary_embedding_hnsw ON commentary
     USING hnsw (embedding vector_cosine_ops);
+RESET max_parallel_maintenance_workers;
 CREATE INDEX IF NOT EXISTS commentary_search_gin ON commentary USING gin (search_vector);
 CREATE INDEX IF NOT EXISTS commentary_match ON commentary (match_id);
 CREATE TABLE IF NOT EXISTS gamestate_windows (

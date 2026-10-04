@@ -15,6 +15,6 @@ services:
       interval: 5s
       timeout: 5s
       retries: 20
-    shm_size: 256mb
+    shm_size: 2gb
 volumes:
   db_data:

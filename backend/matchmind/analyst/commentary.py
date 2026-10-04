@@ -19,7 +19,7 @@ import pandas as pd
 from psycopg import Connection
 from psycopg.types.json import Jsonb
 
-from matchmind.analyst.client import async_client
+from matchmind.analyst.client import async_client, embed_async_client, embedding_kwargs
 from matchmind.api.repository import connect, require_match
 from matchmind.config import get_settings
 from matchmind.metrics.match import clock_label, compute_match, map_type
@@ -736,10 +736,10 @@ async def embed(
         async with semaphore:
             for attempt in range(6):
                 try:
-                    r = await async_client().embeddings.create(
+                    r = await embed_async_client().embeddings.create(
                         model=s.embed_deployment,
                         input=[row["text"] for row in batch],
-                        dimensions=s.embed_dim,
+                        **embedding_kwargs(),
                     )
                     vectors = sorted(r.data, key=lambda x: x.index)
                     if len(vectors) != len(batch) or any(
