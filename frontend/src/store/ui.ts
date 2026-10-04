@@ -2,12 +2,15 @@ import { create } from "zustand";
 
 interface UiState {
   searchOpen: boolean;
-  setSearchOpen: (open: boolean) => void;
+  /** Query the palette starts with when opened from an example. */
+  searchSeed: string;
+  setSearchOpen: (open: boolean, seed?: string) => void;
 }
 
 export const useUi = create<UiState>((set) => ({
   searchOpen: false,
-  setSearchOpen: (open) => set({ searchOpen: open }),
+  searchSeed: "",
+  setSearchOpen: (open, seed = "") => set({ searchOpen: open, searchSeed: seed }),
 }));
 
 interface PlayerUi {

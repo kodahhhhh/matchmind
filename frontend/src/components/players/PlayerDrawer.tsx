@@ -1,19 +1,26 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useNavigate } from "react-router";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { X } from "@phosphor-icons/react";
 import { scaleLinear, scaleTime } from "d3-scale";
-import { line, curveStepAfter } from "d3-shape";
+import { area, line, curveStepAfter } from "d3-shape";
 import { api } from "../../api/client";
 import type { PlayerProfile } from "../../api/types";
 import { useMatch } from "../../store/match";
 import { usePlayerUi } from "../../store/ui";
 import { PitchMarkings } from "../pitch/PitchMarkings";
 import { PITCH } from "../pitch/geometry";
+import { RevealImage } from "../ui/motion";
+import { useSize } from "../ui/useSize";
+import { initials, trapTab } from "../ui/focusTrap";
+import { eur } from "../../lib/format";
 
 const SOURCE_NAME: Record<string, string> = { transfermarkt: "Transfermarkt", wikidata: "Wikidata", statsbomb: "StatsBomb" };
+const FOOT: Record<string, string> = { left: "Left foot", right: "Right foot", both: "Both feet" };
+const DRAWER_EASE = [0.32, 0.72, 0, 1] as const;
+const EASE = [0.22, 1, 0.36, 1] as const;
+const monthFmt = new Intl.DateTimeFormat("en-GB", { month: "short", year: "numeric" });
 
-export const eur = (v: number | null | undefined) =>
-  v == null ? "—" : v >= 1e6 ? `€${(v / 1e6).toFixed(v >= 1e8 ? 0 : 1)}m` : v >= 1e3 ? `€${Math.round(v / 1e3)}k` : `€${v}`;
 
 /** Slide-over player profile; open it from anywhere with usePlayerUi().openPlayer(id). */
 export function PlayerDrawer() {
@@ -22,6 +29,10 @@ export function PlayerDrawer() {
   const matchId = useMatch((s) => s.matchId);
   const [p, setP] = useState<PlayerProfile | null>(null);
   const [err, setErr] = useState(false);
+  const reduce = useReducedMotion();
+  const panel = useRef<HTMLElement>(null);
+  const closeBtn = useRef<HTMLButtonElement>(null);
+  const open = playerId != null;
 
   useEffect(() => {
     if (playerId == null) return;
@@ -38,179 +49,276 @@ export function PlayerDrawer() {
     return () => window.removeEventListener("keydown", onKey);
   }, [openPlayer]);
 
+  // move focus into the drawer on open and hand it back to the trigger on close
+  useEffect(() => {
+    if (!open) return;
+    const trigger = document.activeElement as HTMLElement | null;
+    closeBtn.current?.focus({ preventScroll: true });
+    return () => { if (trigger?.isConnected) trigger.focus({ preventScroll: true }); };
+  }, [open]);
+
+  const shut = { transform: reduce ? "translateX(0%)" : "translateX(100%)", opacity: reduce ? 0 : 1 };
+
   return (
     <AnimatePresence>
-      {playerId != null && (
-        <motion.div className="fixed inset-0 z-40 flex justify-end bg-black/40 backdrop-blur-[2px]" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-          onMouseDown={() => openPlayer(null)}>
-          <motion.aside initial={{ x: 40, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: 40, opacity: 0 }} transition={{ type: "spring", bounce: 0.1, duration: 0.4 }}
-            onMouseDown={(e) => e.stopPropagation()}
-            className="scroll-thin h-full w-full max-w-[560px] overflow-y-auto bg-surface-1 shadow-[-30px_0_80px_-20px_rgba(0,0,0,0.8)] ring-1 ring-white/10">
-            <button onClick={() => openPlayer(null)} aria-label="Close" className="absolute right-4 top-4 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-surface-3 text-ink-2 transition hover:text-ink">
-              <svg width="12" height="12" viewBox="0 0 12 12"><path d="M1 1l10 10M11 1 1 11" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>
+      {open && (
+        <div key="drawer" className="fixed inset-0 z-40">
+          <motion.div aria-hidden className="absolute inset-0 bg-bg/60 backdrop-blur-[2px]"
+            initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { duration: 0.35, ease: DRAWER_EASE } }}
+            exit={{ opacity: 0, transition: { duration: 0.2, ease: EASE } }}
+            onMouseDown={() => openPlayer(null)} />
+          <motion.aside ref={panel} role="dialog" aria-modal="true" aria-labelledby="player-drawer-title"
+            initial={shut} animate={{ transform: "translateX(0%)", opacity: 1, transition: { duration: 0.35, ease: DRAWER_EASE } }}
+            exit={{ ...shut, transition: { duration: 0.22, ease: DRAWER_EASE } }}
+            onKeyDown={(e) => trapTab(e, panel.current)}
+            className="scroll-thin absolute inset-y-0 right-0 w-full max-w-[560px] overflow-y-auto overscroll-contain bg-surface-1 shadow-[-30px_0_80px_-20px_rgba(0,0,0,0.8)] ring-1 ring-line-strong">
+            <button ref={closeBtn} type="button" onClick={() => openPlayer(null)} aria-label="Close profile"
+              className="absolute right-4 top-4 z-10 grid size-9 place-items-center rounded-full bg-surface-2 text-ink-2 ring-1 ring-line transition-[background-color,color,transform] duration-150 ease-out hover:bg-surface-3 hover:text-ink active:scale-[0.97]">
+              <X size={16} weight="bold" aria-hidden />
             </button>
-            {err ? <div className="p-8 text-sm text-ink-3">No profile for this player yet.</div>
-              : !p ? <div className="p-8"><span className="shimmer text-sm font-medium">Loading player</span></div>
-              : <Profile p={p} />}
+            {err ? (
+              <div className="px-6 pb-10 pt-8 md:px-8">
+                <h2 id="player-drawer-title" className="pr-12 text-[22px] font-semibold tracking-[-0.02em] text-ink">No profile yet</h2>
+                <p className="mt-2 text-[14.5px] leading-[1.6] text-ink-3">We have no profile for this player. Close this panel and pick another player.</p>
+              </div>
+            ) : !p ? <ProfileSkeleton /> : <Profile p={p} />}
           </motion.aside>
-        </motion.div>
+        </div>
       )}
     </AnimatePresence>
   );
 }
 
+function ProfileSkeleton() {
+  return (
+    <div className="px-6 pt-8 md:px-8" aria-busy="true">
+      <h2 id="player-drawer-title" className="sr-only">Loading player</h2>
+      <div className="flex items-end gap-5" aria-hidden>
+        <span className="size-[112px] shrink-0 rounded-2xl bg-surface-2 motion-safe:animate-pulse" />
+        <span className="flex-1 space-y-3 pb-2">
+          <span className="block h-7 w-48 rounded-full bg-surface-2 motion-safe:animate-pulse" />
+          <span className="block h-3.5 w-32 rounded-full bg-surface-2 motion-safe:animate-pulse" />
+        </span>
+      </div>
+      <div className="mt-10 h-[120px] rounded-2xl bg-surface-2 motion-safe:animate-pulse" aria-hidden />
+      <div className="mt-8 h-[160px] rounded-2xl bg-surface-2 motion-safe:animate-pulse" aria-hidden />
+    </div>
+  );
+}
+
+function Block({ title, meta, children }: { title: string; meta?: ReactNode; children: ReactNode }) {
+  return (
+    <section>
+      <div className="mb-3 flex items-baseline justify-between gap-3">
+        <h3 className="text-[16px] font-semibold tracking-[-0.01em] text-ink">{title}</h3>
+        {meta && <p className="tabular text-right text-[13px] text-ink-3">{meta}</p>}
+      </div>
+      {children}
+    </section>
+  );
+}
+
 function Profile({ p }: { p: PlayerProfile }) {
   const age = p.date_of_birth ? Math.floor((Date.now() - new Date(p.date_of_birth).getTime()) / 3.15576e10) : null;
+  const display = p.nickname || p.short_name || p.name;
+  const facts = [
+    age != null && `${age} years old`,
+    p.height_cm && `${p.height_cm} cm`,
+    p.foot && (FOOT[p.foot.toLowerCase()] ?? `${p.foot} foot`),
+    p.current_club,
+    p.caps != null && p.caps > 0 && `${p.caps} caps`,
+  ].filter((x): x is string => !!x);
+  const sources = (p.sources ?? ["transfermarkt"]).filter((x) => x !== "statsbomb").map((x) => SOURCE_NAME[x] ?? x).join(" and ") || "public records";
+
   return (
-    <div className="pb-10">
-      <div className="relative overflow-hidden px-6 pb-6 pt-8">
-        <div className="absolute inset-0 bg-gradient-to-b from-[#173d2a]/70 to-transparent" />
-        <div className="relative flex items-end gap-5">
-          <Avatar p={p} />
+    <div className="pb-12">
+      <header className="px-6 pt-8 md:px-8">
+        <div className="flex items-end gap-5 pr-10">
+          <span className="relative size-[112px] shrink-0 overflow-hidden rounded-2xl">
+            <RevealImage key={p.photo_url ?? "none"} src={p.photo_url} alt={display} className="size-full"
+              fallback={<span className="grid size-full place-items-center bg-surface-3 text-[34px] font-semibold text-ink-3">{initials(p.short_name || p.name)}</span>} />
+            <span className="pointer-events-none absolute inset-0 rounded-2xl outline outline-1 -outline-offset-1 outline-white/10" />
+          </span>
           <div className="min-w-0 pb-1">
-            <div className="eyebrow mb-1">{[p.position, p.nationality].filter(Boolean).join(" · ")}</div>
-            <h2 className="display text-[38px] leading-[0.95] text-ink">{p.nickname || p.short_name || p.name}</h2>
-            {(p.nickname || p.short_name) && p.name !== (p.nickname || p.short_name) && <div className="mt-1 text-[12px] text-ink-3">{p.name}</div>}
-            <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[12.5px] text-ink-2">
-              {age != null && <span>{age} yrs</span>}
-              {p.height_cm && <span>{p.height_cm} cm</span>}
-              {p.foot && <span className="capitalize">{p.foot} foot</span>}
-              {p.current_club && <span>{p.current_club}</span>}
-              {p.caps != null && p.caps > 0 && <span>{p.caps} caps</span>}
-            </div>
+            <h2 id="player-drawer-title" className="text-balance text-[30px] font-semibold leading-[1.08] tracking-[-0.03em] text-ink">{display}</h2>
+            {display !== p.name && <p className="mt-1 truncate text-[13.5px] text-ink-3">{p.name}</p>}
+            {(p.position || p.nationality) && <p className="mt-2 text-[14.5px] text-ink-2">{[p.position, p.nationality].filter(Boolean).join(", ")}</p>}
           </div>
         </div>
-      </div>
+        {facts.length > 0 && (
+          <ul className="mt-6 flex flex-wrap gap-x-5 gap-y-1.5 text-[14px] text-ink-2" aria-label="Facts">
+            {facts.map((f) => <li key={f} className="tabular">{f}</li>)}
+          </ul>
+        )}
+      </header>
 
-      <div className="space-y-5 px-6">
+      <div className="mt-8 space-y-9 px-6 md:px-8">
         {p.in_match && (
-          <div className="rounded-2xl bg-surface-2 p-4 ring-1 ring-line">
-            <div className="eyebrow mb-3">In this match</div>
-            <div className="grid grid-cols-4 gap-3">
+          <Block title="In this match">
+            <dl className="grid grid-cols-2 gap-x-4 gap-y-5 rounded-2xl bg-surface-2 p-5 ring-1 ring-line sm:grid-cols-4">
               <Big label="Minutes" value={`${Math.round(p.in_match.minutes)}'`} />
               <Big label="Value added" value={`${p.in_match.vaep >= 0 ? "+" : ""}${p.in_match.vaep.toFixed(2)}`} />
               <Big label="Rank in match" value={`#${p.in_match.rank_in_match}`} />
               <Big label="Market value then" value={eur(p.in_match.market_value_eur)} />
-            </div>
-            {p.in_match.age != null && <div className="mt-2 text-[11.5px] text-ink-3">Aged {p.in_match.age} on match day.</div>}
-          </div>
+            </dl>
+            {p.in_match.age != null && <p className="mt-2.5 text-[13px] text-ink-3">Aged {p.in_match.age} on match day.</p>}
+          </Block>
         )}
 
         {!p.career && (
-          <div className="rounded-2xl bg-surface-2 p-4 text-[13px] leading-relaxed text-ink-2 ring-1 ring-line">
-            <span className="font-semibold text-ink">Not in our match data.</span> This profile comes from {(p.sources ?? ["transfermarkt"]).filter((x) => x !== "statsbomb").map((x) => SOURCE_NAME[x] ?? x).join(" and ") || "public records"};
-            our models only have event data for the 2,924 matches in StatsBomb's open data.
-          </div>
+          <p className="rounded-2xl bg-surface-2 p-5 text-[14px] leading-[1.6] text-ink-2 ring-1 ring-line">
+            <span className="font-medium text-ink">Not in our match data.</span> This profile comes from {sources}. Our models only have event data for the 2,924 matches in StatsBomb's open data.
+          </p>
         )}
 
-        {p.career && <div>
-          <div className="eyebrow mb-2">Career in our data · {p.career.matches} matches</div>
-          <div className="grid grid-cols-5 gap-2">
-            <Stat label="Minutes" value={Math.round(p.career.minutes).toLocaleString()} />
-            <Stat label="VAEP / 90" value={p.career.vaep_per90.toFixed(2)} accent />
-            <Stat label="xG" value={p.career.xg.toFixed(1)} />
-            <Stat label="Goals" value={String(p.career.goals)} />
-            <Stat label="Prog / 90" value={p.career.prog_per90.toFixed(1)} />
-          </div>
-        </div>}
+        {p.career && (
+          <Block title="Career in our data" meta={`${p.career.matches} matches`}>
+            <dl className="grid grid-cols-3 gap-x-4 gap-y-5 rounded-2xl bg-surface-2 p-5 ring-1 ring-line sm:grid-cols-5">
+              <Big small label="Minutes" value={Math.round(p.career.minutes).toLocaleString("en-GB")} />
+              <Big small label="Value added per 90" value={p.career.vaep_per90.toFixed(2)} />
+              <Big small label="Expected goals" value={p.career.xg.toFixed(1)} />
+              <Big small label="Goals" value={String(p.career.goals)} />
+              <Big small label="Progression per 90" value={p.career.prog_per90.toFixed(1)} />
+            </dl>
+          </Block>
+        )}
 
         {p.valuations.length > 1 && <ValueChart p={p} />}
 
-        {p.career && p.heatmap && <div className="grid grid-cols-[1fr_1fr] gap-4">
-          <div>
-            <div className="eyebrow mb-2">Where they act</div>
-            <Heatmap h={p.heatmap} />
-            <div className="mt-1 text-[11px] text-ink-4">Attacking left → right, all matches</div>
+        {p.career && p.heatmap && (
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-5">
+            <Block title="Where they act">
+              <Heatmap h={p.heatmap} />
+              <p className="mt-2 text-[12.5px] text-ink-3">Attacking left to right, all matches</p>
+            </Block>
+            <Block title="Value split">
+              <Split off={p.career.vaep_off} def={p.career.vaep_def} />
+            </Block>
           </div>
-          <div>
-            <div className="eyebrow mb-2">Value split</div>
-            <Split off={p.career.vaep_off} def={p.career.vaep_def} />
-          </div>
-        </div>}
+        )}
 
         {p.top_moments.length > 0 && <Moments p={p} />}
 
-        {p.career && p.career.by_competition.length > 0 && <div>
-          <div className="eyebrow mb-2">By competition</div>
-          <div className="overflow-hidden rounded-2xl bg-surface-2 ring-1 ring-line">
-            {p.career.by_competition.map((c, i) => (
-              <div key={c.competition + c.season + c.team} className={`grid grid-cols-[1.6fr_0.6fr_0.7fr_0.6fr_0.5fr] items-center gap-2 px-3.5 py-2 text-[12.5px] ${i ? "border-t border-line" : ""}`}>
-                <span className="min-w-0"><span className="block truncate font-medium text-ink">{c.competition} {c.season}</span><span className="block truncate text-[11px] text-ink-3">{c.team}</span></span>
-                <span className="tabular text-ink-3">{c.matches} gp</span>
-                <span className="tabular text-ink-3">{Math.round(c.minutes).toLocaleString()}'</span>
-                <span className="text-right font-semibold tabular text-ink">{c.vaep_per90.toFixed(2)}</span>
-                <span className="text-right tabular text-ink-2">{c.goals}g</span>
-              </div>
-            ))}
-          </div>
-        </div>}
-
-        <div className="text-[11px] leading-relaxed text-ink-4">
-          Profile: Transfermarkt via transfermarkt-datasets (CC0){p.wikidata_id ? " and Wikidata (CC0)" : ""}
-          {p.match_confidence != null && <> · matched with {Math.round(p.match_confidence * 100)}% confidence</>}
-          {p.photo_credit && <> · Photo: {p.photo_credit}{p.photo_license ? ` (${p.photo_license})` : ""}, Wikimedia Commons</>}
-          .{p.career ? " Career numbers are MatchMind's own models." : ""}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function Avatar({ p }: { p: PlayerProfile }) {
-  const [broken, setBroken] = useState(false);
-  const initials = p.short_name.split(/\s+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase();
-  return p.photo_url && !broken ? (
-    <img src={p.photo_url} alt={p.nickname || p.name} onError={() => setBroken(true)}
-      className="h-[104px] w-[104px] shrink-0 rounded-[28px] object-cover object-top ring-2 ring-white/15" />
-  ) : (
-    <div className="display flex h-[104px] w-[104px] shrink-0 items-center justify-center rounded-[28px] bg-surface-3 text-[40px] text-ink-2 ring-2 ring-white/10">{initials}</div>
-  );
-}
-
-function Big({ label, value }: { label: string; value: string }) {
-  return <div><div className="text-[11px] text-ink-3">{label}</div><div className="display text-[26px] leading-tight text-ink">{value}</div></div>;
-}
-
-function Stat({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
-  return (
-    <div className="rounded-xl bg-surface-2 px-2.5 py-2 ring-1 ring-line">
-      <div className="text-[10.5px] text-ink-3">{label}</div>
-      <div className={`text-[15px] font-semibold tabular ${accent ? "text-ai" : "text-ink"}`}>{value}</div>
-    </div>
-  );
-}
-
-function ValueChart({ p }: { p: PlayerProfile }) {
-  const W = 512, H = 120, P = { l: 44, r: 8, t: 10, b: 20 };
-  const pts = p.valuations.map((v) => ({ d: new Date(v.date), v: v.value_eur, club: v.club }));
-  const x = scaleTime().domain([pts[0].d, pts[pts.length - 1].d]).range([P.l, W - P.r]);
-  const y = scaleLinear().domain([0, Math.max(...pts.map((q) => q.v))]).nice(3).range([H - P.b, P.t]);
-  const path = line<(typeof pts)[number]>().x((q) => x(q.d)).y((q) => y(q.v)).curve(curveStepAfter)(pts);
-  const match = p.matches[0]?.date && p.in_match ? new Date(p.matches[0].date) : null;
-  return (
-    <div>
-      <div className="mb-2 flex items-baseline justify-between">
-        <span className="eyebrow">Market value</span>
-        <span className="text-[12px] text-ink-3">now <span className="font-semibold text-ink">{eur(p.market_value_eur)}</span> · peak <span className="font-semibold text-ink">{eur(p.peak_market_value_eur)}</span></span>
-      </div>
-      <svg viewBox={`0 0 ${W} ${H}`} className="w-full rounded-2xl bg-surface-2 ring-1 ring-line" role="img" aria-label="Market value over time">
-        {y.ticks(3).map((t) => (
-          <g key={t}>
-            <line x1={P.l} x2={W - P.r} y1={y(t)} y2={y(t)} stroke="var(--grid)" />
-            <text x={P.l - 6} y={y(t) + 3.5} fontSize={9.5} fill="var(--ink-4)" textAnchor="end">{eur(t)}</text>
-          </g>
-        ))}
-        <path d={path ?? ""} fill="none" stroke="var(--ink)" strokeWidth={2} strokeLinejoin="round" />
-        {match && match >= pts[0].d && match <= pts[pts.length - 1].d && (
-          <g>
-            <line x1={x(match)} x2={x(match)} y1={P.t} y2={H - P.b} stroke="var(--ai)" strokeDasharray="3 3" />
-            <text x={x(match) + 4} y={P.t + 8} fontSize={9.5} fill="var(--ai)">this match</text>
-          </g>
+        {p.career && p.career.by_competition.length > 0 && (
+          <Block title="By competition">
+            <div className="overflow-hidden rounded-2xl bg-surface-2 ring-1 ring-line">
+              <table className="w-full border-collapse text-[13px]">
+                <thead className="border-b border-line">
+                  <tr className="text-[12px] text-ink-3">
+                    <th scope="col" className="px-4 py-2.5 text-left font-medium">Competition</th>
+                    <th scope="col" className="px-2 py-2.5 text-right font-medium">Matches</th>
+                    <th scope="col" className="hidden px-2 py-2.5 text-right font-medium sm:table-cell">Minutes</th>
+                    <th scope="col" className="px-2 py-2.5 text-right font-medium">Per 90</th>
+                    <th scope="col" className="px-4 py-2.5 text-right font-medium">Goals</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {p.career.by_competition.map((c) => (
+                    <tr key={c.competition + c.season + c.team} className="border-t border-line first:border-t-0">
+                      <th scope="row" className="min-w-0 px-4 py-2.5 text-left font-normal">
+                        <span className="block font-medium text-ink">{c.competition} {c.season}</span>
+                        <span className="block text-[12px] text-ink-3">{c.team}</span>
+                      </th>
+                      <td className="tabular px-2 py-2.5 text-right text-ink-3">{c.matches}</td>
+                      <td className="tabular hidden px-2 py-2.5 text-right text-ink-3 sm:table-cell">{Math.round(c.minutes).toLocaleString("en-GB")}</td>
+                      <td className="tabular px-2 py-2.5 text-right font-medium text-ink">{c.vaep_per90.toFixed(2)}</td>
+                      <td className="tabular px-4 py-2.5 text-right text-ink-2">{c.goals}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p className="mt-2 text-[12.5px] text-ink-3">Per 90 is value added per 90 minutes.</p>
+          </Block>
         )}
-        <text x={P.l} y={H - 5} fontSize={9.5} fill="var(--ink-4)">{pts[0].d.getFullYear()}</text>
-        <text x={W - P.r} y={H - 5} fontSize={9.5} fill="var(--ink-4)" textAnchor="end">{pts[pts.length - 1].d.getFullYear()}</text>
-      </svg>
+
+        <p className="text-pretty text-[12.5px] leading-[1.6] text-ink-3">
+          Profile from Transfermarkt via transfermarkt-datasets (CC0){p.wikidata_id ? " and Wikidata (CC0)" : ""}.
+          {p.match_confidence != null && <> Matched to our data with {Math.round(p.match_confidence * 100)}% confidence.</>}
+          {p.photo_credit && <> Photo by {p.photo_credit}{p.photo_license ? ` (${p.photo_license})` : ""}, Wikimedia Commons.</>}
+          {p.career ? " Career numbers come from MatchMind's own models." : ""}
+        </p>
+      </div>
     </div>
+  );
+}
+
+function Big({ label, value, small }: { label: string; value: string; small?: boolean }) {
+  return (
+    <div className="flex min-w-0 flex-col-reverse justify-end gap-1.5">
+      <dt className="text-[12.5px] leading-[1.35] text-ink-3">{label}</dt>
+      <dd className={`numeral leading-none text-ink ${small ? "text-[24px]" : "text-[30px]"}`}>{value}</dd>
+    </div>
+  );
+}
+
+/** Transfermarkt valuation history: a step line that draws on, with a hover readout. */
+function ValueChart({ p }: { p: PlayerProfile }) {
+  const [ref, { width }] = useSize<HTMLDivElement>();
+  const [hover, setHover] = useState<number | null>(null);
+  const [last, setLast] = useState<number | null>(null);
+  const reduce = useReducedMotion();
+  const H = 132, P = { l: 48, r: 8, t: 14, b: 24 };
+  const pts = useMemo(() => p.valuations.map((v) => ({ d: new Date(v.date), v: v.value_eur, club: v.club })), [p]);
+  if (hover != null && hover !== last) setLast(hover);
+  const shownIdx = hover ?? last;
+  const shown = shownIdx != null ? pts[shownIdx] : null;
+
+  const x = scaleTime().domain([pts[0].d, pts[pts.length - 1].d]).range([P.l, Math.max(P.l + 1, width - P.r)]);
+  const y = scaleLinear().domain([0, Math.max(...pts.map((q) => q.v))]).nice(3).range([H - P.b, P.t]);
+  const path = line<(typeof pts)[number]>().x((q) => x(q.d)).y((q) => y(q.v)).curve(curveStepAfter)(pts) ?? "";
+  const fill = area<(typeof pts)[number]>().x((q) => x(q.d)).y0(H - P.b).y1((q) => y(q.v)).curve(curveStepAfter)(pts) ?? "";
+  const match = p.matches[0]?.date && p.in_match ? new Date(p.matches[0].date) : null;
+  const showMatch = match && match >= pts[0].d && match <= pts[pts.length - 1].d;
+
+  return (
+    <Block title="Market value" meta={<>Now <span className="text-ink">{eur(p.market_value_eur)}</span>, peak <span className="text-ink">{eur(p.peak_market_value_eur)}</span></>}>
+      <div ref={ref} className="relative" style={{ height: H }}>
+        {width > 0 && (
+          <svg width={width} height={H} className="block overflow-visible" role="img"
+            aria-label={`Market value from ${pts[0].d.getFullYear()} to ${pts[pts.length - 1].d.getFullYear()}, peaking at ${eur(p.peak_market_value_eur)}`}>
+            {y.ticks(3).map((t) => (
+              <g key={t}>
+                <line x1={P.l} x2={width - P.r} y1={y(t)} y2={y(t)} stroke="var(--grid)" />
+                <text x={P.l - 8} y={y(t) + 4} fontSize={11} fill="var(--ink-3)" textAnchor="end" className="tabular">{eur(t)}</text>
+              </g>
+            ))}
+            <motion.path d={fill} fill="var(--ink)" initial={reduce ? false : { opacity: 0 }} animate={{ opacity: 0.06 }} transition={{ duration: 0.6, delay: 0.5 }} />
+            <motion.path d={path} fill="none" stroke="var(--ink-2)" strokeWidth={1.5} strokeLinejoin="round"
+              initial={reduce ? false : { pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.1, delay: 0.2, ease: EASE }} />
+            {showMatch && (
+              <g>
+                <line x1={x(match)} x2={x(match)} y1={P.t} y2={H - P.b} stroke="var(--ink-3)" strokeDasharray="3 3" />
+                <text x={x(match) + 5} y={P.t + 9} fontSize={11} fill="var(--ink-2)">This match</text>
+              </g>
+            )}
+            <text x={P.l} y={H - 5} fontSize={11} fill="var(--ink-3)" className="tabular">{pts[0].d.getFullYear()}</text>
+            <text x={width - P.r} y={H - 5} fontSize={11} fill="var(--ink-3)" textAnchor="end" className="tabular">{pts[pts.length - 1].d.getFullYear()}</text>
+            {shown && (
+              <circle cx={x(shown.d)} cy={y(shown.v)} r={4} fill="var(--ink)" stroke="var(--surface-1)" strokeWidth={2} pointerEvents="none"
+                opacity={hover != null ? 1 : 0} style={{ transition: `opacity ${hover != null ? "var(--tt-in-dur)" : "var(--tt-out-dur)"} ease-out` }} />
+            )}
+            <rect x={P.l} y={0} width={Math.max(0, width - P.l - P.r)} height={H} fill="transparent"
+              onPointerMove={(e) => {
+                const t = x.invert(e.clientX - e.currentTarget.getBoundingClientRect().left + P.l).getTime();
+                // the valuation in force at the pointer (step-after)
+                let i = 0;
+                for (let k = 0; k < pts.length; k++) if (pts[k].d.getTime() <= t) i = k;
+                setHover(i);
+              }}
+              onPointerLeave={() => setHover(null)} />
+          </svg>
+        )}
+        {shown && width > 0 && (
+          <div data-open={hover != null} style={{ left: Math.min(Math.max(x(shown.d), 100), width - 100), top: Math.max(-34, y(shown.v) - 42) }}
+            className="t-tt absolute z-10 whitespace-nowrap rounded-lg bg-surface-3 px-2.5 py-1.5 text-[12px] text-ink shadow-[0_8px_24px_-8px_rgba(0,0,0,0.6)] ring-1 ring-line-strong">
+            <span className="mr-2 text-ink-2">{monthFmt.format(shown.d)}</span>
+            <span className="tabular font-medium">{eur(shown.v)}</span>
+            {shown.club && <span className="text-ink-2">, {shown.club}</span>}
+          </div>
+        )}
+      </div>
+    </Block>
   );
 }
 
@@ -218,11 +326,11 @@ function Heatmap({ h }: { h: NonNullable<PlayerProfile["heatmap"]> }) {
   const { L, W } = PITCH;
   const cw = L / h.nx, ch = W / h.ny;
   return (
-    <svg viewBox={`-1.5 -1.5 ${L + 3} ${W + 3}`} className="w-full overflow-hidden rounded-xl" role="img" aria-label="Action heatmap">
+    <svg viewBox={`-1.5 -1.5 ${L + 3} ${W + 3}`} className="w-full overflow-hidden rounded-xl" role="img" aria-label="Where this player's actions happen, attacking left to right">
       <PitchMarkings pad={1.5} texture={false} lineWidth={0.45} />
       {h.values.map((v, i) => {
         const cx = i % h.nx, cy = Math.floor(i / h.nx);
-        return v > 0.02 ? <rect key={i} x={cx * cw} y={(h.ny - 1 - cy) * ch} width={cw} height={ch} fill="#b6a4ff" opacity={Math.min(0.85, v * 0.85)} /> : null;
+        return v > 0.02 ? <rect key={i} x={cx * cw} y={(h.ny - 1 - cy) * ch} width={cw} height={ch} fill="var(--ink)" opacity={Math.min(0.75, v * 0.75)} /> : null;
       })}
     </svg>
   );
@@ -231,14 +339,14 @@ function Heatmap({ h }: { h: NonNullable<PlayerProfile["heatmap"]> }) {
 function Split({ off, def }: { off: number; def: number }) {
   const total = Math.max(Math.abs(off) + Math.abs(def), 0.001);
   return (
-    <div className="rounded-xl bg-surface-2 p-3 ring-1 ring-line">
-      {[["Attacking", off], ["Defending", def]].map(([l, v]) => (
-        <div key={l as string} className="mb-2 last:mb-0">
-          <div className="mb-1 flex justify-between text-[12px]"><span className="text-ink-3">{l}</span><span className="font-semibold tabular text-ink">{(v as number).toFixed(1)}</span></div>
-          <div className="h-[5px] rounded-full bg-surface-4"><div className="h-[5px] rounded-full bg-ai" style={{ width: `${(Math.abs(v as number) / total) * 100}%` }} /></div>
+    <div className="rounded-2xl bg-surface-2 p-4 ring-1 ring-line">
+      {([["Attacking", off], ["Defending", def]] as const).map(([l, v]) => (
+        <div key={l} className="mb-3 last:mb-0">
+          <div className="mb-1.5 flex justify-between text-[13px]"><span className="text-ink-3">{l}</span><span className="tabular font-medium text-ink">{v.toFixed(1)}</span></div>
+          <div className="h-1.5 rounded-full bg-surface-4"><div className="h-1.5 rounded-full bg-ink-2" style={{ width: `${(Math.abs(v) / total) * 100}%` }} /></div>
         </div>
       ))}
-      <p className="mt-2 text-[11px] leading-snug text-ink-4">Total VAEP from attacking vs defending actions.</p>
+      <p className="mt-3 text-[12.5px] leading-[1.5] text-ink-3">Total value added from attacking and defending actions.</p>
     </div>
   );
 }
@@ -262,21 +370,25 @@ function Moments({ p }: { p: PlayerProfile }) {
   const rows = useMemo(() => p.top_moments.slice(0, 6), [p]);
   const inDb = useMemo(() => new Set(p.matches.filter((m) => m.in_db).map((m) => m.match_id)), [p]);
   return (
-    <div>
-      <div className="eyebrow mb-2">Best moments by value added</div>
-      <div className="overflow-hidden rounded-2xl bg-surface-2 ring-1 ring-line">
-        {rows.map((m, i) => (
-          <button key={i} onClick={() => inDb.has(m.match_id) && go(m)} disabled={!inDb.has(m.match_id)}
-            className={`flex w-full items-start gap-3 px-3.5 py-2.5 text-left transition enabled:hover:bg-surface-3 ${i ? "border-t border-line" : ""}`}>
-            <span className="display w-12 shrink-0 text-[16px] text-ink">{m.minute_label}</span>
-            <span className="min-w-0 flex-1">
-              <span className="block text-[11.5px] text-ink-3">{m.match_label}</span>
-              <span className="block text-[13px] leading-snug text-ink-2">{m.text ?? (inDb.has(m.match_id) ? "Open the moment" : "Training match (not in the demo set)")}</span>
-            </span>
-            <span className="shrink-0 text-[12px] font-semibold tabular text-ai">+{m.vaep.toFixed(2)}</span>
-          </button>
-        ))}
-      </div>
-    </div>
+    <Block title="Best moments by value added">
+      <ul className="space-y-0.5 rounded-[18px] bg-surface-2 p-1.5 ring-1 ring-line">
+        {rows.map((m, i) => {
+          const can = inDb.has(m.match_id);
+          return (
+            <li key={i}>
+              <button type="button" onClick={() => can && go(m)} disabled={!can}
+                className="flex w-full items-start gap-3 rounded-xl px-3 py-2.5 text-left transition-[background-color,transform] duration-150 ease-out enabled:hover:bg-surface-3 enabled:active:scale-[0.98] disabled:cursor-default">
+                <span className="numeral w-11 shrink-0 text-[18px] leading-[1.2] text-ink">{m.minute_label}</span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-[12.5px] text-ink-3">{m.match_label}</span>
+                  <span className="mt-0.5 block text-[14px] leading-[1.45] text-ink-2">{m.text?.replace(/(\d)[–—](\d)/g, "$1-$2") ?? (can ? "Open the moment" : "Training match, not in the demo set")}</span>
+                </span>
+                <span className="tabular shrink-0 pt-px text-[13px] font-medium text-ink-2">+{m.vaep.toFixed(2)}</span>
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+    </Block>
   );
 }

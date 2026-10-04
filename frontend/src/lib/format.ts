@@ -10,9 +10,9 @@ export function clock(period: number, minute: number): string {
 }
 
 export const pct = (v: number | null | undefined, digits = 0) =>
-  v == null ? "–" : `${(v * 100).toFixed(digits)}%`;
+  v == null ? "-" : `${(v * 100).toFixed(digits)}%`;
 
-export const xg = (v: number | null | undefined) => (v == null ? "–" : v.toFixed(2));
+export const xg = (v: number | null | undefined) => (v == null ? "-" : v.toFixed(2));
 
 export const signed = (v: number, digits = 2) => `${v >= 0 ? "+" : "−"}${Math.abs(v).toFixed(digits)}`;
 
@@ -34,3 +34,13 @@ export const isMove = (t: ActionType) =>
   ["pass", "cross", "corner", "freekick", "throw_in", "goalkick", "kickoff"].includes(t);
 export const isDefensive = (t: ActionType) =>
   ["tackle", "interception", "clearance", "recovery", "block"].includes(t);
+
+/** House style has no em or en dashes: digit ranges and scores take a hyphen, a dash between words becomes a comma.
+ *  Applied at display time to generated text (analyst answers, commentary). */
+export function undash(t: string): string {
+  return t.replace(/(\d)\s*[–—]\s*(\d)/g, "$1-$2").replace(/\s*[–—]\s*/g, ", ").replace(/,\s*([,.;:!?])/g, "$1");
+}
+
+/** Compact euro amounts: €275k, €4.0m, €120m. */
+export const eur = (v: number | null | undefined) =>
+  v == null ? "-" : v >= 1e6 ? `€${(v / 1e6).toFixed(v >= 1e8 ? 0 : 1)}m` : v >= 1e3 ? `€${Math.round(v / 1e3)}k` : `€${v}`;

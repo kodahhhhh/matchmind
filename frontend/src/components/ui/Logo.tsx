@@ -14,7 +14,7 @@ export function Logo({ size = 34 }: { size?: number }) {
         <circle cx="20" cy="20" r="3.6" fill="none" stroke="rgba(255,255,255,0.75)" strokeWidth="1.6" />
         <circle cx="28" cy="15" r="2.6" fill="#b6a4ff" />
       </svg>
-      <span className="display text-[19px] tracking-[0.06em] text-ink">MatchMind</span>
+      <span className="text-[17px] font-semibold tracking-[-0.02em] text-ink">MatchMind</span>
     </span>
   );
 }

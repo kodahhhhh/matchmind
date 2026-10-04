@@ -1,51 +1,66 @@
+import { useReducedMotion } from "motion/react";
 import type { MatchDetail, Side } from "../../api/types";
 import { clock } from "../../lib/format";
 import { AnimatedNumber } from "../ui/AnimatedNumber";
 
-/** Broadcast scorebug: team blocks, big score, scorers underneath. */
+interface Scorer { name: string; minutes: string }
+
+/** Broadcast scorebug: team names, big score, scorers underneath. */
 export function Scoreboard({ match }: { match: MatchDetail }) {
+  const reduce = useReducedMotion();
   const pens = match.score.penalties;
   const players = new Map([...match.lineups.home, ...match.lineups.away].map((p) => [p.player_id, p.short_name]));
-  const scorers = (side: Side) => {
+  const scorers = (side: Side): Scorer[] => {
     const by = new Map<string, string[]>();
     for (const m of match.markers) {
       if (m.type !== "goal" || m.team !== side) continue;
-      const name = m.detail === "own_goal" ? "OG" : players.get(m.player_id ?? -1) ?? "?";
-      by.set(name, [...(by.get(name) ?? []), clock(m.period, m.minute) + (m.detail === "penalty" ? " P" : "")]);
+      const name = m.detail === "own_goal" ? "Own goal" : players.get(m.player_id ?? -1) ?? "Unknown";
+      by.set(name, [...(by.get(name) ?? []), clock(m.period, m.minute) + (m.detail === "penalty" ? " (pen)" : "")]);
     }
-    return [...by.entries()].map(([n, ms]) => `${n} ${ms.join(", ")}`);
+    return [...by.entries()].map(([name, ms]) => ({ name, minutes: ms.join(", ") }));
   };
+  const extraTime = match.periods.some((p) => p.period >= 3);
+  const status = pens ? `${pens.home}-${pens.away} on penalties` : extraTime ? "After extra time" : "Full time";
 
   return (
-    <div className="flex items-start gap-3">
+    <div className="flex w-full items-start justify-center gap-3 lg:w-auto lg:gap-4">
       <TeamBlock side="home" name={match.teams.home.name} scorers={scorers("home")} />
-      <div className="flex flex-col items-center">
-        <div className="flex h-[52px] items-center overflow-hidden rounded-xl bg-surface-3 ring-1 ring-white/10">
+      <div className="flex shrink-0 flex-col items-center">
+        <div className="flex h-[52px] items-center overflow-hidden rounded-2xl bg-surface-3 ring-1 ring-line-strong"
+          aria-label={`${match.score.home}-${match.score.away}`} role="img">
           <span className="h-full w-1.5 bg-home" />
-          <span className="display w-14 text-center text-[40px] leading-none text-ink"><AnimatedNumber value={match.score.home} from={0} ms={900} /></span>
-          <span className="h-6 w-px bg-white/15" />
-          <span className="display w-14 text-center text-[40px] leading-none text-ink"><AnimatedNumber value={match.score.away} from={0} ms={900} /></span>
+          <span className="numeral w-14 text-center text-[40px] leading-none text-ink">
+            <AnimatedNumber value={match.score.home} from={reduce ? undefined : 0} ms={900} />
+          </span>
+          <span className="h-6 w-px bg-line-strong" />
+          <span className="numeral w-14 text-center text-[40px] leading-none text-ink">
+            <AnimatedNumber value={match.score.away} from={reduce ? undefined : 0} ms={900} />
+          </span>
           <span className="h-full w-1.5 bg-away" />
         </div>
-        <div className="mt-1.5 text-[11px] font-medium text-ink-3">
-          {pens ? <>{pens.home}–{pens.away} pens · <span className="text-ink-2">FT</span></> : "Full time"}
-        </div>
+        <p className="tabular mt-1.5 whitespace-nowrap text-[12px] font-medium text-ink-3">{status}</p>
       </div>
       <TeamBlock side="away" name={match.teams.away.name} scorers={scorers("away")} />
     </div>
   );
 }
 
-function TeamBlock({ side, name, scorers }: { side: Side; name: string; scorers: string[] }) {
+function TeamBlock({ side, name, scorers }: { side: Side; name: string; scorers: Scorer[] }) {
   const right = side === "home";
+  const size = name.length <= 12 ? "text-[18px] lg:text-[26px]" : name.length <= 17 ? "text-[15px] lg:text-[21px]" : "text-[13px] lg:text-[18px]";
+  const all = scorers.map((s) => `${s.name} ${s.minutes}`).join(", ");
   return (
-    <div className={`flex w-[34vw] flex-col lg:w-[230px] ${right ? "items-end text-right" : "items-start text-left"}`}>
-      <div className={`display flex h-[52px] items-center leading-none text-ink ${name.length <= 12 ? "text-[20px] lg:text-[30px]" : name.length <= 17 ? "text-[17px] lg:text-[24px]" : "text-[15px] lg:text-[20px]"}`}>{name}</div>
-      <div className="mt-1.5 line-clamp-1 text-[10.5px] text-ink-3 lg:text-[11.5px]">
+    <div className={`flex min-w-0 flex-1 flex-col lg:w-[230px] lg:flex-none lg:max-[1399px]:w-[176px] ${right ? "items-end text-right" : "items-start text-left"}`}>
+      <p title={name} className={`flex h-[52px] max-w-full items-center font-semibold leading-none tracking-[-0.03em] text-ink ${size}`}>
+        <span className="truncate">{name}</span>
+      </p>
+      <p title={all || undefined} className="tabular mt-1.5 max-w-full truncate text-[11px] text-ink-3 lg:text-[12px]">
         {scorers.length ? scorers.map((s, i) => (
-          <span key={s}>{i > 0 && <span className="mx-1 text-ink-4">·</span>}{s}</span>
+          <span key={s.name} className={i > 0 ? "ml-2.5" : undefined}>
+            <span className="text-ink-2">{s.name}</span> {s.minutes}
+          </span>
         )) : <span className="text-ink-4">No goals</span>}
-      </div>
+      </p>
     </div>
   );
 }

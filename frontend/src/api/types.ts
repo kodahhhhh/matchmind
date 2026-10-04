@@ -223,6 +223,16 @@ export interface Counterfactual {
   effect?: Record<Side, { xg: number; possession: number }>;
   negligible?: boolean;
   lineup_change?: { restored: LineupPlayer; removed: LineupPlayer | null } | null;
+  /** Actual-goals model: how the current block (normal time or extra time) ends, real state vs changed. */
+  result?: {
+    block: "normal_time" | "extra_time";
+    level_means: "draw" | "extra_time" | "penalties";
+    score: { factual: Record<Side, number>; modelled: Record<Side, number> };
+    factual: { home: number; level: number; away: number };
+    modelled: { home: number; level: number; away: number };
+  };
+  /** Chance each team scores at least once in the next 15 minutes. */
+  scoring_chance?: { factual: Record<Side, number>; modelled: Record<Side, number> };
   series: { offset_min: number; actual: Record<Side, number>; modelled: Record<Side, Band> | null }[];
   analogs: {
     match_id: string;
@@ -303,6 +313,8 @@ export interface CommentaryLine {
 
 export type AskChunk =
   | { type: "tool"; name: string; args: Record<string, unknown> }
+  | { type: "tool_result"; name: string; summary: string; ok: boolean }
+  | { type: "reasoning"; delta: string }
   | { type: "text"; delta: string }
   | { type: "citation"; ref: string; label: string }
   | { type: "done" };

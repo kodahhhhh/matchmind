@@ -1,5 +1,7 @@
 @import "tailwindcss";
 @import "./theme/tokens.css";
+@import "./theme/transitions.css";
+@import "./theme/shadcn.css";
 
 @theme inline {
   --color-bg: var(--bg);
@@ -19,8 +21,15 @@
   --color-ai-soft: var(--ai-soft);
   --color-home: var(--home);
   --color-away: var(--away);
+  --color-positive: var(--positive);
+  --color-negative: var(--negative);
+  --color-card-yellow: var(--card-yellow);
+  --color-card-red: var(--card-red);
   --font-sans: var(--font-sans);
   --font-display: var(--font-display);
+  --font-landing: var(--font-landing);
+  --font-mono: var(--font-mono);
+  --ease-smooth-out: var(--ease-smooth-out);
 }
 
 html,
@@ -34,7 +43,6 @@ body {
   background: var(--bg);
   color: var(--ink);
   font-family: var(--font-sans);
-  font-feature-settings: "cv11", "ss01", "ss03";
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
@@ -57,19 +65,28 @@ body::before {
 
 .tabular { font-variant-numeric: tabular-nums; }
 
-.display {
+/* broadcast numerals for scores, clock labels and big figures. Digits only: words use the sans.
+   `.display` is the legacy name and now means the same thing (no case transform anywhere). */
+.display,
+.numeral {
   font-family: var(--font-display);
-  font-weight: 700;
-  letter-spacing: 0.01em;
-  text-transform: uppercase;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
 }
 
+/* neutral focus ring everywhere; text fields draw their own ring */
+:focus-visible:not(input, textarea, select) {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+
+/* small section heading inside panels (legacy class name; sentence case, never uppercase) */
 .eyebrow {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--ink-3);
+  letter-spacing: -0.005em;
+  color: var(--ink-2);
 }
 
 .glass {
@@ -79,11 +96,14 @@ body::before {
   border: 1px solid rgba(255, 255, 255, 0.09);
 }
 
+/* the one AI action colour: flat violet, inner highlight, no glow */
 .ai-button {
-  background: linear-gradient(135deg, #8f7dff 0%, #6b5ce7 100%);
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12) inset, 0 8px 24px -8px rgba(124, 108, 240, 0.7);
+  background: var(--ai-button);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 0 0 1px rgba(255, 255, 255, 0.06);
+  transition: background-color 150ms ease-out, transform 150ms ease-out;
 }
-.ai-button:hover { filter: brightness(1.08); }
+.ai-button:hover { background: var(--ai-button-hover); }
+.ai-button:active { transform: scale(0.97); }
 
 .scroll-thin { scrollbar-width: thin; scrollbar-color: var(--surface-4) transparent; }
 

@@ -36,12 +36,28 @@
   --ai-2: #7c6cf0;
   --ai-soft: rgba(182, 164, 255, 0.12);
   --ai-line: rgba(182, 164, 255, 0.38);
+  --ai-button: #6b5ce7;
+  --ai-button-hover: #7768ee;
+
+  /* semantic state: cards on the timeline, wins and losses in the backtest */
+  --card-yellow: #f2c94c;
+  --card-red: #e5484d;
+  --positive: #3ccf8e;
+  --negative: #ff6b6b;
 
   /* team colours, set per match */
   --home: #7cb9e8;
   --away: #e5484d;
 
   --radius: 18px;
-  --font-sans: "Inter Variable", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-sans: "Geist Variable", "Inter Variable", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-display: "Barlow Condensed", "Inter Variable", system-ui, sans-serif;
+  --font-landing: "Geist Variable", "Inter Variable", system-ui, sans-serif;
+  --font-mono: "Geist Mono Variable", ui-monospace, "SF Mono", monospace;
+
+  /* motion (transitions.dev scale) */
+  --ease-smooth-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-quick: 150ms;
+  --duration-fast: 250ms;
+  --duration-very-slow: 500ms;
 }

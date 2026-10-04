@@ -19,11 +19,23 @@ export type Focus =
   | { kind: "turning"; id: string }
   | null;
 
+/** One tool call the analyst made: what it asked for and what came back (in plain English). */
+export interface AgentStep {
+  name: string;
+  args: Record<string, unknown>;
+  state: "running" | "done" | "error";
+  summary?: string;
+}
+
 export interface ChatMessage {
   id: string;
   role: "user" | "assistant";
   content: string;
-  tools: string[];
+  steps: AgentStep[];
+  /** The model's own thinking summary, streamed before and between tool calls. */
+  reasoning: string;
+  /** Citation labels from the backend, keyed "ev:<id>" / "seq:<id>". */
+  labels: Record<string, string>;
   streaming: boolean;
 }
 
@@ -109,6 +121,7 @@ interface State {
   stepReplay: () => void;
   stopReplay: () => void;
   ask: (question: string) => Promise<void>;
+  stopAsking: () => void;
   setPendingFocus: (f: { seq?: string; ev?: string } | null) => void;
 }
 
@@ -144,6 +157,10 @@ function buildReel(d: MatchData): ReelItem[] {
 export const bucketKey = (period: number, minute: number) => `${period}:${minute}`;
 
 let askAbort: AbortController | null = null;
+
+/** crypto.randomUUID only exists on HTTPS/localhost; the app is also opened over plain HTTP (Tailscale IP). */
+let idSeq = 0;
+const newId = () => `m${Date.now().toString(36)}${(idSeq++).toString(36)}${Math.random().toString(36).slice(2, 8)}`;
 
 export const useMatch = create<State>((set, get) => ({
   matchId: null,
@@ -268,12 +285,12 @@ export const useMatch = create<State>((set, get) => ({
     askAbort = new AbortController();
     const signal = askAbort.signal;
     const history = get().chat.filter((m) => !m.streaming).map((m) => ({ role: m.role, content: m.content }));
-    const uid = crypto.randomUUID();
-    const aid = crypto.randomUUID();
+    const uid = newId();
+    const aid = newId();
     set((s) => ({
       rightTab: "analyst",
-      chat: [...s.chat, { id: uid, role: "user", content: question, tools: [], streaming: false },
-        { id: aid, role: "assistant", content: "", tools: [], streaming: true }],
+      chat: [...s.chat, { id: uid, role: "user", content: question, steps: [], reasoning: "", labels: {}, streaming: false },
+        { id: aid, role: "assistant", content: "", steps: [], reasoning: "", labels: {}, streaming: true }],
     }));
     const patch = (fn: (m: ChatMessage) => ChatMessage) =>
       set((s) => ({ chat: s.chat.map((m) => (m.id === aid ? fn(m) : m)) }));
@@ -298,13 +315,25 @@ export const useMatch = create<State>((set, get) => ({
           patch((m) => ({ ...m, content: m.content + chunk.delta }));
           follow();
         }
-        else if (chunk.type === "tool") patch((m) => ({ ...m, tools: [...m.tools, chunk.name] }));
+        else if (chunk.type === "tool") patch((m) => ({ ...m, steps: [...m.steps, { name: chunk.name, args: chunk.args, state: "running" }] }));
+        else if (chunk.type === "tool_result") {
+          patch((m) => {
+            const i = m.steps.findLastIndex((st) => st.name === chunk.name && st.state === "running");
+            if (i < 0) return m;
+            const steps = [...m.steps];
+            steps[i] = { ...steps[i], state: chunk.ok ? "done" : "error", summary: chunk.summary };
+            return { ...m, steps };
+          });
+        }
+        else if (chunk.type === "reasoning") patch((m) => ({ ...m, reasoning: m.reasoning + chunk.delta }));
+        else if (chunk.type === "citation") patch((m) => ({ ...m, labels: { ...m.labels, [chunk.ref]: chunk.label } }));
         else if (chunk.type === "done") break;
       }
-    } catch (e) {
-      if (!signal.aborted) patch((m) => ({ ...m, content: m.content + `\n\n_Something went wrong: ${e instanceof Error ? e.message : e}_` }));
+    } catch {
+      if (!signal.aborted) patch((m) => ({ ...m, content: m.content + "\n\n_Unable to finish the answer. Check your connection and ask again._" }));
     } finally {
-      patch((m) => ({ ...m, streaming: false }));
+      patch((m) => ({ ...m, streaming: false, steps: m.steps.map((st) => (st.state === "running" ? { ...st, state: "done" } : st)) }));
     }
   },
+  stopAsking: () => askAbort?.abort(),
 }));

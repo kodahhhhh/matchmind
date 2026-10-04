@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import type { MatchEvent, Side } from "../../api/types";
 import { bucketKey, resolveSequence, useMatch } from "../../store/match";
-import { clock, describe, isDefensive, isMove, isShot, xg } from "../../lib/format";
+import { clock, describe, isDefensive, isMove, isShot } from "../../lib/format";
 import { PitchMarkings } from "./PitchMarkings";
 import { PITCH, sy } from "./geometry";
 import { useSize } from "../ui/useSize";
@@ -48,6 +48,9 @@ export function Pitch() {
   const focusEvent = useMatch((s) => s.focusEvent);
   const { events, mode } = usePitchEvents();
   const [hover, setHover] = useState<MatchEvent | null>(null);
+  // keep the last hovered event while the tooltip fades out, so it doesn't empty mid-exit
+  const [lastHover, setLastHover] = useState<MatchEvent | null>(null);
+  if (hover && hover !== lastHover) setLastHover(hover);
   const [boxRef, box] = useSize<HTMLDivElement>();
 
   const reel = useMatch((s) => s.reel);
@@ -143,15 +146,15 @@ export function Pitch() {
             <g key={e.id} {...hoverProps(e)}>
               {(goal || isFocus || mode === "sequence") && (
                 <line x1={e.x!} y1={sy(e.y!)} x2={e.team === "home" ? L : 0} y2={sy(e.end_y ?? W / 2)}
-                  stroke="#fff" strokeOpacity={goal ? 0.5 : 0.25} strokeWidth={0.16} strokeDasharray={goal ? undefined : "0.5 0.5"} />
+                  stroke="var(--ink)" strokeOpacity={goal ? 0.5 : 0.25} strokeWidth={0.16} strokeDasharray={goal ? undefined : "0.5 0.5"} />
               )}
-              <motion.g initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
-                transition={{ type: "spring", stiffness: 380, damping: 22, delay: Math.min(shotIndex.get(e.id) ?? 0, 40) * 0.018 }}
+              <motion.g initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1], delay: Math.min(shotIndex.get(e.id) ?? 0, 40) * 0.018 }}
                 style={{ transformBox: "fill-box", transformOrigin: "center" }}>
                 <circle cx={e.x!} cy={sy(e.y!)} r={Math.max(r + 1, 2.4)} fill="transparent" />
                 <circle cx={e.x!} cy={sy(e.y!)} r={r} fill={col(e.team)} fillOpacity={goal ? 1 : 0.32}
-                  stroke={goal ? "#fff" : col(e.team)} strokeWidth={goal ? 0.32 : 0.3} filter={goal || isFocus ? "url(#pglow)" : undefined} />
-                {goal && <circle cx={e.x!} cy={sy(e.y!)} r={Math.max(r * 0.3, 0.35)} fill="#fff" />}
+                  stroke={goal ? "var(--ink)" : col(e.team)} strokeWidth={goal ? 0.32 : 0.3} filter={goal || isFocus ? "url(#pglow)" : undefined} />
+                {goal && <circle cx={e.x!} cy={sy(e.y!)} r={Math.max(r * 0.3, 0.35)} fill="var(--ink)" />}
               </motion.g>
             </g>
           );
@@ -166,7 +169,7 @@ export function Pitch() {
             <motion.g key="ball" initial={{ x: current.x, y: sy(current.y!) }}
               animate={{ x: current.end_x ?? current.x, y: sy(current.end_y ?? current.y!) }}
               transition={{ duration: 0.6, ease: "easeInOut" }} exit={{ opacity: 0 }}>
-              <circle r={1.1} fill="#fff" filter="url(#pglow)" />
+              <circle r={1.1} fill="var(--ink)" filter="url(#pglow)" />
               <circle r={0.45} fill="var(--on-grass)" />
             </motion.g>
           )}
@@ -174,11 +177,12 @@ export function Pitch() {
 
         {focusEv && focusEv.x != null && mode !== "sequence" && <FocusCallout e={focusEv} />}
 
-        <g fontSize={1.5} fontWeight={700} letterSpacing={0.15} fill="#fff" fillOpacity={0.7} textAnchor="middle">
-          <text x={L / 2} y={-0.8}>{data.match.teams.home.short} →  attacking  ← {data.match.teams.away.short}</text>
+        <g fontSize={1.45} fontWeight={600} fill="var(--ink)" fillOpacity={0.72}>
+          <text x={L / 2 - 1.6} y={-0.75} textAnchor="end">{data.match.teams.home.name} attacking →</text>
+          <text x={L / 2 + 1.6} y={-0.75} textAnchor="start">← {data.match.teams.away.name} attacking</text>
         </g>
       </svg>
-      {hover && hover.id !== focusId && <Tooltip e={hover} vb={vb} />}
+      {lastHover && <Tooltip e={lastHover} vb={vb} open={!!hover && hover.id !== focusId} />}
     </div>
   );
 }
@@ -189,9 +193,9 @@ function Pill({ x, y, text, side, anchor = "middle", size = 1.5 }: { x: number; 
   const x0 = anchor === "middle" ? x - w / 2 : anchor === "end" ? x - w : x;
   return (
     <g pointerEvents="none">
-      <rect x={x0} y={y - h / 2} width={w} height={h} rx={h / 2} fill="rgba(6,10,8,0.82)" stroke="rgba(255,255,255,0.14)" strokeWidth={0.08} />
+      <rect x={x0} y={y - h / 2} width={w} height={h} rx={h / 2} fill="var(--bg)" fillOpacity={0.82} stroke="var(--ink)" strokeOpacity={0.14} strokeWidth={0.08} />
       {side && <circle cx={x0 + 1.15} cy={y} r={0.42} fill={col(side)} />}
-      <text x={x0 + (side ? 1.9 : 0.8)} y={y + size * 0.36} fontSize={size} fontWeight={600} fill="#fff">{text}</text>
+      <text x={x0 + (side ? 1.9 : 0.8)} y={y + size * 0.36} fontSize={size} fontWeight={600} fill="var(--ink)">{text}</text>
     </g>
   );
 }
@@ -204,11 +208,11 @@ function GoalCallouts({ goals }: { goals: MatchEvent[] }) {
         let ly = sy(e.y!) - 4.2;
         while (placed.some((p) => Math.abs(p.x - e.x!) < 12 && Math.abs(p.y - ly) < 2.8)) ly -= 3;
         placed.push({ x: e.x!, y: ly });
-        const label = `${e.player} ${clock(e.period, e.minute)}${e.type === "shot_penalty" ? " (P)" : ""}`;
+        const label = `${e.player} ${clock(e.period, e.minute)}${e.type === "shot_penalty" ? " (pen)" : ""}`;
         const anchor = e.x! > L - 10 ? "end" : e.x! < 10 ? "start" : "middle";
         return (
           <g key={`c-${e.id}`}>
-            <line x1={e.x!} y1={sy(e.y!) - 1} x2={e.x!} y2={ly + 1.2} stroke="#fff" strokeOpacity={0.4} strokeWidth={0.1} />
+            <line x1={e.x!} y1={sy(e.y!) - 1} x2={e.x!} y2={ly + 1.2} stroke="var(--ink)" strokeOpacity={0.4} strokeWidth={0.1} />
             <Pill x={e.x!} y={ly} text={label} side={e.team} anchor={anchor} size={1.35} />
           </g>
         );
@@ -218,13 +222,14 @@ function GoalCallouts({ goals }: { goals: MatchEvent[] }) {
 }
 
 function FocusCallout({ e }: { e: MatchEvent }) {
+  const reduce = useReducedMotion();
   const y = sy(e.y!);
   const above = y > 8;
   return (
     <g>
-      <circle cx={e.x!} cy={y} r={2.4} fill="none" stroke="#fff" strokeWidth={0.2}>
-        <animate attributeName="r" values="2;3.6;2" dur="1.8s" repeatCount="indefinite" />
-        <animate attributeName="opacity" values="0.9;0.1;0.9" dur="1.8s" repeatCount="indefinite" />
+      <circle cx={e.x!} cy={y} r={2.4} fill="none" stroke="var(--ink)" strokeWidth={0.2}>
+        {!reduce && <animate attributeName="r" values="2;3.6;2" dur="1.8s" repeatCount="indefinite" />}
+        {!reduce && <animate attributeName="opacity" values="0.9;0.1;0.9" dur="1.8s" repeatCount="indefinite" />}
       </circle>
       <Pill x={e.x!} y={above ? y - 4.6 : y + 4.6} text={describe(e)} side={e.team} anchor={e.x! > L - 14 ? "end" : e.x! < 14 ? "start" : "middle"} />
     </g>
@@ -246,7 +251,7 @@ function SequenceNodes({ evs }: { evs: MatchEvent[] }) {
         prev = e.player;
         return (
           <motion.g key={`n-${e.id}`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.05 }}>
-            <circle cx={e.x!} cy={sy(e.y!)} r={1.25} fill={col(e.team)} stroke="#fff" strokeWidth={0.22} />
+            <circle cx={e.x!} cy={sy(e.y!)} r={1.25} fill={col(e.team)} stroke="var(--ink)" strokeWidth={0.22} />
             <text x={e.x!} y={sy(e.y!) + 0.46} textAnchor="middle" fontSize={1.25} fontWeight={700} fill="var(--on-grass)">{i + 1}</text>
             {name && <Pill x={e.x!} y={sy(e.y!) - 3.1} text={name} size={1.3} />}
           </motion.g>
@@ -256,16 +261,16 @@ function SequenceNodes({ evs }: { evs: MatchEvent[] }) {
   );
 }
 
-function Tooltip({ e, vb }: { e: MatchEvent; vb: typeof VB }) {
+/** Event tooltip (transitions.dev tooltip): fades and scales in over 150ms, out in 50ms. */
+function Tooltip({ e, vb, open }: { e: MatchEvent; vb: typeof VB; open: boolean }) {
   const left = `${((e.x! - vb.x) / vb.w) * 100}%`;
   const top = `${((sy(e.y!) - vb.y) / vb.h) * 100}%`;
   return (
-    <div className="glass pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-[calc(100%+16px)] rounded-xl px-3 py-2 text-xs shadow-2xl"
-      style={{ left, top }}>
-      <div className="flex items-center gap-2 whitespace-nowrap">
-        <span className="h-2 w-2 rounded-full" style={{ background: col(e.team) }} />
+    <div className="pointer-events-none absolute z-10 -translate-y-[calc(100%+14px)] whitespace-nowrap" style={{ left, top }}>
+      <div data-open={open} className="t-tt glass flex items-center gap-2 rounded-xl px-3 py-2 text-[12.5px] shadow-2xl">
+        <span className="size-2 rounded-full" style={{ background: col(e.team) }} aria-hidden />
         <span className="font-semibold text-ink">{describe(e)}</span>
-        {isShot(e.type) && <span className="tabular text-ink-2">{xg(e.xg)} xG</span>}
+        {isShot(e.type) && e.xg != null && <span className="tabular text-ink-2">{Math.round(e.xg * 100)}% chance</span>}
       </div>
     </div>
   );

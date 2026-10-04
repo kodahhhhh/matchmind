@@ -1,0 +1,26 @@
+@import "tw-animate-css";
+/* Streamdown (AI Elements' markdown renderer) ships its own utility classes. */
+@source "../../node_modules/streamdown/dist/*.js";
+
+/* shadcn/ui semantic tokens, mapped onto the MatchMind theme (tokens.css).
+   shadcn and AI Elements components read these; the rest of the app keeps its own names. */
+@theme inline {
+  --color-background: var(--bg);
+  --color-foreground: var(--ink);
+  --color-card: var(--surface-2);
+  --color-card-foreground: var(--ink);
+  --color-popover: var(--surface-3);
+  --color-popover-foreground: var(--ink);
+  --color-primary: var(--ai);
+  --color-primary-foreground: var(--bg);
+  --color-secondary: var(--surface-3);
+  --color-secondary-foreground: var(--ink);
+  --color-muted: var(--surface-2);
+  --color-muted-foreground: var(--ink-3);
+  --color-accent: var(--surface-3);
+  --color-accent-foreground: var(--ink);
+  --color-destructive: var(--away);
+  --color-border: var(--border);
+  --color-input: var(--border-strong);
+  --color-ring: var(--ai-line);
+}

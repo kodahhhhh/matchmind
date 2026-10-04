@@ -1,5 +1,5 @@
 import { useId, useMemo, useRef, useState } from "react";
-import { motion } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 import { scaleLinear } from "d3-scale";
 import { area, curveMonotoneX, curveStepAfter, line } from "d3-shape";
 import type { Marker, Side, TimelineMinute } from "../../api/types";
@@ -14,7 +14,13 @@ const H_WAVE = 84;
 const H_XG = 34;
 const H_AXIS = 20;
 const H_MKT = 46;
-const PERIOD_NAME: Record<number, string> = { 1: "First half", 2: "Second half", 3: "Extra time", 4: "ET 2" };
+// extra time's two short periods share one label, on the first
+const PERIOD_NAME: Record<number, string> = { 1: "First half", 2: "Second half", 3: "Extra time", 4: "" };
+// real-world card colours and bet outcomes; tokens when the theme defines them
+const CARD = { yellow: "var(--card-yellow)", red: "var(--card-red)" };
+const BET = { win: "var(--positive)", loss: "var(--negative)" };
+const LEGEND_CHARS = 12;
+const fit = (name: string, n = LEGEND_CHARS) => (name.length > n ? `${name.slice(0, n - 1).trimEnd()}…` : name);
 
 export function Timeline() {
   const uid = useId().replace(/:/g, "");
@@ -29,6 +35,10 @@ export function Timeline() {
   const [ref, { width }] = useSize<HTMLDivElement>();
   const drag = useRef<{ anchor: number; moved: boolean } | null>(null);
   const [dragWin, setDragWin] = useState<{ from: number; to: number } | null>(null);
+  const reduce = useReducedMotion();
+  // keep the last hovered minute while the hover card fades out
+  const [lastHover, setLastHover] = useState<number | null>(null);
+  if (hoverIndex != null && hoverIndex !== lastHover) setLastHover(hoverIndex);
 
   const geo = useMemo(() => {
     if (!data || !width) return null;
@@ -87,6 +97,10 @@ export function Timeline() {
   const shown = dragWin ?? win;
   const tp = focus?.kind === "turning" ? data.turningPoints.find((t) => t.id === focus.id) : undefined;
   const hovered = hoverIndex != null ? geo?.tl[hoverIndex] : undefined;
+  const cardMinute = lastHover != null ? geo?.tl[lastHover] : undefined;
+  const narrow = width < 640;
+  // where each period name ends, so minute ticks never collide with it
+  const nameEnds = geo ? periods.map((p) => ({ from: geo.x(p.start_index), to: geo.x(p.start_index) + 2 + (PERIOD_NAME[p.period] ?? `Period ${p.period}`).length * 6 + 14 })) : [];
 
   const goals = markers.filter((m) => m.type === "goal");
   const laneEnds: number[][] = [[], []];
@@ -107,7 +121,7 @@ export function Timeline() {
       {geo && (
         <>
           <svg width={width} height={geo.height} className="block touch-none" onPointerDown={onDown} onPointerMove={onMove}
-            onPointerUp={onUp} onPointerLeave={() => setHoverIndex(null)} role="img" aria-label="Match timeline: momentum and cumulative xG by minute">
+            onPointerUp={onUp} onPointerLeave={() => setHoverIndex(null)} role="img" aria-label="Match timeline: who was on top, and chance quality built up minute by minute">
             <defs>
               {(["home", "away"] as Side[]).map((s) => (
                 <linearGradient key={s} id={`wave-${s}-${uid}`} x1="0" y1={s === "home" ? "0" : "1"} x2="0" y2={s === "home" ? "1" : "0"}>
@@ -116,7 +130,7 @@ export function Timeline() {
                 </linearGradient>
               ))}
               <clipPath id={`reveal-${uid}`}>
-                <motion.rect key={data.match.match_id} x={0} y={0} height={geo.height} initial={{ width: 0 }} animate={{ width }} transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }} />
+                <motion.rect key={data.match.match_id} x={0} y={0} height={geo.height} initial={reduce ? false : { width: 0 }} animate={{ width }} transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }} />
               </clipPath>
               <clipPath id={`above-${uid}`}><rect x={0} y={0} width={width} height={geo.yMom(0)} /></clipPath>
               <clipPath id={`below-${uid}`}><rect x={0} y={geo.yMom(0)} width={width} height={geo.height} /></clipPath>
@@ -127,6 +141,9 @@ export function Timeline() {
               const wave = area<TimelineMinute>().x((m) => geo.cx(m.index)).y0(geo.yMom(0)).y1((m) => geo.yMom(m.momentum)).curve(curveMonotoneX);
               const x0 = geo.x(p.start_index);
               const x1 = geo.x(p.end_index) + geo.step;
+              const name = PERIOD_NAME[p.period] ?? `Period ${p.period}`;
+              // only label a period when the name fits its width (extra time is narrow on phones)
+              const showName = name && (x1 - x0 + (p.period === 3 ? geo.step * 15 : 0)) >= name.length * 5.8 + 4;
               return (
                 <g key={p.period}>
                   <rect x={x0} y={geo.waveTop} width={x1 - x0} height={H_WAVE} rx={8} fill="var(--surface-2)" />
@@ -136,7 +153,7 @@ export function Timeline() {
                   </g>
                   <line x1={x0} x2={x1} y1={geo.yMom(0)} y2={geo.yMom(0)} stroke="var(--ink-4)" strokeOpacity={0.5} />
                   <line x1={x0} x2={x1} y1={geo.yXg(0)} y2={geo.yXg(0)} stroke="var(--axis)" />
-                  <text x={x0 + 2} y={geo.height - 5} fontSize={10.5} fill="var(--ink-3)" fontWeight={500}>{PERIOD_NAME[p.period] ?? `Period ${p.period}`}</text>
+                  {showName && <text x={x0 + 2} y={geo.height - 5} fontSize={11} fill="var(--ink-3)" fontWeight={500}>{name}</text>}
                 </g>
               );
             })}
@@ -147,8 +164,9 @@ export function Timeline() {
                 stroke={t.id === tp.id ? "none" : "var(--ai-line)"} strokeDasharray="3 3" />
             ))}
 
-            <g fontSize={10.5} fill="var(--ink-4)" className="tabular" textAnchor="middle">
-              {geo.tl.filter((m) => [15, 30, 60, 75, 105].includes(m.minute + 1) && !m.label.includes("+")).map((m) => (
+            <g fontSize={11} fill="var(--ink-4)" className="tabular" textAnchor="middle">
+              {!narrow && geo.tl.filter((m) => [15, 30, 60, 75, 105].includes(m.minute + 1) && !m.label.includes("+")
+                && !nameEnds.some((n) => geo.cx(m.index) > n.from && geo.cx(m.index) < n.to)).map((m) => (
                 <text key={m.index} x={geo.cx(m.index)} y={geo.height - 5}>{m.minute + 1}'</text>
               ))}
             </g>
@@ -167,28 +185,28 @@ export function Timeline() {
                 {market.bets.filter((b) => b.minute != null).map((b, k) => {
                   const pt = market.series.find((p) => p.minute >= b.minute!);
                   if (!pt) return null;
-                  return <circle key={k} cx={geo.cx(pt.index)} cy={geo.yMkt(b.market_prob)} r={4} fill={b.pnl >= 0 ? "#3ccf8e" : "#ff6b6b"} stroke="var(--surface-1)" strokeWidth={1.5}><title>{`Bet ${b.side} ${b.outcome} at ${Math.round(b.price_or_odds * 100)}¢ · ${b.pnl >= 0 ? "+" : ""}$${b.pnl}`}</title></circle>;
+                  return <circle key={k} cx={geo.cx(pt.index)} cy={geo.yMkt(b.market_prob)} r={4} fill={b.pnl >= 0 ? BET.win : BET.loss} stroke="var(--surface-1)" strokeWidth={1.5}><title>{`Bet ${b.side} ${b.outcome} at ${Math.round(b.price_or_odds * 100)}¢ · ${b.pnl >= 0 ? "+" : ""}$${b.pnl}`}</title></circle>;
                 })}
-                <g fontSize={10} fill="var(--ink-3)">
-                  <text x={width - M.r + 12} y={geo.mktTop + 12} fontWeight={700} fill="var(--ink)">{teams.home.short} win</text>
+                <g fontSize={10.5} fill="var(--ink-3)">
+                  <text x={width - M.r + 12} y={geo.mktTop + 12} fontWeight={600} fill="var(--ink)">{fit(teams.home.name, 9)} win<title>{`${teams.home.name} win probability`}</title></text>
                   <line x1={width - M.r + 12} x2={width - M.r + 26} y1={geo.mktTop + 24} y2={geo.mktTop + 24} stroke="var(--ai)" strokeWidth={2} />
-                  <text x={width - M.r + 30} y={geo.mktTop + 27}>model</text>
+                  <text x={width - M.r + 30} y={geo.mktTop + 27}>Model</text>
                   <line x1={width - M.r + 12} x2={width - M.r + 26} y1={geo.mktTop + 38} y2={geo.mktTop + 38} stroke="var(--ink-2)" strokeWidth={1.5} strokeDasharray="4 3" />
-                  <text x={width - M.r + 30} y={geo.mktTop + 41}>market</text>
+                  <text x={width - M.r + 30} y={geo.mktTop + 41}>Market</text>
                 </g>
               </g>
             )}
 
-            <g fontSize={10.5} fontWeight={700} letterSpacing={0.8}>
-              <text x={width - M.r + 12} y={geo.waveTop + 14} fill="var(--ink)">{teams.home.short}</text>
-              <rect x={width - M.r + 12} y={geo.waveTop + 18} width={14} height={2} rx={1} fill="var(--home)" />
-              <text x={width - M.r + 12} y={geo.waveTop + H_WAVE - 12} fill="var(--ink)">{teams.away.short}</text>
-              <rect x={width - M.r + 12} y={geo.waveTop + H_WAVE - 8} width={14} height={2} rx={1} fill="var(--away)" />
-              <text x={width - M.r + 12} y={geo.yMom(0) + 3.5} fill="var(--ink-4)" fontWeight={500} letterSpacing={0}>momentum</text>
+            <g fontSize={11} fontWeight={600}>
+              <rect x={width - M.r + 12} y={geo.waveTop + 6} width={8} height={8} rx={2} fill="var(--home)" />
+              <text x={width - M.r + 24} y={geo.waveTop + 14} fill="var(--ink)">{fit(teams.home.name)}<title>{teams.home.name}</title></text>
+              <rect x={width - M.r + 12} y={geo.waveTop + H_WAVE - 16} width={8} height={8} rx={2} fill="var(--away)" />
+              <text x={width - M.r + 24} y={geo.waveTop + H_WAVE - 8} fill="var(--ink)">{fit(teams.away.name)}<title>{teams.away.name}</title></text>
+              <text x={width - M.r + 12} y={geo.yMom(0) + 3.5} fill="var(--ink-4)" fontWeight={500}>Who's on top<title>Who is on top: which team's recent actions are making a goal more likely</title></text>
             </g>
 
             {goalLabels.map(({ g, i, lane }) => (
-              <line key={`stem-${g.event_id}`} x1={geo.cx(i)} x2={geo.cx(i)} y1={lane ? 48 : 22} y2={geo.yMom(0)}
+              <line key={`stem-${g.event_id}`} x1={geo.cx(i)} x2={geo.cx(i)} y1={lane ? 52 : 24} y2={geo.yMom(0)}
                 stroke={`var(--${g.team})`} strokeOpacity={0.6} strokeWidth={1.2} />
             ))}
             {goalLabels.map(({ g, i }) => (
@@ -202,9 +220,9 @@ export function Timeline() {
               const y = geo.waveTop + H_WAVE - 8;
               return (
                 <g key={mk.event_id + mk.type}>
-                  <title>{`${mk.type === "sub" ? "Substitution" : "Card"} · ${geo.tl[i].label}`}</title>
+                  <title>{`${mk.type === "sub" ? "Substitution" : mk.detail === "yellow" ? "Yellow card" : "Red card"}, ${geo.tl[i].label}`}</title>
                   {mk.type === "card"
-                    ? <rect x={x - 2.5} y={y - 4} width={5} height={7} rx={1} fill={mk.detail === "yellow" ? "#f2c94c" : "#e5484d"} />
+                    ? <rect x={x - 2.5} y={y - 4} width={5} height={7} rx={1} fill={mk.detail === "yellow" ? CARD.yellow : CARD.red} />
                     : <path d={`M ${x - 2.6} ${y + 1.5} l 2.6 -3.4 l 2.6 3.4`} stroke="var(--ink-3)" strokeWidth={1.3} fill="none" strokeLinecap="round" strokeLinejoin="round" />}
                 </g>
               );
@@ -230,15 +248,15 @@ export function Timeline() {
           </svg>
 
           {goalLabels.map(({ g, text, x0, w, lane }) => (
-            <button key={g.event_id} onClick={() => focusEvent(g.event_id)}
-              className="absolute flex h-[22px] items-center gap-1.5 rounded-full bg-surface-3 pl-1.5 pr-2.5 text-[11.5px] font-semibold text-ink shadow-lg ring-1 ring-white/10 transition hover:bg-surface-4"
-              style={{ left: x0, top: lane ? 26 : 0, width: w }}>
-              <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: `var(--${g.team})` }} />
+            <button key={g.event_id} onClick={() => focusEvent(g.event_id)} aria-label={`Show goal: ${text}`}
+              className="absolute flex h-6 items-center gap-1.5 rounded-full bg-surface-3 pl-2 pr-2.5 text-[11.5px] font-semibold text-ink shadow-lg ring-1 ring-line-strong transition-[transform,background-color] duration-150 ease-out hover:bg-surface-4 active:scale-[0.97]"
+              style={{ left: x0, top: lane ? 28 : 0, width: w }}>
+              <span className="size-2 shrink-0 rounded-full" style={{ background: `var(--${g.team})` }} aria-hidden />
               <span className="truncate">{text}</span>
             </button>
           ))}
-          {hovered && <HoverCard m={hovered} left={geo.cx(hovered.index)} width={width} top={geo.waveTop}
-            mkt={market?.series.find((p) => p.index === hovered.index)} />}
+          {cardMinute && <HoverCard m={cardMinute} open={hovered != null} left={geo.cx(cardMinute.index)} width={width} top={geo.waveTop}
+            teams={teams} mkt={market?.series.find((p) => p.index === cardMinute.index)} />}
         </>
       )}
     </div>
@@ -271,7 +289,7 @@ function XgLines({ tl, x, step, y, periods }: {
           })}
           <circle cx={endX} cy={dotY[s]} r={3.5} fill={`var(--${s})`} stroke="var(--surface-1)" strokeWidth={2} />
           <text x={endX + 10} y={labelY[s] + 4} fontSize={11} fill="var(--ink-3)" stroke="none" className="tabular">
-            <tspan fontWeight={700} fill="var(--ink)">{xg(last[s].xg_cum)}</tspan> xG
+            <tspan fontWeight={700} fill="var(--ink)">{xg(last[s].xg_cum)}</tspan> chances<title>Chance quality (xG): about one goal's worth per 1.0</title>
           </text>
         </g>
       ))}
@@ -279,25 +297,43 @@ function XgLines({ tl, x, step, y, periods }: {
   );
 }
 
-function HoverCard({ m, left, width, top, mkt }: { m: TimelineMinute; left: number; width: number; top: number; mkt?: { market: { home: number }; model: { home: number } } }) {
-  const flip = left > width - 240;
+const CARD_W = 236;
+
+/** Minute card beside the crosshair (transitions.dev tooltip: 150ms in, 50ms out; position follows instantly). */
+function HoverCard({ m, open, left, width, top, teams, mkt }: {
+  m: TimelineMinute; open: boolean; left: number; width: number; top: number;
+  teams: Record<Side, { name: string }>; mkt?: { market: { home: number }; model: { home: number } };
+}) {
+  const flip = left > width - CARD_W - 32;
+  // .t-tt centres itself with translate(-50%), so anchor the wrapper at the card's centre
+  const x = (flip ? left - CARD_W - 12 : left + 12) + CARD_W / 2;
   return (
-    <div className="glass pointer-events-none absolute z-20 w-[208px] rounded-xl px-3.5 py-2.5 text-xs shadow-2xl"
-      style={{ left: flip ? left - 220 : left + 12, top }}>
-      <div className="display mb-1.5 text-base text-ink">{m.label}</div>
-      {(["home", "away"] as Side[]).map((s) => (
-        <div key={s} className="flex items-center gap-2 py-0.5 tabular text-ink-2">
-          <span className="h-[2px] w-3 rounded" style={{ background: `var(--${s})` }} />
-          <span className="font-semibold text-ink">{xg(m[s].xg_cum)}</span> xG
-          <span className="ml-auto font-semibold text-ink">{pct(m[s].possession)}</span> poss.
+    <div className="pointer-events-none absolute z-20" style={{ left: x, top }}>
+      <div data-open={open} className="t-tt glass rounded-xl px-3.5 py-2.5 text-[12px] shadow-2xl" style={{ width: CARD_W }}>
+        <div className="mb-1.5 flex items-baseline justify-between">
+          <span className="numeral text-[17px] leading-none text-ink">{m.label}</span>
+          <span className="flex gap-3 text-[11px] text-ink-3"><span className="w-9 text-right">Chances</span><span className="w-[62px] text-right">Possession</span></span>
         </div>
-      ))}
-      {mkt && (
-        <div className="mt-1.5 flex items-center gap-2 border-t border-white/10 pt-1.5 tabular text-ink-2">
-          Home win <span className="font-semibold text-ai">{pct(mkt.model.home)}</span> model
-          <span className="ml-auto font-semibold text-ink">{pct(mkt.market.home)}</span> mkt
-        </div>
-      )}
+        {(["home", "away"] as Side[]).map((s) => (
+          <div key={s} className="flex items-center gap-2 py-0.5 tabular text-ink-2">
+            <span className="size-2 shrink-0 rounded-[2px]" style={{ background: `var(--${s})` }} aria-hidden />
+            <span className="min-w-0 flex-1 truncate">{teams[s].name}</span>
+            <span className="flex gap-3 font-semibold text-ink">
+              <span className="w-9 text-right">{xg(m[s].xg_cum)}</span>
+              <span className="w-[62px] text-right">{pct(m[s].possession)}</span>
+            </span>
+          </div>
+        ))}
+        {mkt && (
+          <div className="mt-1.5 border-t border-line-strong pt-1.5 tabular text-ink-2">
+            <div className="truncate text-ink-3">{teams.home.name} win chance</div>
+            <div className="mt-0.5 flex items-center gap-3">
+              <span>Model <span className="font-semibold text-ai">{pct(mkt.model.home)}</span></span>
+              <span>Market <span className="font-semibold text-ink">{pct(mkt.market.home)}</span></span>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
