@@ -1,0 +1,40 @@
+# MatchPulse demo narration
+
+- `0:00.4` (home) Every football argument ends with: trust me, I watched the game.
+- `0:04.5` (home) Reader, they did not watch the game.
+- `0:06.4` (home) So we built MatchPulse: an AI analyst that shows you why a match turned, with receipts.
+- `0:11.7` (home) Four hundred and ninety-three matches to replay, and models trained on nearly three thousand games.
+- `0:16.9` (match) Here's the 2022 World Cup final. Argentina, France, three-three: the match that aged every fan ten years.
+- `0:23.6` (match) Every shot on one pitch. Bigger circle, better chance.
+- `0:26.7` (match) Down here, who's on top. That red spike? France remembering they have Kylian Mbappé.
+- `0:32.3` (turning) Now the fun button: find the turning point.
+- `0:34.6` (turning) The analyst calls real tools, pulls the numbers, then writes it up.
+- `0:39.7` (turning) It finds the swing: Mbappé's double at eighty and eighty-one, then a late extra-time surge.
+- `0:45.3` (turning) That second goal? A volley our model gave a six percent chance.
+- `0:51.1` (turning) Every claim is a receipt. Click one, and the pitch jumps right to it.
+- `0:55.4` (ask) You can also just ask it things. Like the question that has ended friendships.
+- `0:59.9` (ask) One rule: the AI only explains. Every number comes from our own code, so unlike your uncle, it can't make stats up.
+- `1:06.3` (ask) Its verdict? Narrowly Mbappé, for decisive impact. Bold, considering who lifted the trophy.
+- `1:13.2` (highlights) Play highlights redraws every goal, pass by pass, with commentary written by our AI.
+- `1:18.8` (highlights) This Argentina move: nine touches in eleven seconds, end to end.
+- `1:22.9` (highlights) Somewhere, a French full-back is still jogging back.
+- `1:26.4` (moments) Moments ranks the most dangerous attacks of the game.
+- `1:32.2` (moments) Tap one to replay it: Thuram finds Mbappé. Two-two.
+- `1:38.4` (moments) Players ranks who actually changed the game, not who made the most passes.
+- `1:42.0` (moments) Look at Konaté: nineteen places higher on impact than on passing. Defenders, finally, some respect.
+- `1:48.9` (whatif) Then there's What if. What if Argentina had kept Di María on, instead of subbing him at sixty-four minutes?
+- `1:54.9` (whatif) The model says: almost no difference. Argentina win, ninety-eight percent, either way. It finished two-two.
+- `2:01.8` (shotalt) Or pick any shot: should they have passed?
+- `2:04.6` (shotalt) For Di María's goal: shooting, thirty-two percent. Passing, five. Good call.
+- `2:09.2` (shotalt) And it's always labelled modelled. We're an analytics app, not a time machine.
+- `2:13.9` (search) Search finds any moment, across every match, in plain English.
+- `2:17.8` (search) Messi free kick. And yes, it'll happily show you the ones that went off target. We're analysts, not fans.
+- `2:24.5` (search) Hit enter, and you're right there.
+- `2:26.7` (players) Underrated players asks who the transfer market slept on.
+- `2:29.7` (players) Bundesliga, twenty fifteen sixteen: Mark Uth. Valued at two million euros. Top of the list.
+- `2:35.5` (players) Scouts: you're welcome.
+- `2:37.8` (backtest) Finally: could it beat the bookies? We replayed real betting prices.
+- `2:41.3` (backtest) Verdict: not conclusively.
+- `2:42.4` (backtest) Polymarket's up fifty-five percent, but the error bars could fit a team bus.
+- `2:46.2` (backtest) The most honest betting chart ever made. Please don't remortgage your house.
+- `2:51.0` (outro) MatchPulse. Stats say what happened. We show why.
