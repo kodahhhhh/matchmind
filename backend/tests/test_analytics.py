@@ -6,10 +6,10 @@ from unittest.mock import patch
 
 import pandas as pd
 
-from matchmind.analyst.agent import ask_chunks
-from matchmind.analyst.grounding import display_evidence, grounding_errors, sentences
-from matchmind.metrics.match import compute_match
-from matchmind.models.gamestate import (
+from matchpulse.analyst.agent import ask_chunks
+from matchpulse.analyst.grounding import display_evidence, grounding_errors, sentences
+from matchpulse.metrics.match import compute_match
+from matchpulse.models.gamestate import (
     FEATURE_NAMES,
     changed_features,
     outcome_series,
@@ -192,7 +192,7 @@ def test_unit_claims_and_forbidden_phrasing() -> None:
 def test_ask_provider_error_finishes_cleanly() -> None:
     async def collect() -> list:
         with patch(
-            "matchmind.analyst.agent.async_client",
+            "matchpulse.analyst.agent.async_client",
             side_effect=RuntimeError("private provider payload"),
         ):
             return [
@@ -206,8 +206,8 @@ def test_ask_provider_error_finishes_cleanly() -> None:
 
 
 def test_counterfactual_model_seam_receives_intervention_state() -> None:
-    from matchmind.api.counterfactual import run_counterfactual
-    from matchmind.models.gamestate_model import predict
+    from matchpulse.api.counterfactual import run_counterfactual
+    from matchpulse.models.gamestate_model import predict
 
     observed = []
 
@@ -215,7 +215,7 @@ def test_counterfactual_model_seam_receives_intervention_state() -> None:
         observed.append(state.copy())
         return predict(state)
 
-    with patch("matchmind.api.counterfactual.predict", side_effect=inspect):
+    with patch("matchpulse.api.counterfactual.predict", side_effect=inspect):
         result = run_counterfactual("sb:3869685", "sb:3869685:2928", "remove_goal")
     assert result["label"] == "Modelled hypothetical"
     assert result["method"] == "trained_model"

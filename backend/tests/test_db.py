@@ -7,8 +7,8 @@ from pathlib import Path
 import psycopg
 import pytest
 
-from matchmind.config import get_settings
-from matchmind.db import load
+from matchpulse.config import get_settings
+from matchpulse.db import load
 
 FINAL = "sb:3869685"
 
@@ -50,12 +50,9 @@ def test_catalogue_upsert(database_url: str, data_dir: Path) -> None:
             conn.execute("SELECT count(*) FROM players").fetchone()[0]
             == counts["players"]
         )
-        assert (
-            conn.execute(
-                "SELECT count(*) FROM matches WHERE (meta->>'demo')::boolean"
-            ).fetchone()[0]
-            == 493
-        )
+        assert conn.execute(
+            "SELECT count(*) FROM matches WHERE (meta->>'demo')::boolean"
+        ).fetchone()[0] == sum(m["demo"] for m in load.read_catalogue(data_dir))
         assert (
             conn.execute(
                 "SELECT count(*) FROM matches "

@@ -64,7 +64,7 @@ export function BacktestPage() {
           <section className="mx-auto grid max-w-[1280px] grid-cols-1 items-start gap-12 px-5 pb-4 pt-8 md:px-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:pt-14">
             <Stagger onMount>
               <Line n={1} as="h1" className="max-w-[16ch] text-balance text-[38px] font-semibold leading-[1.06] tracking-[-0.04em] text-ink md:text-[48px]">
-                Would MatchMind have beaten the market?
+                Would MatchPulse have beaten the market?
               </Line>
               <Line n={2} as="p" className="mt-6 max-w-[48ch] text-pretty text-[17px] leading-[1.6] text-ink-2">
                 We replayed our models against real prices from before and during matches, using only what was known at the time, and counted every bet. If we had lost money, this page would say so.

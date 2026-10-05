@@ -9,8 +9,8 @@ from pathlib import Path
 import httpx
 import pandas as pd
 
-from matchmind.api.repository import catalogue, connect
-from matchmind.api.schemas import Counterfactual
+from matchpulse.api.repository import catalogue, connect
+from matchpulse.api.schemas import Counterfactual
 
 ENDPOINTS = (
     "",
@@ -37,7 +37,7 @@ def main() -> None:
             r = client.get(path)
             r.raise_for_status()
         cards = client.get("/matches").json()["matches"]
-        assert len(cards) == 493
+        assert len(cards) == len(catalogue())
         cats = catalogue()
         euros = [c["match_id"] for c in cards if c["competition"] == "UEFA Euro"]
         rebuilt = [c["match_id"] for c in cards if c["reconstructed"]]
@@ -134,7 +134,10 @@ def main() -> None:
                     if endpoint != "/match":
                         latencies[endpoint].append(ms)
                 if i % 25 == 0:
-                    print(f"HTTP sweep: {i}/493, {len(failures)} failures", flush=True)
+                    print(
+                        f"HTTP sweep: {i}/{len(cards)}, {len(failures)} failures",
+                        flush=True,
+                    )
         # Controlled warm sample, no corpus loading in parallel.
         warm = {}
         for endpoint in ENDPOINTS:
@@ -184,8 +187,8 @@ def main() -> None:
                     first_text = round(time.monotonic() - now, 3)
         assert chunks[-1] == {"type": "done"}
         report = {
-            "matches": 493,
-            "get_requests": 493 * 7,
+            "matches": len(cards),
+            "get_requests": len(cards) * 7,
             "failures": failures,
             "smoke_matches": smoke_results,
             "red_card_match": red,

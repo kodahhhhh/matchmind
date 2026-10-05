@@ -5,7 +5,7 @@ import asyncio
 import pytest
 from fastapi.testclient import TestClient
 
-from matchmind.analyst.commentary import (
+from matchpulse.analyst.commentary import (
     build_facts,
     line_errors,
     load_facts,
@@ -13,10 +13,10 @@ from matchmind.analyst.commentary import (
     prompt_facts,
     zone,
 )
-from matchmind.analyst.grounding import grounding_errors
-from matchmind.analyst.tools import TOOLS, dispatch
-from matchmind.api.main import app
-from matchmind.api.repository import bundle, connect
+from matchpulse.analyst.grounding import grounding_errors
+from matchpulse.analyst.tools import TOOLS, dispatch
+from matchpulse.api.main import app
+from matchpulse.api.repository import bundle, connect
 
 FINAL = "sb:3869685"
 
@@ -137,7 +137,7 @@ def test_query_embedding_dimension_mismatch_degrades_before_sql(
 ) -> None:
     from types import SimpleNamespace
 
-    from matchmind.analyst import client
+    from matchpulse.analyst import client
 
     monkeypatch.setattr(
         client,
@@ -208,7 +208,7 @@ def test_analyst_commentary_citations() -> None:
 def test_generate_resumes_without_provider_calls(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from matchmind.analyst import commentary
+    from matchpulse.analyst import commentary
 
     def forbidden(*args: object, **kwargs: object) -> None:
         raise AssertionError("A complete match must not call Luna")
@@ -223,7 +223,7 @@ def test_generate_resumes_without_provider_calls(
 def test_full_text_search_does_not_request_unavailable_embeddings(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from matchmind.api import search
+    from matchpulse.api import search
 
     def forbidden(*args: object, **kwargs: object) -> None:
         raise AssertionError("No loaded vectors: do not call Azure")

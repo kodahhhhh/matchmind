@@ -236,7 +236,7 @@ function Profile({ p }: { p: PlayerProfile }) {
           Profile from Transfermarkt via transfermarkt-datasets (CC0){p.wikidata_id ? " and Wikidata (CC0)" : ""}.
           {p.match_confidence != null && <> Matched to our data with {Math.round(p.match_confidence * 100)}% confidence.</>}
           {p.photo_credit && <> Photo by {p.photo_credit}{p.photo_license ? ` (${p.photo_license})` : ""}, Wikimedia Commons.</>}
-          {p.career ? " Career numbers come from MatchMind's own models." : ""}
+          {p.career ? " Career numbers come from MatchPulse's own models." : ""}
         </p>
       </div>
     </div>

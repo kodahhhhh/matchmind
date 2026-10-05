@@ -10,13 +10,13 @@ import psycopg
 import pytest
 from fastapi.testclient import TestClient
 
-from matchmind.api.routes.players import create_player_app
-from matchmind.config import get_settings
-from matchmind.players import schemas, service
-from matchmind.players.build import build_profiles, photos
-from matchmind.players.career import aggregate, playing_minutes
-from matchmind.players.matching import choose, normalise
-from matchmind.players.sources import wikidata
+from matchpulse.api.routes.players import create_player_app
+from matchpulse.config import get_settings
+from matchpulse.players import schemas, service
+from matchpulse.players.build import build_profiles, photos
+from matchpulse.players.career import aggregate, playing_minutes
+from matchpulse.players.matching import choose, normalise
+from matchpulse.players.sources import wikidata
 
 FINAL = "sb:3869685"
 MESSI = 5503
@@ -146,7 +146,7 @@ def test_commons_normalization_and_attribution_gate(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    monkeypatch.setattr("matchmind.players.build.raw_directory", lambda: tmp_path)
+    monkeypatch.setattr("matchpulse.players.build.raw_directory", lambda: tmp_path)
     data = {
         "query": {
             "pages": {
@@ -171,7 +171,7 @@ def test_commons_normalization_and_attribution_gate(
             }
         }
     }
-    monkeypatch.setattr("matchmind.players.build.cached_json", lambda *args: data)
+    monkeypatch.setattr("matchpulse.players.build.cached_json", lambda *args: data)
     result = photos(
         {
             28003: {
@@ -201,7 +201,7 @@ def test_source_throttling_stops_remaining_batches(
             "Throttled", request=response.request, response=response
         )
 
-    monkeypatch.setattr("matchmind.players.sources.cached_json", throttle)
+    monkeypatch.setattr("matchpulse.players.sources.cached_json", throttle)
     assert wikidata(list(range(250))) == {}
     assert len(calls) == 1
 
@@ -245,15 +245,15 @@ def test_contradictory_wikidata_dob_removes_bridge_and_photo(
         ]
     )
     monkeypatch.setattr(
-        "matchmind.players.build.get_settings",
+        "matchpulse.players.build.get_settings",
         lambda: SimpleNamespace(data_dir=tmp_path),
     )
     monkeypatch.setattr(
-        "matchmind.players.build.table",
+        "matchpulse.players.build.table",
         lambda name: tm if name == "players" else values,
     )
     monkeypatch.setattr(
-        "matchmind.players.build.photos",
+        "matchpulse.players.build.photos",
         lambda enrichment: {
             2: {
                 "photo_url": "https://upload.wikimedia.org/test.jpg",
@@ -358,7 +358,7 @@ def test_all_corpus_coverage_and_replay_availability() -> None:
     matches = pd.read_parquet(root / "matches.parquet")
     mapping = pd.read_parquet(root / "player_map.parquet")
     assert matches.match_id.nunique() == 2924
-    assert matches[matches.in_db].match_id.nunique() == 493
+    assert matches[matches.in_db].match_id.nunique() == 2924
     assert set(matches.player_id) <= set(mapping.sb_player_id)
     assert mapping.sb_player_id.is_unique
     assert mapping.tm_player_id.dropna().is_unique
@@ -372,7 +372,7 @@ def test_all_corpus_coverage_and_replay_availability() -> None:
 def test_additive_sql_is_idempotent_and_protects_photo_credits(
     database_url: str,
 ) -> None:
-    path = Path(__file__).resolve().parents[1] / "matchmind/db/players.sql"
+    path = Path(__file__).resolve().parents[1] / "matchpulse/db/players.sql"
     with psycopg.connect(database_url) as conn:
         conn.execute(path.read_text())
         conn.execute(path.read_text())
@@ -400,8 +400,8 @@ def test_additive_sql_is_idempotent_and_protects_photo_credits(
 
 
 def test_analyst_profile_numbers_and_citations_are_tool_grounded() -> None:
-    from matchmind.analyst.grounding import grounding_errors
-    from matchmind.analyst.tools import TOOLS, _dispatch
+    from matchpulse.analyst.grounding import grounding_errors
+    from matchpulse.analyst.tools import TOOLS, _dispatch
 
     assert any(t["name"] == "get_player_profile" for t in TOOLS)
     result = _dispatch(FINAL, "get_player_profile", {"player_id": MESSI})

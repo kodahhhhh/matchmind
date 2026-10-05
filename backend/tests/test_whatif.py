@@ -6,15 +6,15 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from matchmind.api.counterfactual import (
+from matchpulse.api.counterfactual import (
     inference_inputs,
     model_metadata,
     run_counterfactual,
     training_analogs,
 )
-from matchmind.api.repository import require_match
-from matchmind.models.common import data_dir
-from matchmind.models.gamestate_model import (
+from matchpulse.api.repository import require_match
+from matchpulse.models.common import data_dir
+from matchpulse.models.gamestate_model import (
     FEATURES,
     anchor_features,
     intervene,
@@ -220,7 +220,7 @@ def test_response_uses_trained_bands_and_observed_analog_summary() -> None:
 
 
 def test_outcome_probabilities_add_up_and_follow_the_score() -> None:
-    from matchmind.models.goals import outcome_probs
+    from matchpulse.models.goals import outcome_probs
 
     probs = outcome_probs(
         np.array([0.3, 0.3, 0.0]), np.array([0.3, 0.3, 0.0]), np.array([1.0, 0.0, 0.0])

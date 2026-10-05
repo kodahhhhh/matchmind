@@ -3,9 +3,9 @@
 import psycopg
 from psycopg.rows import dict_row
 
-from matchmind.analyst.commentary import apply_commentary_schema
-from matchmind.api.search import query_commentary
-from matchmind.config import get_settings
+from matchpulse.analyst.commentary import apply_commentary_schema
+from matchpulse.api.search import query_commentary
+from matchpulse.config import get_settings
 
 
 def test_hybrid_search_in_transaction(final_url: str) -> None:

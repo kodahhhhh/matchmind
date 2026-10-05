@@ -7,11 +7,11 @@ from pathlib import Path
 
 from pydantic import TypeAdapter
 
-from matchmind.analyst.agent import ask_chunks
-from matchmind.analyst.grounding import CITATION, grounding_errors
-from matchmind.analyst.tools import citation_exists
-from matchmind.api.repository import bundle, catalogue
-from matchmind.api.schemas import AskChunk
+from matchpulse.analyst.agent import ask_chunks
+from matchpulse.analyst.grounding import CITATION, grounding_errors
+from matchpulse.analyst.tools import citation_exists
+from matchpulse.api.repository import bundle, catalogue
+from matchpulse.api.schemas import AskChunk
 
 QUESTIONS = [
     "Find the turning point",

@@ -1,4 +1,4 @@
-# MatchMind — Build Plan
+# MatchPulse — Build Plan
 
 > An AI football analyst that explains *why* a match turned, with every claim linked to real events, and models *what could have happened instead*.
 
@@ -157,7 +157,7 @@ hackathon/
   fixtures/                   # committed JSON for every endpoint
   data/                       # gitignored (raw/, processed/, models/) except catalogue/ and manifest.json
   backend/                    # uv project, Python 3.12
-    matchmind/
+    matchpulse/
       ingest/   statsbomb.py spadl.py
       models/   xg.py vaep.py gamestate.py
       metrics/  timeline.py sequences.py players.py turning.py
@@ -227,7 +227,7 @@ If T0 slips, cut features in §2 order. Never cut the 30-minute buffer.
 
 ## 14. Demo script (3 min)
 
-1. **0:00–0:20** Hook: "Stats apps tell you *what* happened. MatchMind tells you *why*, and what could have happened instead."
+1. **0:00–0:20** Hook: "Stats apps tell you *what* happened. MatchPulse tells you *why*, and what could have happened instead."
 2. **0:20–1:00** WC 2022 final → **Find the turning point** → lands on 80–81' → Sol explains, citations jump the pitch.
 3. **1:00–1:40** "Who was actually progressing the ball?" → VAEP ranking vs raw pass counts; they differ.
 4. **1:40–2:20** What if: "Mbappé's penalty is missed" → modelled band vs actual, plus real analog matches.

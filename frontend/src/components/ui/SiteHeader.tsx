@@ -13,7 +13,7 @@ export function SiteHeader({ scroller }: { scroller: RefObject<HTMLDivElement | 
     <header className="sticky top-0 z-20">
       <motion.div aria-hidden className="absolute inset-0 border-b border-line bg-bg/85 backdrop-blur-xl" style={{ opacity: backdrop }} />
       <div className="relative mx-auto flex h-16 max-w-[1280px] items-center justify-between gap-4 px-5 md:h-[72px] md:px-8">
-        <Link to="/" aria-label="MatchMind home" className="rounded-xl"><Logo size={30} /></Link>
+        <Link to="/" aria-label="MatchPulse home" className="rounded-xl"><Logo size={30} /></Link>
         <nav aria-label="Primary" className="flex items-center gap-1 md:gap-1.5">
           <Item to="/" end>Matches</Item>
           <Item to="/players">Underrated players</Item>

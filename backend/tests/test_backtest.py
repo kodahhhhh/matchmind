@@ -9,13 +9,13 @@ import numpy as np
 import pytest
 from fastapi.testclient import TestClient
 
-from matchmind.api.routes import backtest as routes
-from matchmind.backtest.common import catalogue, output, root
-from matchmind.backtest.contracts import Backtest, Market
-from matchmind.backtest.inplay import split
-from matchmind.backtest.markets import align, last_price, outcome, scheduled
-from matchmind.backtest.prematch import predictions, result_probability
-from matchmind.backtest.statistics import roi_interval, scores, summary
+from matchpulse.api.routes import backtest as routes
+from matchpulse.backtest.common import catalogue, output, root
+from matchpulse.backtest.contracts import Backtest, Market
+from matchpulse.backtest.inplay import split
+from matchpulse.backtest.markets import align, last_price, outcome, scheduled
+from matchpulse.backtest.prematch import predictions, result_probability
+from matchpulse.backtest.statistics import roi_interval, scores, summary
 
 
 def test_poisson_support_and_symmetry() -> None:
@@ -144,7 +144,7 @@ def test_outcome_subject_accepts_the_netherlands() -> None:
 
 
 def test_alignment_fails_closed_without_goals(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr("matchmind.backtest.markets.match_goals", lambda m: ([], 2800))
+    monkeypatch.setattr("matchpulse.backtest.markets.match_goals", lambda m: ([], 2800))
     result = align({"match": {"match_id": "sb:1"}, "kickoff": 1000, "markets": {}})
     assert result["aligned"] is False
 
@@ -245,7 +245,7 @@ def test_golden_contracts_match_real_precomputed_route(name: str) -> None:
 
 
 def test_future_goals_cannot_change_entry_decisions() -> None:
-    from matchmind.backtest.polymarket import entry_allowed
+    from matchpulse.backtest.polymarket import entry_allowed
 
     future = [{"period": 2, "seconds": 3601, "side": "home"}]
     assert entry_allowed(2, 60, [])

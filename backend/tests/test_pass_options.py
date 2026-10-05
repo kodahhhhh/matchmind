@@ -2,7 +2,7 @@
 
 import pytest
 
-from matchmind.models.pass_options import pass_features, spadl_xy, xt_value
+from matchpulse.models.pass_options import pass_features, spadl_xy, xt_value
 
 
 def test_lane_and_target_defenders() -> None:

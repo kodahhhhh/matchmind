@@ -8,9 +8,9 @@ import pytest
 from fastapi.testclient import TestClient
 from pydantic import TypeAdapter
 
-from matchmind.api import schemas as s
-from matchmind.api.main import app
-from matchmind.api.repository import bundle
+from matchpulse.api import schemas as s
+from matchpulse.api.main import app
+from matchpulse.api.repository import bundle, catalogue
 
 FIXTURES = Path(__file__).resolve().parents[2] / "fixtures"
 FINAL = "sb:3869685"
@@ -124,7 +124,7 @@ def test_final_change_near_mbappe_double(client: TestClient) -> None:
 
 def test_all_matches_have_detail_and_null_dates(client: TestClient) -> None:
     rows = client.get("/api/matches").json()["matches"]
-    assert len(rows) == 493
+    assert len(rows) == len(catalogue()) == 2924
     assert all(m["has_detail"] for m in rows)
     rebuilt = next(m for m in rows if m["reconstructed"])
     assert rebuilt["match_date"] is None

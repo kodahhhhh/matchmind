@@ -1,8 +1,8 @@
 import numpy as np
 import pytest
 
-from matchmind.models.common import fold_map
-from matchmind.models.xg import shot_features
+from matchpulse.models.common import fold_map
+from matchpulse.models.xg import shot_features
 
 
 def test_visible_goal_angle_and_freeze_frame_geometry() -> None:
@@ -60,7 +60,7 @@ def test_match_split_is_complete_and_reproducible() -> None:
 def test_vaep_retains_score_across_half_time() -> None:
     import pandas as pd
 
-    from matchmind.models.common import data_dir
+    from matchpulse.models.common import data_dir
 
     path = data_dir() / "processed/vaep_features/3869685.parquet"
     if not path.exists():

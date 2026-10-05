@@ -3,7 +3,7 @@
 import pytest
 from fastapi.testclient import TestClient
 
-from matchmind.api.main import app
+from matchpulse.api.main import app
 
 
 @pytest.mark.parametrize(

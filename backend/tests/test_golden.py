@@ -6,10 +6,10 @@ from pathlib import Path
 import pytest
 from pydantic import TypeAdapter
 
-from matchmind.analyst.grounding import CITATION, grounding_errors
-from matchmind.analyst.tools import citation_exists
-from matchmind.api.repository import bundle
-from matchmind.api.schemas import AskChunk
+from matchpulse.analyst.grounding import CITATION, grounding_errors
+from matchpulse.analyst.tools import citation_exists
+from matchpulse.api.repository import bundle
+from matchpulse.api.schemas import AskChunk
 
 
 @pytest.mark.parametrize("name", [f"{i:02d}" for i in range(1, 11)])

@@ -1,7 +1,7 @@
 """Read-only acceptance against an isolated API; save evidence outside git.
 
 DATA_DIR=/home/ubuntu/hackathon/data uv run python tests/run_whatif_sweep.py \
-    --url http://127.0.0.1:8020 --output /tmp/matchmind-whatif-sweep.json
+    --url http://127.0.0.1:8020 --output /tmp/matchpulse-whatif-sweep.json
 """
 
 import argparse
@@ -14,10 +14,10 @@ from pathlib import Path
 import httpx
 import numpy as np
 
-from matchmind.api.counterfactual import inference_inputs, training_analogs
-from matchmind.api.repository import require_match
-from matchmind.api.schemas import Counterfactual
-from matchmind.models.gamestate_model import anchor_features, intervene, predict
+from matchpulse.api.counterfactual import inference_inputs, training_analogs
+from matchpulse.api.repository import require_match
+from matchpulse.api.schemas import Counterfactual
+from matchpulse.models.gamestate_model import anchor_features, intervene, predict
 
 
 def change_for(marker: dict) -> str | None:
@@ -34,7 +34,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--url", default="http://127.0.0.1:8020")
     parser.add_argument(
-        "--output", type=Path, default=Path("/tmp/matchmind-whatif-sweep.json")
+        "--output", type=Path, default=Path("/tmp/matchpulse-whatif-sweep.json")
     )
     args = parser.parse_args()
     records, sanity, failures = [], [], []

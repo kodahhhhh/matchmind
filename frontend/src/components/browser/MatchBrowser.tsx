@@ -153,12 +153,12 @@ function Stats({ matches }: { matches: number }) {
   const inView = useInView(ref, { once: true, amount: 0.6 });
   const items: [number, string][] = [
     [matches, "Matches to replay"],
-    [2924, "Matches the models learned from"],
+    [5962491, "Plays the models learned from"],
     [82580, "Lines of AI commentary"],
     [52151, "Player profiles"],
   ];
   return (
-    <section aria-label="MatchMind in numbers" className="mx-auto max-w-[1280px] px-5 md:px-8">
+    <section aria-label="MatchPulse in numbers" className="mx-auto max-w-[1280px] px-5 md:px-8">
       <dl ref={ref} className="grid grid-cols-2 gap-x-6 gap-y-8 border-t border-line pt-6 md:grid-cols-4">
         {items.map(([n, label], i) => (
           <div key={label} className="flex flex-col-reverse justify-end gap-1">

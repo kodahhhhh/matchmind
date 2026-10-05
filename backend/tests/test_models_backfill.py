@@ -2,8 +2,8 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from matchmind.models.backfill import join_outputs
-from matchmind.models.common import data_dir
+from matchpulse.models.backfill import join_outputs
+from matchpulse.models.common import data_dir
 
 
 def test_uuid_aggregation_synthetic_skip_and_nullable_xt() -> None:

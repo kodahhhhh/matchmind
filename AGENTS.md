@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Guidance for coding agents (Claude subagents, Codex) working on MatchMind.
+Guidance for coding agents (Claude subagents, Codex) working on MatchPulse.
 
 ## 1) Source of truth
 
@@ -21,7 +21,7 @@ Guidance for coding agents (Claude subagents, Codex) working on MatchMind.
 ## 3) Hard rules
 
 * **The LLM never produces numbers.** Every stat in an analyst answer must come from a tool result. Tools return IDs; answers cite them as `[[ev:<event_id>]]` or `[[seq:<sequence_id>]]`.
-* **Never commit secrets.** Azure keys live in `backend/.env` (gitignored). Read config via `matchmind.config`, never `os.environ` scattered through the code.
+* **Never commit secrets.** Azure keys live in `backend/.env` (gitignored). Read config via `matchpulse.config`, never `os.environ` scattered through the code.
 * **Never commit data,** except `data/catalogue/` (the match list) and `data/manifest.json` (StatsBomb source commit). Everything else in `data/` is gitignored.
 * **No scraping.** No task makes requests to WhoScored or other third-party data sites. Exception (W10 backtest only): Polymarket's public Gamma/CLOB APIs, Kalshi's public market-data API and football-data.co.uk CSVs, with polite rate limits and cached raw responses under `data/raw/markets/`.
 * **No network calls in `metrics/` or `models/`.** They are pure functions over DataFrames and saved model files.
@@ -62,7 +62,7 @@ These are the conventions W0 sets up; until W0 lands they may not exist yet.
 ```sh
 docker compose up -d db                                    # TimescaleDB + pgvector on :5432
 cd backend && uv sync
-cd backend && uv run uvicorn matchmind.api.main:app --reload --port 8000
+cd backend && uv run uvicorn matchpulse.api.main:app --reload --port 8000
 cd backend && uv run ruff check . && uv run ruff format --check .
 cd backend && uv run pytest
 cd frontend && npm install
@@ -102,5 +102,5 @@ Open issues / risks:
 | `ANALYST_MODEL` | analyst | `gpt-6.1-sol` |
 | `BULK_MODEL` | commentary, routing | `gpt-6-luna` |
 | `EMBED_DEPLOYMENT` | commentary, analogs | Azure embeddings deployment name |
-| `DATABASE_URL` | db, api | `postgresql://matchmind:matchmind@localhost:5432/matchmind` |
+| `DATABASE_URL` | db, api | `postgresql://matchmind:matchmind@localhost:5432/matchmind` (the DB keeps its pre-rename name so the existing volume is reused) |
 | `DATA_DIR` | all | Defaults to `<repo>/data` |

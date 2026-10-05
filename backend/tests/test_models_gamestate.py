@@ -2,8 +2,8 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from matchmind.models.gamestate_model import FEATURES, bound_predictions, featurize
-from matchmind.models.windows import event_clock
+from matchpulse.models.gamestate_model import FEATURES, bound_predictions, featurize
+from matchpulse.models.windows import event_clock
 
 
 def test_feature_contract_and_missing_values() -> None:
@@ -44,7 +44,7 @@ def test_counterfactual_copy_preserves_factual_features() -> None:
 def test_window_boundaries_and_substitution_state(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import matchmind.models.windows as windows
+    import matchpulse.models.windows as windows
 
     events = [
         {

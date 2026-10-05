@@ -1,8 +1,8 @@
-# MatchMind
+# MatchPulse
 
 **An AI football analyst that explains *why* a match turned, backs every claim with the events behind it, and is honest about what it can't predict.**
 
-Stats apps tell you what happened: 62% possession, 1.8 xG. MatchMind shows you why. Replay any of 493 matches on a tactical pitch, find the moment it turned, ask questions in plain English, search every move ever played in the dataset, and see what our models would have done against real betting markets.
+Stats apps tell you what happened: 62% possession, 1.8 xG. MatchPulse shows you why. Replay any of 493 matches on a tactical pitch, find the moment it turned, ask questions in plain English, search every move ever played in the dataset, and see what our models would have done against real betting markets.
 
 > Built in 24 hours at **StormHacks 2026** (Simon Fraser University).
 
@@ -40,7 +40,7 @@ All models were trained on **2,924 men's matches** (5.96 million on-ball actions
 | **Pre-match result model** (walk-forward xG team ratings, Poisson) | P(home/draw/away) before kick-off | Used in the Pinnacle backtest |
 | **In-play win probability** (gradient boosting, test tournaments excluded) | P(home/draw/away) at every minute | Used in the Polymarket backtest. Held-out Brier 0.4574 vs **0.4565** for a score-and-clock-only baseline: our xG/VAEP features add no accuracy here |
 
-Full model card: [`backend/matchmind/models/MODELS.md`](backend/matchmind/models/MODELS.md).
+Full model card: [`backend/matchpulse/models/MODELS.md`](backend/matchpulse/models/MODELS.md).
 
 ## Would it have beaten the market?
 
@@ -53,7 +53,7 @@ We replayed the models against real prices using only information available at t
 
 **Adding player data.** We then added squad information (each starting XI's market value at kick-off, age, caps and missing regulars, from Transfermarkt's CC0 data). It made the pre-match model more accurate on held-out matches (Brier 0.593 → 0.585; Pinnacle: 0.574) but not more profitable (−5.5% flat, 95% CI −25% to +16%); the in-play version got worse, so we kept the original. Note that the decision to keep the improved pre-match model was made on the same held-out matches it is scored on.
 
-**Verdict: no demonstrated edge.** Pinnacle's closing line beat us, as expected for the sharpest price in football. The Polymarket result is positive, but 42 bets on 14 matches is too few to rule out luck, and historical prices don't prove the bets would have been filled. Kalshi had no markets for any of our matches (its football markets start in 2025). Method, leakage guards and every number: [`backend/matchmind/backtest/BACKTEST.md`](backend/matchmind/backtest/BACKTEST.md).
+**Verdict: no demonstrated edge.** Pinnacle's closing line beat us, as expected for the sharpest price in football. The Polymarket result is positive, but 42 bets on 14 matches is too few to rule out luck, and historical prices don't prove the bets would have been filled. Kalshi had no markets for any of our matches (its football markets start in 2025). Method, leakage guards and every number: [`backend/matchpulse/backtest/BACKTEST.md`](backend/matchpulse/backtest/BACKTEST.md).
 
 ## How it works
 
@@ -108,22 +108,22 @@ git clone --depth 1 https://github.com/statsbomb/open-data data/raw/statsbomb   
 docker compose up -d db
 cp backend/.env.example backend/.env       # Azure OpenAI + Cloudflare credentials
 cd backend && uv sync --all-groups
-uv run python -m matchmind.db.load init && uv run python -m matchmind.db.load load-catalogue
-uv run python -m matchmind.db.load load-events --source raw --demo-only
-uv run python -m matchmind.models.backfill && uv run python -m matchmind.db.load refresh
-uv run uvicorn matchmind.api.main:app --port 8000
+uv run python -m matchpulse.db.load init && uv run python -m matchpulse.db.load load-catalogue
+uv run python -m matchpulse.db.load load-events --source raw --demo-only
+uv run python -m matchpulse.models.backfill && uv run python -m matchpulse.db.load refresh
+uv run uvicorn matchpulse.api.main:app --port 8000
 cd ../frontend && npm install && npm run dev  # http://localhost:5173
 ```
 
-Training, commentary generation and the backtest each have their own CLIs (`matchmind.models.*`, `matchmind.analyst.commentary`, `matchmind.backtest`); see the docs below. The frontend also runs standalone on the committed fixtures: `npm run dev:fixtures`.
+Training, commentary generation and the backtest each have their own CLIs (`matchpulse.models.*`, `matchpulse.analyst.commentary`, `matchpulse.backtest`); see the docs below. The frontend also runs standalone on the committed fixtures: `npm run dev:fixtures`.
 
 ## Project docs
 
 - [`PLAN.md`](PLAN.md): build plan and API contract
 - [`AGENTS.md`](AGENTS.md): conventions for the coding agents that helped build this
-- [`backend/matchmind/models/MODELS.md`](backend/matchmind/models/MODELS.md): model card
-- [`backend/matchmind/backtest/BACKTEST.md`](backend/matchmind/backtest/BACKTEST.md): market backtest
+- [`backend/matchpulse/models/MODELS.md`](backend/matchpulse/models/MODELS.md): model card
+- [`backend/matchpulse/backtest/BACKTEST.md`](backend/matchpulse/backtest/BACKTEST.md): market backtest
 
 ## Data & attribution
 
-Match event data: [StatsBomb Open Data](https://github.com/statsbomb/open-data), under the StatsBomb public data user agreement. Player data: [transfermarkt-datasets](https://github.com/dcaribou/transfermarkt-datasets) (CC0) and [Wikidata](https://www.wikidata.org) (CC0); photos from Wikimedia Commons under their individual free licences, credited in the app. Bookmaker odds: [football-data.co.uk](https://www.football-data.co.uk). Prediction-market prices: Polymarket public API. MatchMind is not affiliated with StatsBomb, FIFA, UEFA, any club or league, or any bookmaker or market. Nothing here is betting advice.
+Match event data: [StatsBomb Open Data](https://github.com/statsbomb/open-data), under the StatsBomb public data user agreement. Player data: [transfermarkt-datasets](https://github.com/dcaribou/transfermarkt-datasets) (CC0) and [Wikidata](https://www.wikidata.org) (CC0); photos from Wikimedia Commons under their individual free licences, credited in the app. Bookmaker odds: [football-data.co.uk](https://www.football-data.co.uk). Prediction-market prices: Polymarket public API. MatchPulse is not affiliated with StatsBomb, FIFA, UEFA, any club or league, or any bookmaker or market. Nothing here is betting advice.

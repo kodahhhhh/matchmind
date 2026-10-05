@@ -2,7 +2,7 @@
 /* Streamdown (AI Elements' markdown renderer) ships its own utility classes. */
 @source "../../node_modules/streamdown/dist/*.js";
 
-/* shadcn/ui semantic tokens, mapped onto the MatchMind theme (tokens.css).
+/* shadcn/ui semantic tokens, mapped onto the MatchPulse theme (tokens.css).
    shadcn and AI Elements components read these; the rest of the app keeps its own names. */
 @theme inline {
   --color-background: var(--bg);

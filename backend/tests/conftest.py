@@ -9,8 +9,8 @@ import pytest
 from psycopg import sql
 from psycopg.conninfo import make_conninfo
 
-from matchmind.config import get_settings
-from matchmind.db.load import apply_schema, load_catalogue, load_events, refresh
+from matchpulse.config import get_settings
+from matchpulse.db.load import apply_schema, load_catalogue, load_events, refresh
 
 
 @pytest.fixture(scope="session")
@@ -21,7 +21,7 @@ def data_dir() -> Path:
 @pytest.fixture(scope="session")
 def database_url(data_dir: Path) -> Iterator[str]:
     settings = get_settings()
-    name = f"matchmind_test_{uuid4().hex}"
+    name = f"matchpulse_test_{uuid4().hex}"
     url = make_conninfo(settings.database_url, dbname=name)
     with psycopg.connect(settings.database_url, autocommit=True) as admin:
         admin.execute(sql.SQL("CREATE DATABASE {}").format(sql.Identifier(name)))

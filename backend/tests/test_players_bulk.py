@@ -8,11 +8,11 @@ import httpx
 import pandas as pd
 import pytest
 
-from matchmind.config import get_settings
-from matchmind.players import bulk, service
-from matchmind.players.build import free_license, load_database
-from matchmind.players.coverage_matching import club_overlap, select_bridge
-from matchmind.players.matching import name_score, normalise
+from matchpulse.config import get_settings
+from matchpulse.players import bulk, service
+from matchpulse.players.build import free_license, load_database
+from matchpulse.players.coverage_matching import club_overlap, select_bridge
+from matchpulse.players.matching import name_score, normalise
 
 
 @pytest.mark.parametrize(
@@ -256,7 +256,7 @@ def test_reloading_catalogue_is_idempotent(database_url: str) -> None:
     with psycopg.connect(database_url) as conn:
         conn.execute(
             (
-                Path(__file__).resolve().parents[1] / "matchmind/db/players.sql"
+                Path(__file__).resolve().parents[1] / "matchpulse/db/players.sql"
             ).read_text()
         )
         conn.execute(
