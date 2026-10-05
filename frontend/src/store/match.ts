@@ -257,7 +257,9 @@ export const useMatch = create<State>((set, get) => ({
         data: { match, events: events.v, timeline: timeline.v, sequences: sequences.v, players: players.v, turningPoints: turningPoints.v, bucketOf, eventById, eventsBySeq, seqCache: new Map(), has },
       });
       const pf = get().pendingFocus;
-      if (pf?.seq) get().focusSequence(pf.seq);
+      // arriving from search or a player's best moments: play the move straight away
+      if (pf?.seq && has.events) get().startReplay(pf.seq);
+      else if (pf?.seq) get().focusSequence(pf.seq);
       else if (pf?.ev) get().focusEvent(pf.ev);
       set({ pendingFocus: null });
       api.market(id).then((m) => { if (get().matchId === id && m?.series.length) set({ market: m }); });

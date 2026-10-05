@@ -13,6 +13,7 @@ import { Suggestion, Suggestions } from "@/components/ai-elements/suggestion";
 import { Tool, ToolContent, ToolHeader } from "@/components/ai-elements/tool";
 import { resolveSequence, useMatch, type AgentStep, type ChatMessage } from "../../store/match";
 import { clock, describe, isShot, undash } from "../../lib/format";
+import { momentInfo } from "../../lib/story";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -105,6 +106,13 @@ function useAnnouncement(chat: ChatMessage[]): string {
 
 function EmptyState({ onPick }: { onPick: (q: string) => void }) {
   const reduce = useReducedMotion();
+  // if a moment is selected, offer to ask about it first
+  const data = useMatch((s) => s.data);
+  const focus = useMatch((s) => s.focus);
+  const replay = useMatch((s) => s.replay);
+  const seq = replay?.sequenceId ?? (focus?.kind === "sequence" ? focus.id : undefined);
+  const ev = !seq && focus?.kind === "event" ? focus.id : undefined;
+  const here = data && (seq || ev) ? momentInfo(data, { seq, ev }) : null;
   return (
     <div className="pt-2">
       <div className="mb-4 flex items-start gap-3">
@@ -117,6 +125,19 @@ function EmptyState({ onPick }: { onPick: (q: string) => void }) {
         </div>
       </div>
       <ul className="space-y-2">
+        {here && (
+          <li>
+            <button type="button" onClick={() => onPick(here.question)}
+              className="group flex w-full items-center gap-3 rounded-2xl bg-ai-soft p-3 text-left ring-1 ring-[var(--ai-line)] transition-[background-color,transform] duration-150 ease-out hover:bg-[var(--ai-line)] active:scale-[0.98]">
+              <span className="numeral grid size-8 shrink-0 place-items-center rounded-[10px] bg-surface-1 text-[15px] text-ink" aria-hidden>{here.clock}</span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-[12px] font-medium text-ai">The moment you picked</span>
+                <span className="block text-pretty text-[14px] font-semibold leading-snug text-ink">{here.question}</span>
+              </span>
+              <ArrowRight size={13} weight="bold" className="shrink-0 text-ai transition-transform duration-200 group-hover:translate-x-0.5" aria-hidden />
+            </button>
+          </li>
+        )}
         {STARTERS.map((s, i) => (
           <motion.li key={s.q} initial={reduce ? { opacity: 0 } : { opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: 0.04 * i, ease: EASE }}>
