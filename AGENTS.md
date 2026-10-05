@@ -14,7 +14,7 @@ Guidance for coding agents (Claude subagents, Codex) working on MatchPulse.
 
 ## 2) Ownership: stay in your lane
 
-* Every task belongs to a workstream (W0–W11 in `PLAN.md` §10) and **owns specific directories**. Only edit files your workstream owns.
+* Every task belongs to a workstream (W0–W12 in `PLAN.md` §10, W13–W15 in §11 below) and **owns specific directories**. Only edit files your workstream owns.
 * Need a change outside your area? Don't make it. Put it under "Requests for other workstreams" in your handoff.
 * Shared files (`PLAN.md`, `AGENTS.md`, `fixtures/`, `docker-compose.yml`, root config) are edited by the orchestrator (Claude) only, unless your task explicitly grants it.
 
@@ -104,3 +104,24 @@ Open issues / risks:
 | `EMBED_DEPLOYMENT` | commentary, analogs | Azure embeddings deployment name |
 | `DATABASE_URL` | db, api | `postgresql://matchmind:matchmind@localhost:5432/matchmind` (the DB keeps its pre-rename name so the existing volume is reused) |
 | `DATA_DIR` | all | Defaults to `<repo>/data` |
+
+## 11) Post-hackathon workstreams and orchestration (from 2026-10-05)
+
+The orchestrator is a Claude Code session. It launches agents, merges branches into `main` and promotes models. **Paseo is not used.**
+
+* **Codex agents** run as threads on the shared local Codex app-server daemon, driven by `scripts/codex_agent.py` (`start` / `send` / `wait` / `status` / `interrupt`). The daemon owns the threads, so they keep running if the client disconnects. Watch or steer one with `codex agents`. Per-agent state and event logs are in `~/.matchpulse-agents/<name>/`.
+* **Claude agents** run as Claude Code subagents (Opus 5.5, high effort) started by the orchestrator.
+
+| WS | Owner | Branch / worktree | Owns |
+|---|---|---|---|
+| W13 Data sources | Codex `gpt-6.1-sol` high | `ws/W13-sources`, `~/hackathon-W13-sources` | `backend/matchpulse/sources/`, new loaders in `backend/matchpulse/db/`, `backend/tests/test_sources*`, `docs/sources/`, `data/raw/<source>/`, `data/sources/` |
+| W14 Models v2 | Codex `gpt-6-astra` high | `ws/W14-models`, `~/hackathon-W14-models` | `backend/matchpulse/models/`, `backend/matchpulse/backtest/`, `backend/tests/test_models_*`, `data/models/candidates/` |
+| W15 Frontend v2 | Claude Opus 5.5 high | `ws/W15-frontend`, `~/hackathon-W15-frontend` | `frontend/` |
+
+**Production safety.** The live site (`matchpulse-api.service`) runs from the main checkout, reads `data/models/` and the `matchmind` database. Every worktree's `backend/.env` points `DATA_DIR` at main's `data/`, so:
+
+* Never overwrite files in `data/models/`. Write candidates to `data/models/candidates/<name>/` with the usual sibling JSON. The orchestrator promotes a candidate only when it beats the current model on the same held-out split.
+* Never write to the `matchmind` database. W13 loads into its own `matchpulse_staging` database on the same server (set `DATABASE_URL` for that process only).
+* Don't restart `matchpulse-api`, rebuild `frontend/dist` in main, or bind `:8000`/`:5173`. W15's dev server uses `:5180`.
+* The box is shared (16 cores, about 20 GB free RAM, about 60 GB free disk). Run training and bulk jobs under `nice -n 10`, cap threads at 8, keep peak RAM under 12 GB, and check `df -h /` before large downloads.
+* Keep a running log at `docs/<ws>/LOG.md`: what you tried, the numbers, and what's next. The orchestrator reads it between turns.
