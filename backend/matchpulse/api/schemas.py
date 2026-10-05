@@ -73,6 +73,8 @@ class MatchCard(Contract):
     home_score: int
     away_score: int
     has_detail: bool
+    data_tier: Literal["full", "lite"] | None = None
+    capabilities: dict[str, bool] | None = None
 
 
 class Matches(Contract):
@@ -83,7 +85,7 @@ class LineupPlayer(Contract):
     player_id: int
     name: str
     short_name: str
-    jersey: int
+    jersey: int | None
     position: str | None
     starter: bool
 
@@ -91,10 +93,10 @@ class LineupPlayer(Contract):
 class Marker(Contract):
     type: Literal["goal", "sub", "card"]
     event_id: str
-    period: int
+    period: int | None
     minute: int
-    second: int
-    t: float
+    second: int | None
+    t: float | None
     team: Side
     player_id: int | None
     detail: str | None
@@ -128,17 +130,25 @@ class MatchDetail(Contract):
     teams: Sides[TeamRef]
     score: Score
     periods: list[Period]
-    duration_t: float
+    duration_t: float | None
     lineups: Sides[list[LineupPlayer]]
     markers: list[Marker]
+    data_tier: Literal["full", "lite"] | None = None
+    source: str | None = None
+    capabilities: dict[str, bool] | None = None
+    clock_precision: str | None = None
+    xg_provenance: str | None = None
+    provider_team_stats: dict | list | None = None
+    provider_momentum: dict | list | None = None
+    provider_player_ratings: dict | list | None = None
 
 
 class MatchEvent(Contract):
     id: str
-    period: int
+    period: int | None
     minute: int
-    second: int
-    t: float
+    second: int | None
+    t: float | None
     team: Side
     player_id: int | None
     player: str | None
@@ -152,8 +162,9 @@ class MatchEvent(Contract):
     xg: float | None
     sb_xg: float | None
     vaep: float | None
-    sequence_id: str
-    under_pressure: bool
+    sequence_id: str | None
+    under_pressure: bool | None
+    time_precision: str | None = None
 
 
 class Events(Contract):
@@ -162,23 +173,23 @@ class Events(Contract):
 
 
 class SideMinute(Contract):
-    possession: float = Field(ge=0, le=1)
-    field_tilt: float = Field(ge=0, le=1)
-    xg: float
-    xg_cum: float
-    passes: int
+    possession: float | None = Field(ge=0, le=1)
+    field_tilt: float | None = Field(ge=0, le=1)
+    xg: float | None
+    xg_cum: float | None
+    passes: int | None
     shots: int
-    vaep: float
+    vaep: float | None
 
 
 class TimelineMinute(Contract):
     index: int
-    period: int
+    period: int | None
     minute: int
     label: str
     home: SideMinute
     away: SideMinute
-    momentum: float
+    momentum: float | None
 
 
 class Timeline(Contract):

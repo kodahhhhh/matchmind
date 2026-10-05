@@ -3,6 +3,7 @@
 from fastapi import APIRouter
 
 from matchpulse.api.counterfactual import run_counterfactual
+from matchpulse.api.repository import require_full
 from matchpulse.api.schemas import (
     Counterfactual,
     CounterfactualRequest,
@@ -15,6 +16,7 @@ router = APIRouter()
 
 @router.post("/matches/{match_id}/counterfactual", response_model=Counterfactual)
 def counterfactual(match_id: str, request: CounterfactualRequest) -> dict:
+    require_full(match_id, "game_state")
     return run_counterfactual(match_id, request.event_id, request.change)
 
 
@@ -23,4 +25,5 @@ def counterfactual(match_id: str, request: CounterfactualRequest) -> dict:
     response_model=ShotAlternatives,
 )
 def alternatives(match_id: str, event_id: str) -> dict:
+    require_full(match_id, "pass_options")
     return shot_alternatives(match_id, event_id)

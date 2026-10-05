@@ -6,7 +6,7 @@ from fastapi import APIRouter
 from fastapi.responses import StreamingResponse
 
 from matchpulse.analyst.agent import ask_chunks
-from matchpulse.api.repository import require_match
+from matchpulse.api.repository import require_full
 from matchpulse.api.schemas import AskRequest
 
 router = APIRouter()
@@ -14,7 +14,7 @@ router = APIRouter()
 
 @router.post("/matches/{match_id}/ask")
 def ask(match_id: str, request: AskRequest) -> StreamingResponse:
-    require_match(match_id)
+    require_full(match_id)
 
     async def frames():
         async for chunk in ask_chunks(

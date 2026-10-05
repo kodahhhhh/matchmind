@@ -1,0 +1,880 @@
+{
+  "match_id": "fm:5795459",
+  "minutes": [
+    {
+      "index": 0,
+      "period": 1,
+      "minute": 4,
+      "label": "4",
+      "home": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.3542863690792644,
+        "xg_cum": 0.3542863690792644,
+        "passes": null,
+        "shots": 1,
+        "vaep": null
+      },
+      "away": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.0,
+        "xg_cum": 0.0,
+        "passes": null,
+        "shots": 0,
+        "vaep": null
+      },
+      "momentum": null
+    },
+    {
+      "index": 1,
+      "period": 1,
+      "minute": 9,
+      "label": "9",
+      "home": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.0,
+        "xg_cum": 0.3542863690792644,
+        "passes": null,
+        "shots": 0,
+        "vaep": null
+      },
+      "away": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.6988788851993246,
+        "xg_cum": 0.6988788851993246,
+        "passes": null,
+        "shots": 1,
+        "vaep": null
+      },
+      "momentum": null
+    },
+    {
+      "index": 2,
+      "period": 1,
+      "minute": 10,
+      "label": "10",
+      "home": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.0,
+        "xg_cum": 0.3542863690792644,
+        "passes": null,
+        "shots": 0,
+        "vaep": null
+      },
+      "away": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.3751218875443647,
+        "xg_cum": 1.0740007727436893,
+        "passes": null,
+        "shots": 2,
+        "vaep": null
+      },
+      "momentum": null
+    },
+    {
+      "index": 3,
+      "period": 1,
+      "minute": 11,
+      "label": "11",
+      "home": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.0,
+        "xg_cum": 0.3542863690792644,
+        "passes": null,
+        "shots": 0,
+        "vaep": null
+      },
+      "away": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.5339911788347999,
+        "xg_cum": 1.607991951578489,
+        "passes": null,
+        "shots": 1,
+        "vaep": null
+      },
+      "momentum": null
+    },
+    {
+      "index": 4,
+      "period": 1,
+      "minute": 18,
+      "label": "18",
+      "home": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.8303576092144889,
+        "xg_cum": 1.1846439782937532,
+        "passes": null,
+        "shots": 1,
+        "vaep": null
+      },
+      "away": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.0,
+        "xg_cum": 1.607991951578489,
+        "passes": null,
+        "shots": 0,
+        "vaep": null
+      },
+      "momentum": null
+    },
+    {
+      "index": 5,
+      "period": 1,
+      "minute": 20,
+      "label": "20",
+      "home": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.2728068539033786,
+        "xg_cum": 1.4574508321971318,
+        "passes": null,
+        "shots": 1,
+        "vaep": null
+      },
+      "away": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.0,
+        "xg_cum": 1.607991951578489,
+        "passes": null,
+        "shots": 0,
+        "vaep": null
+      },
+      "momentum": null
+    },
+    {
+      "index": 6,
+      "period": 1,
+      "minute": 21,
+      "label": "21",
+      "home": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.0,
+        "xg_cum": 1.4574508321971318,
+        "passes": null,
+        "shots": 0,
+        "vaep": null
+      },
+      "away": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.6698177966205384,
+        "xg_cum": 2.2778097481990276,
+        "passes": null,
+        "shots": 1,
+        "vaep": null
+      },
+      "momentum": null
+    },
+    {
+      "index": 7,
+      "period": 1,
+      "minute": 24,
+      "label": "24",
+      "home": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.0,
+        "xg_cum": 1.4574508321971318,
+        "passes": null,
+        "shots": 0,
+        "vaep": null
+      },
+      "away": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.14002165434224537,
+        "xg_cum": 2.417831402541273,
+        "passes": null,
+        "shots": 1,
+        "vaep": null
+      },
+      "momentum": null
+    },
+    {
+      "index": 8,
+      "period": 1,
+      "minute": 25,
+      "label": "25",
+      "home": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.0,
+        "xg_cum": 1.4574508321971318,
+        "passes": null,
+        "shots": 0,
+        "vaep": null
+      },
+      "away": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.8311381620314253,
+        "xg_cum": 3.248969564572698,
+        "passes": null,
+        "shots": 1,
+        "vaep": null
+      },
+      "momentum": null
+    },
+    {
+      "index": 9,
+      "period": 1,
+      "minute": 26,
+      "label": "26",
+      "home": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.0,
+        "xg_cum": 1.4574508321971318,
+        "passes": null,
+        "shots": 0,
+        "vaep": null
+      },
+      "away": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.31022059536537056,
+        "xg_cum": 3.5591901599380686,
+        "passes": null,
+        "shots": 1,
+        "vaep": null
+      },
+      "momentum": null
+    },
+    {
+      "index": 10,
+      "period": 1,
+      "minute": 28,
+      "label": "28",
+      "home": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.7864650790206336,
+        "xg_cum": 2.2439159112177656,
+        "passes": null,
+        "shots": 1,
+        "vaep": null
+      },
+      "away": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.0,
+        "xg_cum": 3.5591901599380686,
+        "passes": null,
+        "shots": 0,
+        "vaep": null
+      },
+      "momentum": null
+    },
+    {
+      "index": 11,
+      "period": 1,
+      "minute": 29,
+      "label": "29",
+      "home": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 1.1868051429152542,
+        "xg_cum": 3.43072105413302,
+        "passes": null,
+        "shots": 2,
+        "vaep": null
+      },
+      "away": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.0,
+        "xg_cum": 3.5591901599380686,
+        "passes": null,
+        "shots": 0,
+        "vaep": null
+      },
+      "momentum": null
+    },
+    {
+      "index": 12,
+      "period": 1,
+      "minute": 30,
+      "label": "30",
+      "home": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.8275536210066914,
+        "xg_cum": 4.258274675139711,
+        "passes": null,
+        "shots": 1,
+        "vaep": null
+      },
+      "away": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.0,
+        "xg_cum": 3.5591901599380686,
+        "passes": null,
+        "shots": 0,
+        "vaep": null
+      },
+      "momentum": null
+    },
+    {
+      "index": 13,
+      "period": 1,
+      "minute": 31,
+      "label": "31",
+      "home": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.0,
+        "xg_cum": 4.258274675139711,
+        "passes": null,
+        "shots": 0,
+        "vaep": null
+      },
+      "away": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.950348722315737,
+        "xg_cum": 4.509538882253805,
+        "passes": null,
+        "shots": 3,
+        "vaep": null
+      },
+      "momentum": null
+    },
+    {
+      "index": 14,
+      "period": 1,
+      "minute": 32,
+      "label": "32",
+      "home": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.48294923416274743,
+        "xg_cum": 4.741223909302459,
+        "passes": null,
+        "shots": 1,
+        "vaep": null
+      },
+      "away": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.0,
+        "xg_cum": 4.509538882253805,
+        "passes": null,
+        "shots": 0,
+        "vaep": null
+      },
+      "momentum": null
+    },
+    {
+      "index": 15,
+      "period": 1,
+      "minute": 34,
+      "label": "34",
+      "home": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.0,
+        "xg_cum": 4.741223909302459,
+        "passes": null,
+        "shots": 0,
+        "vaep": null
+      },
+      "away": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.8877695684718679,
+        "xg_cum": 5.3973084507256734,
+        "passes": null,
+        "shots": 2,
+        "vaep": null
+      },
+      "momentum": null
+    },
+    {
+      "index": 16,
+      "period": 1,
+      "minute": 36,
+      "label": "36",
+      "home": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.0,
+        "xg_cum": 4.741223909302459,
+        "passes": null,
+        "shots": 0,
+        "vaep": null
+      },
+      "away": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.12854929037462415,
+        "xg_cum": 5.525857741100298,
+        "passes": null,
+        "shots": 1,
+        "vaep": null
+      },
+      "momentum": null
+    },
+    {
+      "index": 17,
+      "period": 1,
+      "minute": 39,
+      "label": "39",
+      "home": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.0,
+        "xg_cum": 4.741223909302459,
+        "passes": null,
+        "shots": 0,
+        "vaep": null
+      },
+      "away": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.28254959380479316,
+        "xg_cum": 5.808407334905091,
+        "passes": null,
+        "shots": 1,
+        "vaep": null
+      },
+      "momentum": null
+    },
+    {
+      "index": 18,
+      "period": 1,
+      "minute": 42,
+      "label": "42",
+      "home": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.7864650790206336,
+        "xg_cum": 5.527688988323092,
+        "passes": null,
+        "shots": 1,
+        "vaep": null
+      },
+      "away": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.0,
+        "xg_cum": 5.808407334905091,
+        "passes": null,
+        "shots": 0,
+        "vaep": null
+      },
+      "momentum": null
+    },
+    {
+      "index": 19,
+      "period": 1,
+      "minute": 44,
+      "label": "44",
+      "home": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.0,
+        "xg_cum": 5.527688988323092,
+        "passes": null,
+        "shots": 0,
+        "vaep": null
+      },
+      "away": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 1.6384244282278502,
+        "xg_cum": 7.446831763132941,
+        "passes": null,
+        "shots": 2,
+        "vaep": null
+      },
+      "momentum": null
+    },
+    {
+      "index": 20,
+      "period": 2,
+      "minute": 61,
+      "label": "61",
+      "home": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.20679733893263857,
+        "xg_cum": 5.7344863272557305,
+        "passes": null,
+        "shots": 1,
+        "vaep": null
+      },
+      "away": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.0,
+        "xg_cum": 7.446831763132941,
+        "passes": null,
+        "shots": 0,
+        "vaep": null
+      },
+      "momentum": null
+    },
+    {
+      "index": 21,
+      "period": 2,
+      "minute": 63,
+      "label": "63",
+      "home": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.44118037728753046,
+        "xg_cum": 6.175666704543261,
+        "passes": null,
+        "shots": 1,
+        "vaep": null
+      },
+      "away": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.0,
+        "xg_cum": 7.446831763132941,
+        "passes": null,
+        "shots": 0,
+        "vaep": null
+      },
+      "momentum": null
+    },
+    {
+      "index": 22,
+      "period": 2,
+      "minute": 67,
+      "label": "67",
+      "home": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.0,
+        "xg_cum": 6.175666704543261,
+        "passes": null,
+        "shots": 0,
+        "vaep": null
+      },
+      "away": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.15329770495126085,
+        "xg_cum": 7.600129468084202,
+        "passes": null,
+        "shots": 1,
+        "vaep": null
+      },
+      "momentum": null
+    },
+    {
+      "index": 23,
+      "period": 2,
+      "minute": 68,
+      "label": "68",
+      "home": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.0,
+        "xg_cum": 6.175666704543261,
+        "passes": null,
+        "shots": 0,
+        "vaep": null
+      },
+      "away": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.2618191874974907,
+        "xg_cum": 7.861948655581693,
+        "passes": null,
+        "shots": 1,
+        "vaep": null
+      },
+      "momentum": null
+    },
+    {
+      "index": 24,
+      "period": 2,
+      "minute": 70,
+      "label": "70",
+      "home": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.0,
+        "xg_cum": 6.175666704543261,
+        "passes": null,
+        "shots": 0,
+        "vaep": null
+      },
+      "away": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.5402441789124994,
+        "xg_cum": 8.402192834494192,
+        "passes": null,
+        "shots": 1,
+        "vaep": null
+      },
+      "momentum": null
+    },
+    {
+      "index": 25,
+      "period": 2,
+      "minute": 72,
+      "label": "72",
+      "home": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.0,
+        "xg_cum": 6.175666704543261,
+        "passes": null,
+        "shots": 0,
+        "vaep": null
+      },
+      "away": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.6838182733109852,
+        "xg_cum": 9.086011107805177,
+        "passes": null,
+        "shots": 1,
+        "vaep": null
+      },
+      "momentum": null
+    },
+    {
+      "index": 26,
+      "period": 2,
+      "minute": 74,
+      "label": "74",
+      "home": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.0,
+        "xg_cum": 6.175666704543261,
+        "passes": null,
+        "shots": 0,
+        "vaep": null
+      },
+      "away": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.07901817820995781,
+        "xg_cum": 9.165029286015136,
+        "passes": null,
+        "shots": 1,
+        "vaep": null
+      },
+      "momentum": null
+    },
+    {
+      "index": 27,
+      "period": 2,
+      "minute": 75,
+      "label": "75",
+      "home": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.0,
+        "xg_cum": 6.175666704543261,
+        "passes": null,
+        "shots": 0,
+        "vaep": null
+      },
+      "away": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.10088947446752411,
+        "xg_cum": 9.26591876048266,
+        "passes": null,
+        "shots": 1,
+        "vaep": null
+      },
+      "momentum": null
+    },
+    {
+      "index": 28,
+      "period": 2,
+      "minute": 76,
+      "label": "76",
+      "home": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.15889132308352097,
+        "xg_cum": 6.334558027626782,
+        "passes": null,
+        "shots": 1,
+        "vaep": null
+      },
+      "away": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.0,
+        "xg_cum": 9.26591876048266,
+        "passes": null,
+        "shots": 0,
+        "vaep": null
+      },
+      "momentum": null
+    },
+    {
+      "index": 29,
+      "period": 2,
+      "minute": 78,
+      "label": "78",
+      "home": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.0,
+        "xg_cum": 6.334558027626782,
+        "passes": null,
+        "shots": 0,
+        "vaep": null
+      },
+      "away": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.2764032344042844,
+        "xg_cum": 9.542321994886944,
+        "passes": null,
+        "shots": 1,
+        "vaep": null
+      },
+      "momentum": null
+    },
+    {
+      "index": 30,
+      "period": 2,
+      "minute": 81,
+      "label": "81",
+      "home": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.0,
+        "xg_cum": 6.334558027626782,
+        "passes": null,
+        "shots": 0,
+        "vaep": null
+      },
+      "away": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.4307792367912208,
+        "xg_cum": 9.973101231678164,
+        "passes": null,
+        "shots": 1,
+        "vaep": null
+      },
+      "momentum": null
+    },
+    {
+      "index": 31,
+      "period": 2,
+      "minute": 89,
+      "label": "89",
+      "home": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.0,
+        "xg_cum": 6.334558027626782,
+        "passes": null,
+        "shots": 0,
+        "vaep": null
+      },
+      "away": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.10239577517916211,
+        "xg_cum": 10.075497006857326,
+        "passes": null,
+        "shots": 1,
+        "vaep": null
+      },
+      "momentum": null
+    },
+    {
+      "index": 32,
+      "period": 2,
+      "minute": 91,
+      "label": "91",
+      "home": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.0,
+        "xg_cum": 6.334558027626782,
+        "passes": null,
+        "shots": 0,
+        "vaep": null
+      },
+      "away": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.5948505495813589,
+        "xg_cum": 10.670347556438685,
+        "passes": null,
+        "shots": 1,
+        "vaep": null
+      },
+      "momentum": null
+    },
+    {
+      "index": 33,
+      "period": 2,
+      "minute": 93,
+      "label": "93",
+      "home": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.0,
+        "xg_cum": 6.334558027626782,
+        "passes": null,
+        "shots": 0,
+        "vaep": null
+      },
+      "away": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.3958447470532276,
+        "xg_cum": 11.066192303491913,
+        "passes": null,
+        "shots": 1,
+        "vaep": null
+      },
+      "momentum": null
+    },
+    {
+      "index": 34,
+      "period": 2,
+      "minute": 94,
+      "label": "94",
+      "home": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.0,
+        "xg_cum": 6.334558027626782,
+        "passes": null,
+        "shots": 0,
+        "vaep": null
+      },
+      "away": {
+        "possession": null,
+        "field_tilt": null,
+        "xg": 0.67220787969596,
+        "xg_cum": 11.738400183187874,
+        "passes": null,
+        "shots": 1,
+        "vaep": null
+      },
+      "momentum": null
+    }
+  ]
+}

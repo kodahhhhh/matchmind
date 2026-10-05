@@ -25,15 +25,35 @@ def connect() -> psycopg.Connection:
 
 
 @lru_cache(maxsize=1)
-def catalogue() -> dict[str, dict]:
+def _catalogue(epoch: int) -> dict[str, dict]:
     """Read the complete catalogue, including reconstructed matches."""
-    return {
+    result = {
         m["match_id"]: m
         for m in json.loads(
             (get_settings().data_dir / "catalogue/matches.json").read_text()
         )
         if m["demo"]
     }
+    # Source discovery is enabled by a sources directory in DATA_DIR. An isolated
+    # StatsBomb-only DATA_DIR still serves exactly its original reference contract.
+    if (get_settings().data_dir / "sources").is_dir():
+        with connect() as conn:
+            rows = conn.execute(
+                "SELECT meta FROM matches WHERE source <> 'sb' "
+                "AND meta->>'data_tier' IN ('full','lite')"
+            ).fetchall()
+        result.update({row["meta"]["match_id"]: row["meta"] for row in rows})
+    from matchpulse.sources.reconcile import canonical_matches
+
+    preferred = canonical_matches(list(result.values()))
+    return {
+        mid: m for mid, m in result.items() if mid.startswith("sb:") or mid in preferred
+    }
+
+
+def catalogue() -> dict[str, dict]:
+    """Refresh discovery every five minutes after incremental source loads."""
+    return _catalogue(int(time.monotonic() // 300))
 
 
 @lru_cache(maxsize=1)
@@ -52,6 +72,16 @@ def require_match(match_id: str) -> dict:
     return catalogue()[match_id]
 
 
+def require_full(match_id: str, capability: str = "full_events") -> dict:
+    """Reject analytics that require actions the source does not provide."""
+    match = require_match(match_id)
+    if match.get("data_tier") == "lite":
+        raise HTTPException(422, "This feature requires a full event stream")
+    if match.get("capabilities", {}).get(capability) is False:
+        raise HTTPException(422, f"This source does not support {capability}")
+    return match
+
+
 @lru_cache(maxsize=128)
 def _bundle(match_id: str, epoch: int) -> dict[str, Any]:
     require_match(match_id)
@@ -61,6 +91,15 @@ def _bundle(match_id: str, epoch: int) -> dict[str, Any]:
         ).fetchone()
         if not meta:
             raise HTTPException(404, "Match not loaded")
+        if meta["meta"].get("data_tier") == "lite":
+            lite = conn.execute(
+                "SELECT payload FROM source_lite_matches WHERE match_id=%s", (match_id,)
+            ).fetchone()
+            if not lite:
+                raise HTTPException(503, "Lite payload not loaded")
+            from matchpulse.api.lite import compute_lite
+
+            return compute_lite(lite["payload"])
         rows = conn.execute(
             "SELECT event_id, extra, xg, vaep, vaep_off, vaep_def, xt "
             "FROM events WHERE match_id=%s "
@@ -69,11 +108,57 @@ def _bundle(match_id: str, epoch: int) -> dict[str, Any]:
         ).fetchall()
     if not rows:
         raise HTTPException(503, "Match events not loaded")
+    if meta["meta"].get("source", "sb") != "sb":
+        from matchpulse.sources.common import decode_name
+
+        for row in rows:
+            extra = row["extra"]
+            if "player" in extra:
+                extra["player"]["name"] = decode_name(extra["player"]["name"])
+            extra["team"]["name"] = decode_name(extra["team"]["name"])
+            if extra["type"]["name"] == "Own Goal Against":
+                # Retain the observed ball action in replay; the separate source
+                # Own Goal For marker supplies its benefiting team.
+                extra["type"] = {"name": "Miscontrol"}
     result = compute_match(
         pd.DataFrame(rows),
         meta["meta"],
-        source_metadata().get(meta["meta"]["native_id"]),
+        source_metadata().get(meta["meta"]["native_id"])
+        if meta["meta"].get("source", "sb") == "sb"
+        else None,
     )
+    if meta["meta"].get("source", "sb") != "sb":
+        result["match"].update(
+            data_tier="full",
+            source=meta["meta"]["source"],
+            capabilities=meta["meta"].get("capabilities", {}),
+        )
+        source_match = meta["meta"].get("source_match", {})
+        if (
+            meta["meta"]["source"] == "wy"
+            and source_match.get("duration") == "Penalties"
+        ):
+            shootout = {
+                team["side"]: team.get("scoreP")
+                for team in source_match.get("teamsData", {}).values()
+            }
+            if set(shootout) == {"home", "away"} and all(
+                isinstance(value, int) for value in shootout.values()
+            ):
+                result["match"]["score"]["penalties"] = shootout
+        unknown_jerseys = {
+            p["player_id"]
+            for t in meta["meta"].get("lineups", [])
+            for p in t["lineup"]
+            if p.get("jersey_known") is False
+        }
+        for roster in [*result["match"]["lineups"].values(), result["players"]]:
+            for player in roster:
+                if player["player_id"] in unknown_jerseys:
+                    player["jersey"] = None
+        pressure = {row["event_id"]: row["extra"].get("under_pressure") for row in rows}
+        for event in result["events"]:
+            event["under_pressure"] = pressure[event["id"]]
     # Raw extras are discarded; retain model values for window features.
     return result
 
@@ -89,6 +174,7 @@ def bundle(match_id: str) -> dict[str, Any]:
 def clear_cache() -> None:
     """Invalidate cached model results after DB backfills."""
     _bundle.cache_clear()
+    _catalogue.cache_clear()
 
 
 def match_cards(competition: str | None = None) -> list[dict]:
@@ -126,6 +212,11 @@ def match_cards(competition: str | None = None) -> list[dict]:
                     "color": ac,
                 },
                 "has_detail": True,
+                **(
+                    {"data_tier": "lite", "capabilities": m.get("capabilities", {})}
+                    if m.get("data_tier") == "lite"
+                    else {}
+                ),
             }
         )
     return cards

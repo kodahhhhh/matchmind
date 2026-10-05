@@ -15,7 +15,7 @@ def competitions() -> dict:
     return {"competitions": repo.competitions()}
 
 
-@router.get("/matches", response_model=s.Matches)
+@router.get("/matches", response_model=s.Matches, response_model_exclude_unset=True)
 def matches(competition: str | None = None) -> dict:
     return {"matches": repo.match_cards(competition)}
 
@@ -29,7 +29,11 @@ def match(match_id: str) -> dict:
     return repo.bundle(match_id)["match"]
 
 
-@router.get("/matches/{match_id}/events", response_model=s.Events)
+@router.get(
+    "/matches/{match_id}/events",
+    response_model=s.Events,
+    response_model_exclude_unset=True,
+)
 def events(
     match_id: str,
     from_t: float | None = Query(None, alias="from", ge=0),
@@ -38,6 +42,10 @@ def events(
     if from_t is not None and to_t is not None and from_t > to_t:
         raise HTTPException(422, "from must be <= to (elapsed seconds)")
     rows = repo.bundle(match_id)["events"]
+    if (from_t is not None or to_t is not None) and any(e["t"] is None for e in rows):
+        raise HTTPException(
+            422, "Elapsed-time filtering requires an observed precise clock"
+        )
     return {
         "match_id": match_id,
         "events": [

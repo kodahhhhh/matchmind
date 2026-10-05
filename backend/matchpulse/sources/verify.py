@@ -20,7 +20,8 @@ def staged_matches(database_url: str) -> list[dict]:
         return [
             row[0]
             for row in conn.execute(
-                "SELECT meta FROM matches WHERE source IN ('af','us') ORDER BY match_id"
+                "SELECT meta FROM matches WHERE source IN ('af','us','wy','ws','fm') "
+                "ORDER BY match_id"
             ).fetchall()
         ]
 
@@ -30,6 +31,7 @@ def prepare(data_dir: Path, database_url: str) -> Path:
     selected = staged_matches(database_url)
     runtime = data_dir / "sources/verification-runtime"
     runtime.mkdir(parents=True, exist_ok=True)
+    (runtime / "sources").mkdir(exist_ok=True)
     for name in ("models", "raw", "processed"):
         path = runtime / name
         target = data_dir / name
@@ -60,7 +62,12 @@ def probe(data_dir: Path, database_url: str) -> dict:
         cards = schemas.Matches.model_validate(listing.json())
         report["listed_matches"] = len(cards.matches)
         listed = {m.match_id for m in cards.matches}
+        counts = {}
         for match in selected:
+            key = (match["source"], match["data_tier"])
+            if match["match_id"] not in listed or counts.get(key, 0) >= 20:
+                continue
+            counts[key] = counts.get(key, 0) + 1
             mid, tier = match["match_id"], match["data_tier"]
             if mid not in listed:
                 raise ValueError(
@@ -70,7 +77,7 @@ def probe(data_dir: Path, database_url: str) -> dict:
             for suffix, model in routes:
                 response = client.get(f"/api/matches/{mid}{suffix}")
                 row = {"route": suffix or "meta", "status": response.status_code}
-                if tier == "full":
+                if tier in ("full", "lite"):
                     response.raise_for_status()
                     model.model_validate(response.json())
                     if suffix == "/events":
@@ -99,9 +106,7 @@ def probe(data_dir: Path, database_url: str) -> dict:
                     )
                 entry["responses"].append(row)
             report["matches"].append(entry)
-    report["lite_api_status"] = (
-        "Unsupported by current shared API; contract proposal required"
-    )
+    report["lite_api_status"] = "Available: shot events and null full-event series"
     save_json(data_dir / "sources/api_sample_report.json", report)
     return report
 
