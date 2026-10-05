@@ -2,7 +2,7 @@
 
 ## Needs owner
 
-**Recommend orchestrator review of `goals-v2` only.** It improves both goal-rate
+**Recommend review of `goals-v2` and `xg-shot-v1` for Understat lite only.** It improves both goal-rate
 targets and block-result proper scores after repairing indirect upstream leakage.
 Never promote `goals-v1` or `gamestate-v1`: their original validation was invalid.
 Production promotion remains orchestrator-owned; exact steps are in PROMOTION.md.
@@ -341,3 +341,41 @@ and W13 xG augmentation. `git diff --check` passed. The actual goals-v2 boosters
 passed public `rates` / `outlook` feature-order, positive-finite-rate and identical
 intervention parity checks. Ten production cards still match initial hashes;
 source inputs match the augmentation manifest. No W14 job/server remains.
+
+
+## Round 2 — shot-only and new-provider models
+
+Task expands post-hackathon data modelling; AGENTS source/production boundaries
+remain. Read current AGENTS, PLAN, MODELS, INTEGRATION, BACKTEST and W13 source log.
+No WhoScored SPADL has landed at initial inspection. W13 has 2,002 Understat lite
+matches; one FotMob shotmap is cached. No W14 network/DB access.
+
+`xg-shot-v1` fixed the incumbent hyperparameters and five match folds, reducing
+features to x, absolute lateral offset, distance, goal angle, body part and
+situation. Assist type is unavailable in cached FotMob; ambiguous clock/score and
+all event/freeze-frame context are excluded. Actual goals are labels; provider
+xG and shot endpoints/outcomes never enter features. Full current fold boosters
+are freshly scored on the same 73,598 held-out shots.
+
+| Metric | Current full xG | Shot-only | Candidate-current 95% CI |
+|---|---:|---:|---|
+| StatsBomb Brier | 0.075142168 | 0.080167210 | [0.004548887, 0.005500947] |
+| StatsBomb log loss | 0.262876736 | 0.279609383 | [0.015296449, 0.018144158] |
+| StatsBomb ECE | 0.003025311 | 0.002024296 | descriptive |
+| Understat Brier vs legacy lite | 0.233349779 | 0.081345067 | [-0.154728956, -0.149242042] |
+| Understat log loss vs legacy lite | 0.654600397 | 0.287272927 | [-0.374204899, -0.360200910] |
+
+Understat external audit uses 51,086 shots / 2,002 matches; 158 own-goal annotations
+remain unscored. Replay of the current full model and W13's missing-context adapter
+reproduces staged predictions exactly. Own xG ECE is 0.011383, provider reference
+Brier 0.074692 (unknown original training overlap, never a target). Competition
+predicted/actual-goal totals, reliability bins, missing-feature counts and raw
+predictions are in the sibling JSON/parquet. FotMob's three FastBreak shots were
+mapped to open play in a source-only semantic correction; no model refit or recipe
+tuning. One cached match cannot establish broad FotMob transfer.
+
+Recommend **xg-shot-v1 for Understat lite only**. Full-context xG stays unchanged.
+Pure inference and chance-summary interfaces are documented in INTEGRATION.md.
+Summaries expose chance totals/share and evidence IDs, never fake possession or
+VAEP. A strict snapshot refuses missing shot periods: Understat cannot support a
+verified minute-level outlook until W13 supplies clock provenance.

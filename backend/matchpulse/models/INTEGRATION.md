@@ -76,3 +76,56 @@ change the API process, or refresh W4's sequence danger / analog tables.
 Then run `uv run python -m matchpulse.db.load refresh`, and rebuild W4's downstream
 sequence/ranking/analog artifacts as needed. Shootout values are available, but
 period 5 must remain excluded from normal timeline and player aggregation.
+
+## W14 round 2: shot-only xG and lite summaries
+
+New `models.xg_shot` is independent of the full-context xG artifact. For W13's
+normalized Understat/FotMob shots:
+
+```python
+from pathlib import Path
+import pandas as pd
+from matchpulse.models.xg_shot import predict
+from matchpulse.models.lite import chance_summary
+
+shots = pd.DataFrame(bundle["shots"])
+p = predict(shots, Path(DATA_DIR) / "models/candidates/xg-shot-v1/xg_shot.txt")
+shots["xg"] = p
+for row, value in zip(bundle["shots"], p, strict=True):
+    row["xg"] = float(value) if pd.notna(value) else None
+summary = chance_summary(shots)
+```
+
+Loader requirements: attacking-team +x coordinates, 105×68 metres; `body_part`
+and `situation` strings; preserve evidence `id`, team home/away, minute, nullable
+period/second, result, and provider_xg separately. Do not rotate away shots into
+the display frame before inference. Lateral mirroring has no effect because the
+features use distance to the pitch centre line. Result, endpoint, on-target flag,
+provider xG, exact score and unavailable assists are **not** features. Unknown
+categories remain missing; monitor missing counts. Own goals and shootouts get
+null xG, not zero; FotMob must pass `is_own_goal` from raw `isOwnGoal`.
+
+Validated snapshot: 2,002 Understat matches / 51,086 genuine shots. Own model
+Brier 0.081345 versus legacy missing-context full-model Brier 0.233350; the current
+adapter was freshly replayed with zero difference from staged values. The model
+is recommended for **Understat lite only**, never a replacement for full-context
+StatsBomb xG. Only one FotMob sample is available; broader FotMob transfer remains
+unverified. Both predictions and all source comparisons live in the candidate.
+
+`chance_summary` returns own-xG totals, evidence IDs, minute buckets and
+`home_chance_share` (fraction of total shot xG). It is **chance share**, not ball
+possession, field tilt, VAEP momentum or proof of who controlled play. No shots
+or zero total xG gives a null share. Unknown xG annotations are counted explicitly.
+There are no invented passes, carries, sequences, actions or player-impact values.
+
+`lite.snapshot(shots, period=..., minute=..., score={"home": ..., "away": ...})`
+forms strict pre-minute shot history for a modelled outlook. It requires verified
+shot periods and an independently verified anchor score. All shots in the current
+minute are excluded. Understat currently has unknown periods, so **outlook is
+unavailable** there; never guess periods from minutes around halftime. Final totals
+and labelled minute buckets remain supported. Live exact replay and substitution,
+red-card or pass-option counterfactuals are not provided by this lite interface.
+
+These are pure model interfaces, not changes to API response schemas. W13/API owns
+capability dispatch, conversion of NaN to null, fixture/schema changes and staged
+backfill of lite payloads. Preserve provider metrics under provider names.

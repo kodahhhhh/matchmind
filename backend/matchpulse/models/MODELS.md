@@ -550,3 +550,18 @@ against current (CI [-0.013406673, 0.003553391], inconclusive) and
 and tournaments are diagnostic only; market checkpoints remain mixed. Hold
 promotion. The serialized model needs the new PoissonResult class, documented in
 PROMOTION.md; existing public inference signatures and feature order are retained.
+
+## Shot-only xG (W14 round 2)
+
+`xg-shot-v1` uses six shared features: x, absolute lateral offset, distance, angle,
+body part and situation. No unavailable assist/score/clock/freeze-frame context is
+imputed. Actual goals train the fixed incumbent LightGBM recipe; five match folds
+are identical to full xG. Same-shot Brier 0.075142 → 0.080167 and log loss
+0.262877 → 0.279609 quantify the loss from missing context; full xG is not replaced.
+External Understat (2,002 matches / 51,086 shots) improves Brier
+0.233350 → 0.081345 versus freshly replayed current missing-context inference
+(CI [-0.154729, -0.149242]); log loss 0.654600 → 0.287273
+(CI [-0.374205, -0.360201]). Recommend the separate artifact for Understat lite.
+Provider xG is reference only, with unknown training overlap. FotMob currently
+has one cached test match; broader support is not validated. Inference, capability
+limits and source backfill responsibilities are in INTEGRATION/PROMOTION.

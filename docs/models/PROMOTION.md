@@ -137,3 +137,32 @@ The source run pins accepted catalogue/file hashes and tests a source holdout;
 new W13 data requires a fresh run. VAEP remains on hold until its changed action
 values, player totals and dependent windows are evaluated together. Its candidate
 OOF values must never be mistaken for global-fit training values in outer folds.
+
+## Round 2: xg-shot-v1 — recommend Understat lite only
+
+This is a new artifact, not a swap for `xg.txt`. StatsBomb same-fold Brier loses
+0.005025 versus full context, as expected. External Understat Brier improves
+0.233350 → 0.081345 versus freshly replayed current lite inference (exact staged
+prediction reproduction); the paired 95% difference interval is
+[-0.154729, -0.149242]. Provider xG remains reference only. Calibration ECE is
+0.011383 on 2,002 Understat matches. FotMob has only one cached match and is held
+for broader validation. No production write has been performed.
+
+After merging the W14 model interface and W13 loader/capability integration, the
+orchestrator can install the separate artifact:
+
+```sh
+export DATA_DIR=/home/ubuntu/hackathon/data
+cp "$DATA_DIR/models/candidates/xg-shot-v1/xg_shot.txt" "$DATA_DIR/models/xg_shot.txt"
+cp "$DATA_DIR/models/candidates/xg-shot-v1/xg_shot.json" "$DATA_DIR/models/xg_shot.json"
+```
+
+W13 then re-scores existing lite JSON through `xg_shot.predict`, keeps provider_xg,
+keeps own-goal xG null, and reloads the lite payloads using its guarded staging
+loader first. W14 cannot supply a production DB loader command: W13 currently
+only authorizes its loader for matchpulse_staging. The orchestrator must review
+W13's exact production promotion path before any live DB load. This changes lite
+payload shot xG and derived chance totals only; no SPADL/event/VAEP/xT backfill or
+`minute_metrics` refresh is appropriate for lite data. Do not run the generic
+StatsBomb `models.backfill` on lite matches. Forecast capability stays false until
+verified shot periods and a separately validated lite outlook model are available.
