@@ -54,7 +54,7 @@ function TeamBlock({ side, name, scorers }: { side: Side; name: string; scorers:
       <p title={name} className={`flex h-[52px] max-w-full items-center font-semibold leading-none tracking-[-0.03em] text-ink ${size}`}>
         <span className="truncate">{name}</span>
       </p>
-      <p title={all || undefined} className="tabular mt-1.5 max-w-full truncate text-[11px] text-ink-3 lg:text-[12px]">
+      <p title={all || undefined} className="tabular mt-1.5 hidden max-w-full truncate text-[11px] text-ink-3 sm:block lg:text-[12px]">
         {scorers.length ? scorers.map((s, i) => (
           <span key={s.name} className={i > 0 ? "ml-2.5" : undefined}>
             <span className="text-ink-2">{s.name}</span> {s.minutes}

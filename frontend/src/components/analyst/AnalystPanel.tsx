@@ -1,7 +1,7 @@
 import { useMemo, type ComponentProps, type ReactNode } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import type { Components } from "streamdown";
-import { ArrowRight, ArrowsDownUp, CaretRight, Lightning, Play, Question as QuestionIcon, TrendUp } from "@phosphor-icons/react";
+import { ArrowRight, ArrowsDownUp, CaretRight, Lightning, Play, Question as QuestionIcon, Star, TrendUp } from "@phosphor-icons/react";
 import { Conversation, ConversationContent, ConversationScrollButton } from "@/components/ai-elements/conversation";
 import { Message, MessageContent, MessageResponse } from "@/components/ai-elements/message";
 import {
@@ -17,15 +17,15 @@ import { clock, describe, isShot, undash } from "../../lib/format";
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 const STARTERS: { q: string; sub: string; icon: ReactNode }[] = [
-  { q: "Find the turning point", sub: "When did the match swing?", icon: <TrendUp size={16} weight="bold" /> },
-  { q: "Who was actually progressing the ball?", sub: "Who moved the team forward", icon: <ArrowRight size={16} weight="bold" /> },
-  { q: "Show me the three most dangerous sequences", sub: "The attacks closest to a goal", icon: <Lightning size={16} weight="bold" /> },
-  { q: "What changed after the substitutions?", sub: "Did the changes work?", icon: <ArrowsDownUp size={16} weight="bold" /> },
+  { q: "Where did the match turn?", sub: "The moment one side took control", icon: <TrendUp size={16} weight="bold" /> },
+  { q: "Who was the best player on the pitch?", sub: "Beyond goals and assists", icon: <Star size={16} weight="fill" /> },
+  { q: "Show me the three most dangerous attacks", sub: "The moves that came closest to a goal", icon: <Lightning size={16} weight="bold" /> },
+  { q: "Did the substitutions work?", sub: "What changed after the changes", icon: <ArrowsDownUp size={16} weight="bold" /> },
 ];
 const FOLLOW_UPS = [
   ...STARTERS.map((s) => s.q),
+  "Who moved the ball forward most?",
   "What if the first goal never happened?",
-  "Should the last big chance have been a pass instead of a shot?",
 ];
 
 /** What each tool does, in words a fan would use. */
@@ -106,69 +106,33 @@ function useAnnouncement(chat: ChatMessage[]): string {
 function EmptyState({ onPick }: { onPick: (q: string) => void }) {
   const reduce = useReducedMotion();
   return (
-    <div className="pt-3">
-      <div className="mb-5 flex items-start gap-3">
+    <div className="pt-2">
+      <div className="mb-4 flex items-start gap-3">
         <Orb />
         <div className="min-w-0">
-          <h2 className="text-[16px] font-semibold leading-snug tracking-[-0.015em] text-ink">Ask the analyst</h2>
+          <h2 className="text-[16px] font-semibold leading-snug tracking-[-0.015em] text-ink">Ask about this match</h2>
           <p className="mt-1 text-pretty text-[13.5px] leading-[1.55] text-ink-3">
-            Ask in your own words. The analyst looks things up in the match data, shows you each step, and links every claim to the moment on the pitch.
+            Ask in your own words. The analyst looks things up in the match data and links every claim to the moment, so you can replay it.
           </p>
         </div>
       </div>
-      <ul className="grid grid-cols-2 gap-2.5">
+      <ul className="space-y-2">
         {STARTERS.map((s, i) => (
-          <motion.li key={s.q} initial={reduce ? { opacity: 0 } : { opacity: 0, y: 6, filter: "blur(2px)" }} animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+          <motion.li key={s.q} initial={reduce ? { opacity: 0 } : { opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: 0.04 * i, ease: EASE }}>
             <button type="button" onClick={() => onPick(s.q)}
-              className="group flex h-full w-full flex-col items-start gap-3 rounded-2xl bg-surface-2 p-3.5 text-left ring-1 ring-line transition-[background-color,box-shadow,transform] duration-150 ease-out hover:bg-surface-3 hover:ring-[var(--ai-line)] active:scale-[0.97]">
-              <span className="flex size-8 items-center justify-center rounded-[10px] bg-ai-soft text-ai" aria-hidden>{s.icon}</span>
-              <span>
-                <span className="block text-pretty text-[13.5px] font-semibold leading-snug text-ink">{s.q}</span>
-                <span className="mt-1 block text-[12.5px] leading-snug text-ink-3">{s.sub}</span>
+              className="group flex w-full items-center gap-3 rounded-2xl bg-surface-2 p-3 text-left ring-1 ring-line transition-[background-color,box-shadow,transform] duration-150 ease-out hover:bg-surface-3 hover:ring-[var(--ai-line)] active:scale-[0.98]">
+              <span className="grid size-8 shrink-0 place-items-center rounded-[10px] bg-ai-soft text-ai" aria-hidden>{s.icon}</span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-pretty text-[14px] font-semibold leading-snug text-ink">{s.q}</span>
+                <span className="mt-0.5 block text-[12.5px] leading-snug text-ink-3">{s.sub}</span>
               </span>
+              <ArrowRight size={13} weight="bold" className="shrink-0 text-ink-4 transition-[transform,color] duration-200 group-hover:translate-x-0.5 group-hover:text-ai" aria-hidden />
             </button>
           </motion.li>
         ))}
       </ul>
-      <MatchStory />
     </div>
-  );
-}
-
-function MatchStory() {
-  const data = useMatch((s) => s.data);
-  const focusEvent = useMatch((s) => s.focusEvent);
-  if (!data) return null;
-  const names = new Map([...data.match.lineups.home, ...data.match.lineups.away].map((p) => [p.player_id, p.short_name]));
-  const items = data.match.markers.filter((m) => m.type === "goal" || (m.type === "card" && m.detail !== "yellow"));
-  if (!items.length) return null;
-  let h = 0, a = 0;
-  return (
-    <section aria-labelledby="match-story" className="mt-7">
-      <h3 id="match-story" className="mb-2.5 text-[14px] font-semibold tracking-[-0.01em] text-ink">Match story</h3>
-      <ol className="overflow-hidden rounded-2xl bg-surface-2 ring-1 ring-line">
-        {items.map((m, i) => {
-          if (m.type === "goal") { if (m.team === "home") h++; else a++; }
-          const who = m.detail === "own_goal" ? "Own goal" : names.get(m.player_id ?? -1) ?? "Unknown";
-          const what = m.type === "card" ? "Red card" : m.detail === "penalty" ? "Penalty" : m.detail === "own_goal" ? "" : "Goal";
-          return (
-            <li key={m.event_id} className={i ? "border-t border-line" : ""}>
-              <button type="button" onClick={() => focusEvent(m.event_id)}
-                className="flex w-full items-center gap-3 px-3.5 py-2.5 text-left transition-colors duration-150 hover:bg-surface-3">
-                <span className="numeral w-11 text-[18px] leading-none text-ink">{clock(m.period, m.minute)}</span>
-                <span className="h-5 w-1 shrink-0 rounded-full" style={{ background: `var(--${m.team})` }} aria-hidden />
-                <span className="min-w-0 flex-1 truncate text-[13.5px] font-semibold text-ink">
-                  {who}
-                  {what && <span className="ml-2 text-[12.5px] font-normal text-ink-3">{what}</span>}
-                </span>
-                {m.type === "goal" && <span className="numeral text-[18px] leading-none text-ink-2" aria-label={`Score ${h}-${a}`}>{h}-{a}</span>}
-              </button>
-            </li>
-          );
-        })}
-      </ol>
-    </section>
   );
 }
 
@@ -261,7 +225,7 @@ function Answer({ m }: { m: ChatMessage }) {
     });
   }, [m.content, m.labels, data]);
   return (
-    <MessageResponse className="answer text-[15px] leading-[1.7] text-ink [&_p]:text-pretty [&_strong]:font-semibold [&_strong]:text-ink"
+    <MessageResponse data-testid="answer" className="answer text-[15px] leading-[1.7] text-ink [&_p]:text-pretty [&_strong]:font-semibold [&_strong]:text-ink"
       components={MARKDOWN}>
       {markdown}
     </MessageResponse>
@@ -272,15 +236,14 @@ const MARKDOWN: Components = { a: ({ href, children }) => <CitationLink href={hr
 
 function CitationLink({ href, children }: Pick<ComponentProps<"a">, "href" | "children">) {
   const data = useMatch((s) => s.data);
-  const focusEvent = useMatch((s) => s.focusEvent);
-  const focusSequence = useMatch((s) => s.focusSequence);
+  const showMoment = useMatch((s) => s.showMoment);
   const cite = href?.startsWith("#cite:") ? href.slice(6) : null;
   if (!cite) return <a href={href} className="text-ai underline underline-offset-2">{children}</a>;
   const kind = cite.startsWith("ev:") ? "ev" : "seq";
   const id = cite.slice(kind.length + 1);
   const side = kind === "ev" ? data?.eventById.get(id)?.team : resolveSequence(data, id)?.team;
   return (
-    <button type="button" onClick={() => (kind === "ev" ? focusEvent(id) : focusSequence(id))}
+    <button type="button" onClick={() => showMoment(kind === "ev" ? { ev: id } : { seq: id })}
       className="mx-0.5 inline-flex min-h-6 translate-y-[-1px] items-center gap-1.5 whitespace-nowrap rounded-full bg-surface-3 py-[1px] pl-2 pr-2.5 align-middle text-[13px] font-semibold leading-5 text-ink ring-1 ring-line-strong transition-[background-color,box-shadow,transform] duration-150 ease-out hover:bg-ai-soft hover:ring-[var(--ai-line)] active:scale-[0.97]">
       <span className="size-2 shrink-0 rounded-[3px]" style={{ background: side ? `var(--${side})` : "var(--ink-3)" }} aria-hidden />
       {children}
@@ -294,18 +257,21 @@ function FollowUps() {
   const ask = useMatch((s) => s.ask);
   const playHighlights = useMatch((s) => s.playHighlights);
   const setRightTab = useMatch((s) => s.setRightTab);
+  const hasEvents = useMatch((s) => !!s.data?.has.events);
   const asked = new Set(chat.filter((c) => c.role === "user").map((c) => c.content));
   const questions = FOLLOW_UPS.filter((q) => !asked.has(q)).slice(0, 3);
   const pill = "h-8 rounded-full border-0 bg-surface-2 px-3 text-[12.5px] font-medium text-ink-2 ring-1 ring-line hover:bg-surface-3 hover:text-ink";
   return (
     <div role="group" aria-label="Next steps" className="space-y-1.5 pt-1">
       <Suggestions className="gap-1.5">
-        <Suggestion suggestion="Play the highlights" onClick={playHighlights} className={pill}>
+        <Suggestion suggestion="Play the highlights" onClick={() => { playHighlights(); useMatch.getState().pingPitch(); }} className={pill}>
           <Play size={12} weight="fill" aria-hidden />Play the highlights
         </Suggestion>
-        <Suggestion suggestion="Try a what-if" onClick={() => setRightTab("whatif")} className={pill}>
-          Try a what-if<ArrowRight size={12} weight="bold" aria-hidden />
-        </Suggestion>
+        {hasEvents && (
+          <Suggestion suggestion="Try a what-if" onClick={() => setRightTab("whatif")} className={pill}>
+            Try a what-if<ArrowRight size={12} weight="bold" aria-hidden />
+          </Suggestion>
+        )}
       </Suggestions>
       <Suggestions className="gap-1.5">
         {questions.map((q) => (
@@ -320,7 +286,7 @@ function FollowUps() {
 
 function Moments({ m }: { m: ChatMessage }) {
   const data = useMatch((s) => s.data);
-  const focusEvent = useMatch((s) => s.focusEvent);
+  const showMoment = useMatch((s) => s.showMoment);
   const focus = useMatch((s) => s.focus);
   if (!data) return null;
   const ids = [...new Set([...m.content.matchAll(/\[\[ev:([^\]]+)\]\]/g)].map((x) => x[1]))].filter((id) => data.eventById.has(id));
@@ -335,7 +301,7 @@ function Moments({ m }: { m: ChatMessage }) {
           const what = describe(e).replace(/^\S+\s/, "").replace(e.player ?? "", "").trim() || e.type;
           return (
             <li key={id} className={i ? "border-t border-line" : ""}>
-              <button type="button" onClick={() => focusEvent(id)} aria-current={active || undefined}
+              <button type="button" onClick={() => showMoment({ ev: id })} aria-current={active || undefined}
                 className={`flex w-full items-center gap-3 px-3.5 py-2.5 text-left transition-colors duration-150 ${active ? "bg-surface-4" : "hover:bg-surface-3"}`}>
                 <span className="numeral w-11 text-[18px] leading-none text-ink">{clock(e.period, e.minute)}</span>
                 <span className="h-6 w-1 shrink-0 rounded-full" style={{ background: `var(--${e.team})` }} aria-hidden />

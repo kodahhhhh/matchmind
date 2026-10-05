@@ -4,10 +4,11 @@ import type { PlayerRow, Side } from "../../api/types";
 import { useMatch } from "../../store/match";
 import { usePlayerUi } from "../../store/ui";
 import { signed } from "../../lib/format";
+import { Explain } from "@/components/ui/explain";
 
 type Sort = "vaep" | "passes";
 const EASE = [0.22, 1, 0.36, 1] as const;
-const COLS = "grid-cols-[minmax(0,1fr)_84px_60px_34px] sm:grid-cols-[minmax(0,1fr)_104px_76px_40px]";
+const COLS = "grid-cols-[minmax(0,1fr)_96px_64px] sm:grid-cols-[minmax(0,1fr)_120px_76px]";
 
 /** Value added (VAEP) vs raw pass counts: the story is where they disagree. */
 export function Players() {
@@ -25,44 +26,82 @@ export function Players() {
       .map((p) => ({ p, delta: passRank.get(p.player_id)! - valueRank.get(p.player_id)! }));
   }, [data, sort, team]);
   if (!data) return null;
+  if (!data.has.players) return <Lineups />;
   const maxV = Math.max(...rows.map((r) => r.p.vaep), 0.01);
   const maxP = Math.max(...rows.map((r) => r.p.passes), 1);
-  const top = [...rows].sort((a, b) => b.delta - a.delta)[0];
+  const best = [...data.players].sort((a, b) => b.vaep - a.vaep)[0];
+  const hidden = [...rows].sort((a, b) => b.delta - a.delta)[0];
   const teams = data.match.teams;
   const teamLabel = (s: Side) => (
     <span className="flex min-w-0 items-center gap-1.5">
       <span className="size-2.5 shrink-0 rounded-[3px]" style={{ background: `var(--${s})` }} aria-hidden />
-      <span className="max-w-[88px] truncate">{teams[s].name}</span>
+      <span className="max-w-[88px] truncate">{teams[s].short || teams[s].name}</span>
     </span>
   );
 
   return (
     <div className="flex h-full min-h-0 flex-col">
       <div className="px-5 pt-1">
-        <h2 className="text-[16px] font-semibold leading-snug tracking-[-0.015em] text-ink">Who actually mattered</h2>
-        <p className="mt-1 text-pretty text-[13.5px] leading-[1.55] text-ink-3">Value added measures how much each action changed the chance of scoring or conceding. Pass counts don't.</p>
-        {top && top.delta > 3 && (
-          <div className="mt-3.5 flex items-center gap-3 rounded-2xl bg-surface-2 p-3 ring-1 ring-line">
-            <Jersey p={top.p.jersey} side={top.p.team} />
-            <p className="min-w-0 text-pretty text-[13.5px] leading-snug text-ink-2">
-              <span className="font-semibold text-ink">{top.p.short_name}</span> ranks <span className="tabular font-semibold text-ink">{top.delta} places higher</span> on impact than on passes: they did more with the ball than the pass count suggests.
-            </p>
-          </div>
+        <p className="text-[12.5px] font-medium text-ink-3">Biggest impact</p>
+        {best && (
+          <button type="button" onClick={() => usePlayerUi.getState().openPlayer(best.player_id)}
+            className="mt-1.5 flex w-full items-center gap-3 rounded-2xl bg-surface-2 p-3 text-left ring-1 ring-line transition-[background-color,transform] duration-150 ease-out hover:bg-surface-3 active:scale-[0.99]">
+            <Jersey p={best.jersey} side={best.team} />
+            <span className="min-w-0 flex-1">
+              <span className="block truncate text-[15px] font-semibold text-ink">{best.short_name}</span>
+              <span className="block text-pretty text-[13px] leading-snug text-ink-3">Did more than anyone to make {teams[best.team].name} likelier to score, or stop a goal.</span>
+            </span>
+          </button>
         )}
-        <div className="mt-3.5 flex flex-wrap items-center justify-between gap-2">
+        {hidden && hidden.delta > 3 && hidden.p.player_id !== best?.player_id && (
+          <p className="mt-2.5 text-pretty text-[13.5px] leading-snug text-ink-2">
+            <span className="font-semibold text-ink">{hidden.p.short_name}</span> mattered more than the pass count shows: <span className="tabular">{hidden.delta}</span> places higher on impact than on passes.
+          </p>
+        )}
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
           <Seg id="players-sort" label="Sort by" value={sort} onChange={setSort} options={[["vaep", "Impact"], ["passes", "Passes"]]} />
           <Seg id="players-team" label="Team" value={team} onChange={setTeam}
             options={[["all", "Both"], ["home", teamLabel("home")], ["away", teamLabel("away")]]}
             names={{ all: "Both teams", home: teams.home.name, away: teams.away.name }} />
         </div>
-        <div className={`mt-3.5 grid ${COLS} gap-2 px-1 pb-2 text-[12px] font-medium text-ink-3`} aria-hidden>
-          <span>Player</span><span>Impact</span><span>Passes</span>
-          <span className="text-right" title="Places higher on impact than on passes">Gap</span>
+        <div className={`mt-3.5 grid ${COLS} gap-2 px-1 pb-2 text-[12px] font-medium text-ink-3`}>
+          <span>Player</span><span><Explain term="impact">Impact</Explain></span><span className="text-right">Passes</span>
         </div>
       </div>
       <ol className="scroll-thin min-h-0 flex-1 overflow-y-auto px-4 pb-4" aria-label="Players">
-        {rows.map(({ p, delta }, i) => <Row key={p.player_id} p={p} i={i} maxV={maxV} maxP={maxP} delta={delta} />)}
+        {rows.map(({ p }, i) => <Row key={p.player_id} p={p} i={i} maxV={maxV} maxP={maxP} />)}
       </ol>
+    </div>
+  );
+}
+
+/** Lite matches: no per-player numbers, so show who played. */
+function Lineups() {
+  const data = useMatch((s) => s.data!);
+  const { lineups, teams } = data.match;
+  return (
+    <div className="scroll-thin h-full overflow-y-auto px-5 pb-5">
+      <h2 className="text-[16px] font-semibold tracking-[-0.015em] text-ink">Line-ups</h2>
+      <p className="mt-1 text-[13.5px] text-ink-3">Player impact needs every touch of the ball, which we don't have for this match.</p>
+      <div className="mt-4 grid grid-cols-1 gap-5 sm:grid-cols-2">
+        {(["home", "away"] as Side[]).map((s) => (
+          <section key={s} aria-label={teams[s].name}>
+            <h3 className="mb-2 flex items-center gap-2 text-[14px] font-semibold text-ink"><span className="size-2.5 rounded-[3px]" style={{ background: `var(--${s})` }} aria-hidden />{teams[s].name}</h3>
+            <ol className="space-y-0.5">
+              {lineups[s].filter((p) => p.starter).map((p) => (
+                <li key={p.player_id}>
+                  <button type="button" onClick={() => usePlayerUi.getState().openPlayer(p.player_id)}
+                    className="flex w-full items-center gap-2.5 rounded-xl px-1 py-1.5 text-left transition-colors duration-150 hover:bg-surface-2">
+                    <Jersey p={p.jersey} side={s} />
+                    <span className="min-w-0 flex-1 truncate text-[13.5px] font-medium text-ink">{p.short_name}</span>
+                    <span className="truncate text-[12px] text-ink-3">{p.position}</span>
+                  </button>
+                </li>
+              ))}
+            </ol>
+          </section>
+        ))}
+      </div>
     </div>
   );
 }
@@ -73,15 +112,14 @@ function Jersey({ p, side }: { p: number; side: Side }) {
   );
 }
 
-function Row({ p, i, maxV, maxP, delta }: { p: PlayerRow; i: number; maxV: number; maxP: number; delta: number }) {
+function Row({ p, i, maxV, maxP }: { p: PlayerRow; i: number; maxV: number; maxP: number }) {
   const reduce = useReducedMotion();
-  const gap = delta > 0 ? `+${delta}` : `${delta}`;
   const meta = [p.position, `${p.minutes}'`].filter(Boolean).join(" · ");
   return (
     <motion.li layout={!reduce} initial={{ opacity: 0 }} animate={{ opacity: 1 }}
       transition={{ duration: 0.25, delay: Math.min(i * 0.015, 0.24), ease: EASE, layout: { duration: 0.25, ease: EASE } }}>
       <button type="button" onClick={() => usePlayerUi.getState().openPlayer(p.player_id)}
-        aria-label={`${p.short_name}, impact ${signed(p.vaep)}, ${p.passes} passes, rank gap ${gap}. Open profile`}
+        aria-label={`${p.short_name}, impact ${signed(p.vaep)}, ${p.passes} passes. Open profile`}
         className={`grid w-full ${COLS} items-center gap-2 rounded-xl px-1 py-2 text-left transition-[background-color,transform] duration-150 ease-out hover:bg-surface-2 active:scale-[0.99]`}>
         <span className="flex min-w-0 items-center gap-2.5">
           <Jersey p={p.jersey} side={p.team} />
@@ -91,8 +129,7 @@ function Row({ p, i, maxV, maxP, delta }: { p: PlayerRow; i: number; maxV: numbe
           </span>
         </span>
         <Bar v={p.vaep} max={maxV} label={signed(p.vaep)} color={`var(--${p.team})`} />
-        <Bar v={p.passes} max={maxP} label={String(p.passes)} color="var(--ink-4)" />
-        <span className={`tabular text-right text-[12.5px] font-semibold ${delta > 0 ? "text-ink" : "text-ink-4"}`}>{gap}</span>
+        <span className="tabular text-right text-[12.5px] text-ink-2">{p.passes}<span className="sr-only"> of {maxP}</span></span>
       </button>
     </motion.li>
   );

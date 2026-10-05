@@ -28,7 +28,7 @@ export function Timeline() {
   const win = useMatch((s) => s.window);
   const focus = useMatch((s) => s.focus);
   const setWindow = useMatch((s) => s.setWindow);
-  const focusEvent = useMatch((s) => s.focusEvent);
+  const showMoment = useMatch((s) => s.showMoment);
   const hoverIndex = useMatch((s) => s.hoverIndex);
   const market = useMatch((s) => s.market);
   const setHoverIndex = useMatch((s) => s.setHoverIndex);
@@ -106,13 +106,15 @@ export function Timeline() {
   const laneEnds: number[][] = [[], []];
   const goalLabels = geo ? goals.map((g) => {
     const i = idxOf(g) ?? 0;
-    const text = `${nameOf(g.player_id) || "Own goal"} ${clock(g.period, g.minute)}`;
-    const w = text.length * 7.1 + 36;
+    const full = `${nameOf(g.player_id) || "Own goal"} ${clock(g.period, g.minute)}`;
+    // phones: minute only, so labels don't pile up in lanes over a narrow chart
+    const text = narrow ? clock(g.period, g.minute) : full;
+    const w = text.length * 7.1 + (narrow ? 38 : 36);
     const x0 = Math.min(Math.max(geo.cx(i) - w / 2, 0), width - w);
     let lane = laneEnds.findIndex((l) => l.every((end) => x0 > end + 6));
     if (lane < 0) lane = 1;
     laneEnds[lane].push(x0 + w);
-    return { g, i, text, x0, w, lane };
+    return { g, i, text, full, x0, w, lane };
   }) : [];
   const selH = geo ? geo.height - geo.waveTop - H_AXIS + 6 : 0;
 
@@ -247,8 +249,8 @@ export function Timeline() {
             )}
           </svg>
 
-          {goalLabels.map(({ g, text, x0, w, lane }) => (
-            <button key={g.event_id} onClick={() => focusEvent(g.event_id)} aria-label={`Show goal: ${text}`}
+          {goalLabels.map(({ g, text, full, x0, w, lane }) => (
+            <button key={g.event_id} onClick={() => showMoment({ ev: g.event_id })} aria-label={`Show goal: ${full}`}
               className="absolute flex h-6 items-center gap-1.5 rounded-full bg-surface-3 pl-2 pr-2.5 text-[11.5px] font-semibold text-ink shadow-lg ring-1 ring-line-strong transition-[transform,background-color] duration-150 ease-out hover:bg-surface-4 active:scale-[0.97]"
               style={{ left: x0, top: lane ? 28 : 0, width: w }}>
               <span className="size-2 shrink-0 rounded-full" style={{ background: `var(--${g.team})` }} aria-hidden />

@@ -36,6 +36,8 @@ function useEnter() {
 export function WhatIf() {
   const data = useMatch((s) => s.data);
   const focusEvent = useMatch((s) => s.focusEvent);
+  const pick = useMatch((s) => s.whatIfPick);
+  const [allShots, setAllShots] = useState(false);
   const [picked, setPicked] = useState<Pick | null>(null);
   const [result, setResult] = useState<Outcome | null>(null);
   const [loading, setLoading] = useState(false);
@@ -45,6 +47,19 @@ export function WhatIf() {
   useEffect(() => {
     if (result) resultRef.current?.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
   }, [result, reduce]);
+
+  // a moment handed over from the moment card or the analyst: run it straight away
+  const handled = useRef(0);
+  useEffect(() => {
+    if (!pick || !data || handled.current === pick.n) return;
+    handled.current = pick.n;
+    const mk = data.match.markers.find((m) => m.event_id === pick.eventId && (m.type === "goal" || m.type === "sub" || (m.type === "card" && m.detail !== "yellow")));
+    const ev = data.eventById.get(pick.eventId);
+    if (mk) pickMarkerRef.current?.(mk);
+    else if (ev && ev.type === "shot") pickShotRef.current?.(ev);
+  }, [pick, data]);
+  const pickMarkerRef = useRef<((m: Marker) => void) | null>(null);
+  const pickShotRef = useRef<((e: MatchEvent) => void) | null>(null);
 
   if (!data) return null;
   const nameOf = (id: number | null | undefined) =>
@@ -71,12 +86,13 @@ export function WhatIf() {
   const pickShot = (e: MatchEvent) =>
     run({ kind: "shot", shot: e }, () =>
       api.shotAlternatives(data.match.match_id, e.id).then((r) => ({ kind: "shot", r })));
+  pickMarkerRef.current = pickMarker;
+  pickShotRef.current = pickShot;
 
   const firsts = options.filter((m) => m.type !== "sub");
-  const groups: [string, Marker[]][] = [
-    [firsts.some((m) => m.type === "card") ? "Goals and red cards" : "Goals", firsts],
-    ["Substitutions", options.filter((m) => m.type === "sub")],
-  ];
+  const subs = options.filter((m) => m.type === "sub");
+  const bigShots = [...shots].sort((a, b) => (b.xg ?? 0) - (a.xg ?? 0)).slice(0, 6).sort((a, b) => a.period - b.period || a.t - b.t);
+  const shownShots = allShots ? shots : bigShots;
   const pickedId = picked ? (picked.kind === "marker" ? picked.marker.event_id : picked.shot.id) : null;
   const chip = (on: boolean) =>
     `flex min-h-8 items-center gap-2 rounded-full py-1.5 pl-2.5 pr-3 text-[13px] font-medium ring-1 transition-[background-color,color,box-shadow,transform] duration-150 ease-out active:scale-[0.97] ${on ? "bg-ink text-bg ring-ink" : "bg-surface-2 text-ink-2 ring-line hover:bg-surface-3 hover:text-ink"}`;
@@ -90,34 +106,34 @@ export function WhatIf() {
           <span className="rounded-full bg-ai-soft px-2 py-[1px] text-[12px] font-medium text-ai ring-1 ring-[var(--ai-line)]">Modelled</span>
         </div>
         <p className="mt-1 text-pretty text-[13.5px] leading-[1.55] text-ink-3">
-          Pick a moment and see how the next 15 minutes look without it. Or pick a shot to see if a pass was the better option.
+          Change one moment and our model estimates how the rest of the match was likely to go. It can't know what would really have happened.
         </p>
       </div>
 
-      {groups.map(([group, ms]) => ms.length > 0 && (
-        <section key={group} aria-label={group} className="mt-5">
-          <h3 className="mb-2.5 text-[14px] font-semibold tracking-[-0.01em] text-ink">{group}</h3>
+      {firsts.length > 0 && (
+        <section aria-label="Goals and red cards" className="mt-5">
+          <h3 className="mb-2.5 text-[14px] font-semibold tracking-[-0.01em] text-ink">{firsts.some((m) => m.type === "card") ? "What if a goal or red card never happened?" : "What if a goal never happened?"}</h3>
           <div className="flex flex-wrap gap-1.5">
-            {ms.map((m) => {
+            {firsts.map((m) => {
               const on = pickedId === m.event_id;
               return (
-                <button key={m.event_id + m.type} type="button" aria-pressed={on} onClick={() => pickMarker(m)} className={chip(on)}>
-                  <span className="size-2.5 shrink-0 rounded-[3px]" style={{ background: `var(--${m.team})` }} aria-hidden />
+                <button key={m.event_id + m.type} type="button" data-whatif-option aria-pressed={on} onClick={() => pickMarker(m)} className={chip(on)}>
+                  <span className={`size-2.5 shrink-0 rounded-[3px] ${m.type === "card" ? "bg-card-red" : ""}`} style={m.type === "card" ? undefined : { background: `var(--${m.team})` }} aria-hidden />
                   <span className={`tabular ${on ? "text-bg/60" : "text-ink-3"}`}>{clock(m.period, m.minute)}</span>
-                  {label(m)}
+                  {label(m)}{m.type === "card" && <span className={on ? "text-bg/60" : "text-ink-3"}>red</span>}
                 </button>
               );
             })}
           </div>
         </section>
-      ))}
+      )}
 
       {shots.length > 0 && (
-        <section aria-label="Shots" className="mt-5">
-          <h3 className="text-[14px] font-semibold tracking-[-0.01em] text-ink">Shots</h3>
-          <p className="mb-2.5 mt-0.5 text-[12.5px] text-ink-3">Should they have passed instead? The number is the chance it went in.</p>
+        <section aria-label="Shots" className="mt-6">
+          <h3 className="text-[14px] font-semibold tracking-[-0.01em] text-ink">Should they have passed instead?</h3>
+          <p className="mb-2.5 mt-0.5 text-[12.5px] text-ink-3">{allShots ? "Every shot" : "The biggest chances"}, with the chance each one had of going in.</p>
           <div className="flex flex-wrap gap-1.5">
-            {shots.map((e) => {
+            {shownShots.map((e) => {
               const on = pickedId === e.id;
               return (
                 <button key={e.id} type="button" aria-pressed={on} onClick={() => pickShot(e)} className={chip(on)}>
@@ -128,8 +144,40 @@ export function WhatIf() {
                 </button>
               );
             })}
+            {shots.length > bigShots.length && (
+              <button type="button" onClick={() => setAllShots((v) => !v)}
+                className="flex min-h-8 items-center rounded-full px-3 text-[13px] font-medium text-ink-2 underline decoration-ink-4 underline-offset-4 transition-colors duration-150 hover:text-ink">
+                {allShots ? "Show fewer" : `Show all ${shots.length} shots`}
+              </button>
+            )}
           </div>
         </section>
+      )}
+
+      {subs.length > 0 && (
+        <Collapsible className="group/subs mt-6" defaultOpen={picked?.kind === "marker" && picked.marker.type === "sub"}>
+          <CollapsibleTrigger className="flex w-full items-center justify-between gap-3 text-left">
+            <span>
+              <span className="block text-[14px] font-semibold tracking-[-0.01em] text-ink">What if a substitution wasn't made?</span>
+              <span className="tabular mt-0.5 block text-[12.5px] text-ink-3">{subs.length} substitutions</span>
+            </span>
+            <CaretDown size={14} weight="bold" className="shrink-0 text-ink-3 transition-transform duration-200 group-data-[state=open]/subs:rotate-180" aria-hidden />
+          </CollapsibleTrigger>
+          <CollapsibleContent className="pt-2.5">
+            <div className="flex flex-wrap gap-1.5">
+              {subs.map((m) => {
+                const on = pickedId === m.event_id;
+                return (
+                  <button key={m.event_id + m.type} type="button" aria-pressed={on} onClick={() => pickMarker(m)} className={chip(on)}>
+                    <span className="size-2.5 shrink-0 rounded-[3px]" style={{ background: `var(--${m.team})` }} aria-hidden />
+                    <span className={`tabular ${on ? "text-bg/60" : "text-ink-3"}`}>{clock(m.period, m.minute)}</span>
+                    {label(m)}
+                  </button>
+                );
+              })}
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
       )}
 
       {picked && (
@@ -248,12 +296,12 @@ function Result({ r }: { r: Counterfactual }) {
   const rows = out ? ([["home", `${teams.home.name} win`], ["level", level], ["away", `${teams.away.name} win`]] as const) : [];
 
   return (
-    <motion.div exit={{ opacity: 0, transition: { duration: 0.12 } }} className="mt-4 space-y-3">
+    <motion.div data-whatif-result exit={{ opacity: 0, transition: { duration: 0.12 } }} className="mt-4 space-y-3">
       <motion.div {...enter(0)} className="rounded-2xl bg-ai-soft px-4 py-3.5 ring-1 ring-[var(--ai-line)]">
-        <p className="text-[12px] font-medium text-ai">What the model says</p>
+        <p className="text-[12px] font-medium text-ai">Modelled estimate</p>
         <p className="mt-0.5 text-balance text-[18px] font-semibold leading-snug tracking-[-0.01em] text-ink">{headline}</p>
         <p className="mt-1 text-pretty text-[13px] leading-[1.5] text-ink-2">
-          {explain} {r.negligible ? "The model sees the rest of the match playing out about the same." : "Estimated from what happened next in thousands of similar matches."}
+          {explain} {r.negligible ? "The model sees the rest of the match playing out about the same." : "Estimated from how similar situations played out in other matches."}
         </p>
       </motion.div>
 
@@ -504,9 +552,9 @@ function ShotBranch({ r }: { r: ShotAlternatives }) {
     p >= 0.85 ? "almost always" : p >= 0.65 ? "most of the time" : p >= 0.4 ? "about half the time" : p >= 0.2 ? "now and then" : "rarely";
 
   return (
-    <motion.div exit={{ opacity: 0, transition: { duration: 0.12 } }} className="mt-4 space-y-3">
+    <motion.div data-whatif-result exit={{ opacity: 0, transition: { duration: 0.12 } }} className="mt-4 space-y-3">
       <motion.div {...enter(0)} className="rounded-2xl bg-ai-soft px-4 py-3.5 ring-1 ring-[var(--ai-line)]">
-        <p className="text-[12px] font-medium text-ai">What the model says</p>
+        <p className="text-[12px] font-medium text-ai">Modelled estimate</p>
         <p className="mt-0.5 text-balance text-[18px] font-semibold leading-snug tracking-[-0.01em] text-ink">{headline}</p>
         <p className="mt-1 text-pretty text-[13px] leading-[1.5] text-ink-2">
           Based on where every player stood when {r.shot.player} shot. The model assumes a clean first touch, so treat it as a rough guide.

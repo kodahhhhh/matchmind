@@ -5,7 +5,7 @@ import type {
 } from "../api/types";
 import { clock, isShot } from "../lib/format";
 
-export type RightTab = "analyst" | "sequences" | "players" | "whatif";
+export type RightTab = "story" | "ask" | "players" | "whatif";
 
 /** Inclusive range of timeline bucket indices. */
 export interface Window {
@@ -51,6 +51,8 @@ interface MatchData {
   eventById: Map<string, MatchEvent>;
   eventsBySeq: Map<string, MatchEvent[]>;
   seqCache: Map<string, Sequence>;
+  /** Which sections loaded. "Lite" matches (no event stream) have only the match detail. */
+  has: { events: boolean; timeline: boolean; sequences: boolean; players: boolean; turningPoints: boolean };
 }
 
 /** Top sequences come from the API; any other sequence is rebuilt from its events. */
@@ -103,8 +105,15 @@ interface State {
   chat: ChatMessage[];
   commentary: CommentaryLine[];
   commentaryBySeq: Map<string, CommentaryLine>;
+  commentaryStatus: "loading" | "ready" | "none";
   pendingFocus: { seq?: string; ev?: string } | null;
   market: MarketSeries | null;
+  /** A moment handed to the What if tab (from the moment card or the analyst). */
+  whatIfPick: { eventId: string; n: number } | null;
+  /** Bumped when the user picks a moment from a panel, so phones scroll the pitch into view. */
+  pitchPing: number;
+  /** Bumped when an action needs the side panel (asking, What if), so phones scroll down to it. */
+  panelPing: number;
 
   load: (id: string) => Promise<void>;
   setWindow: (w: Window | null) => void;
@@ -123,6 +132,12 @@ interface State {
   ask: (question: string) => Promise<void>;
   stopAsking: () => void;
   setPendingFocus: (f: { seq?: string; ev?: string } | null) => void;
+  /** Focus a moment because the user asked to see it: also brings the pitch into view on phones. */
+  showMoment: (ref: { ev?: string; seq?: string; replay?: boolean }) => void;
+  openWhatIf: (eventId: string) => void;
+  pingPitch: () => void;
+  /** Ask the analyst from anywhere: switches to the Ask tab and sends. */
+  askAbout: (question: string) => void;
 }
 
 export interface ReelItem {
@@ -154,6 +169,8 @@ function buildReel(d: MatchData): ReelItem[] {
   return [...items.values()].sort((a, b) => t(a.sequenceId) - t(b.sequenceId));
 }
 
+export type { MatchData };
+
 export const bucketKey = (period: number, minute: number) => `${period}:${minute}`;
 
 let askAbort: AbortController | null = null;
@@ -172,31 +189,44 @@ export const useMatch = create<State>((set, get) => ({
   hoverIndex: null,
   replay: null,
   reel: null,
-  rightTab: "analyst",
+  rightTab: "story",
   chat: [],
   commentary: [],
   commentaryBySeq: new Map(),
+  commentaryStatus: "loading",
   pendingFocus: null,
   market: null,
+  whatIfPick: null,
+  pitchPing: 0,
+  panelPing: 0,
 
   async load(id) {
     if (get().matchId === id && get().status !== "error") return;
     askAbort?.abort();
-    set({ matchId: id, status: "loading", error: null, data: null, window: null, focus: null, replay: null, reel: null, chat: [], commentary: [], commentaryBySeq: new Map(), market: null });
+    set({ matchId: id, status: "loading", error: null, data: null, window: null, focus: null, replay: null, reel: null, chat: [], commentary: [], commentaryBySeq: new Map(), commentaryStatus: "loading", market: null, rightTab: "story", whatIfPick: null });
     try {
+      // the match detail is required; every other section is optional and hides when it's missing
+      const opt = <T,>(p: Promise<T[]>) => p.then((v) => ({ ok: true, v }), () => ({ ok: false, v: [] as T[] }));
       const [match, events, timeline, sequences, players, turningPoints] = await Promise.all([
-        api.match(id), api.events(id), api.timeline(id), api.sequences(id), api.players(id), api.turningPoints(id),
+        api.match(id), opt(api.events(id)), opt(api.timeline(id)), opt(api.sequences(id)), opt(api.players(id)), opt(api.turningPoints(id)),
       ]);
       if (get().matchId !== id) return;
-      const bucketOf = new Map(timeline.map((m) => [bucketKey(m.period, m.minute), m.index]));
-      const eventById = new Map(events.map((e) => [e.id, e]));
+      const bucketOf = new Map(timeline.v.map((m) => [bucketKey(m.period, m.minute), m.index]));
+      const eventById = new Map(events.v.map((e) => [e.id, e]));
       const eventsBySeq = new Map<string, MatchEvent[]>();
-      for (const e of events) {
+      for (const e of events.v) {
         const list = eventsBySeq.get(e.sequence_id);
         if (list) list.push(e);
         else eventsBySeq.set(e.sequence_id, [e]);
       }
-      set({ status: "ready", data: { match, events, timeline, sequences, players, turningPoints, bucketOf, eventById, eventsBySeq, seqCache: new Map() } });
+      const has = {
+        events: events.v.length > 0, timeline: timeline.v.length > 0, sequences: sequences.v.length > 0,
+        players: players.v.length > 0, turningPoints: turningPoints.v.length > 0,
+      };
+      set({
+        status: "ready",
+        data: { match, events: events.v, timeline: timeline.v, sequences: sequences.v, players: players.v, turningPoints: turningPoints.v, bucketOf, eventById, eventsBySeq, seqCache: new Map(), has },
+      });
       const pf = get().pendingFocus;
       if (pf?.seq) get().focusSequence(pf.seq);
       else if (pf?.ev) get().focusEvent(pf.ev);
@@ -204,8 +234,8 @@ export const useMatch = create<State>((set, get) => ({
       api.market(id).then((m) => { if (get().matchId === id && m?.series.length) set({ market: m }); });
       // commentary is optional: load in the background, ignore failures
       api.commentary(id).then((lines) => {
-        if (get().matchId === id) set({ commentary: lines, commentaryBySeq: new Map(lines.map((l) => [l.sequence_id, l])) });
-      }).catch(() => {});
+        if (get().matchId === id) set({ commentary: lines, commentaryBySeq: new Map(lines.map((l) => [l.sequence_id, l])), commentaryStatus: lines.length ? "ready" : "none" });
+      }).catch(() => { if (get().matchId === id) set({ commentaryStatus: "none" }); });
     } catch (e) {
       set({ status: "error", error: e instanceof Error ? e.message : String(e) });
     }
@@ -217,9 +247,16 @@ export const useMatch = create<State>((set, get) => ({
   focusEvent(id) {
     const d = get().data;
     const ev = d?.eventById.get(id);
-    if (!d || !ev) return;
+    if (!d) return;
+    if (!ev) {
+      // substitutions and some cards aren't in the event stream: show the minutes around them instead
+      const mk = d.match.markers.find((m) => m.event_id === id);
+      const j = mk ? d.bucketOf.get(bucketKey(mk.period, mk.minute)) : undefined;
+      if (j != null) set({ focus: null, window: { from: Math.max(0, j - 2), to: Math.min(d.timeline.length - 1, j + 2) }, replay: null });
+      return;
+    }
     const i = d.bucketOf.get(bucketKey(ev.period, ev.minute)) ?? 0;
-    set({ focus: { kind: "event", id }, window: { from: Math.max(0, i - 2), to: Math.min(d.timeline.length - 1, i + 1) }, replay: null });
+    set({ focus: { kind: "event", id }, window: d.timeline.length ? { from: Math.max(0, i - 2), to: Math.min(d.timeline.length - 1, i + 1) } : null, replay: null });
   },
 
   focusSequence(id) {
@@ -228,7 +265,7 @@ export const useMatch = create<State>((set, get) => ({
     if (!d || !s) return;
     const a = d.bucketOf.get(bucketKey(s.start.period, s.start.minute)) ?? 0;
     const b = d.bucketOf.get(bucketKey(s.end.period, s.end.minute)) ?? a;
-    set({ focus: { kind: "sequence", id }, window: { from: a, to: b }, replay: null });
+    set({ focus: { kind: "sequence", id }, window: d.timeline.length ? { from: a, to: b } : null, replay: null });
   },
 
   focusTurningPoint(id) {
@@ -239,6 +276,20 @@ export const useMatch = create<State>((set, get) => ({
 
   setHoverIndex: (i) => set({ hoverIndex: i }),
   setPendingFocus: (f) => set({ pendingFocus: f }),
+
+  showMoment({ ev, seq, replay }) {
+    set({ reel: null });
+    if (seq && replay) get().startReplay(seq);
+    else if (seq) get().focusSequence(seq);
+    else if (ev) get().focusEvent(ev);
+    set((s) => ({ pitchPing: s.pitchPing + 1 }));
+  },
+  pingPitch: () => set((s) => ({ pitchPing: s.pitchPing + 1 })),
+  openWhatIf: (eventId) => set((s) => ({ rightTab: "whatif", whatIfPick: { eventId, n: (s.whatIfPick?.n ?? 0) + 1 }, panelPing: s.panelPing + 1 })),
+  askAbout(question) {
+    set((s) => ({ rightTab: "ask", panelPing: s.panelPing + 1 }));
+    void get().ask(question);
+  },
   setRightTab: (t) => set({ rightTab: t }),
 
   startReplay(sequenceId, opts) {
@@ -288,7 +339,7 @@ export const useMatch = create<State>((set, get) => ({
     const uid = newId();
     const aid = newId();
     set((s) => ({
-      rightTab: "analyst",
+      rightTab: "ask",
       chat: [...s.chat, { id: uid, role: "user", content: question, steps: [], reasoning: "", labels: {}, streaming: false },
         { id: aid, role: "assistant", content: "", steps: [], reasoning: "", labels: {}, streaming: true }],
     }));

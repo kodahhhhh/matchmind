@@ -68,11 +68,14 @@ export function Pitch() {
   }, [reel, replay, nextHighlight]);
 
   if (!data) return <div ref={boxRef} className="h-full w-full" />;
+  if (!data.has.events) return <NoReplay />;
   // extend the grass sideways so the pitch fills its container edge to edge
   const aspect = box.width && box.height ? box.width / box.height : VB.w / VB.h;
   const vbW = Math.max(VB.w, VB.h * aspect);
   const padX = (vbW - L) / 2;
-  const vb = { x: -padX, y: VB.y, w: vbW, h: VB.h };
+  const full = { x: -padX, y: VB.y, w: vbW, h: VB.h };
+  // phones: zoom the camera onto the attack being shown, so its passes and names are big enough to read
+  const vb = mode === "sequence" && box.width > 0 && box.width < 700 ? zoomTo(events, full, aspect) : full;
   const focusId = focus?.kind === "event" ? focus.id : null;
   const visible = mode === "sequence" && replay ? events.slice(0, replay.step + 1) : events;
   const current = mode === "sequence" && replay ? visible[visible.length - 1] : null;
@@ -93,7 +96,8 @@ export function Pitch() {
 
   return (
     <div ref={boxRef} className="relative h-full w-full select-none">
-      <svg viewBox={`${vb.x} ${vb.y} ${vb.w} ${vb.h}`} className="block h-full w-full" preserveAspectRatio="xMidYMid meet"
+      <motion.svg initial={false} animate={{ viewBox: `${vb.x} ${vb.y} ${vb.w} ${vb.h}` }} transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        className="block h-full w-full" preserveAspectRatio="xMidYMid meet"
         role="img" aria-label={`Pitch showing ${visible.length} events`}>
         <defs>
           <filter id="pglow" x="-60%" y="-60%" width="220%" height="220%">
@@ -181,7 +185,7 @@ export function Pitch() {
           <text x={L / 2 - 1.6} y={-0.75} textAnchor="end">{data.match.teams.home.name} attacking →</text>
           <text x={L / 2 + 1.6} y={-0.75} textAnchor="start">← {data.match.teams.away.name} attacking</text>
         </g>
-      </svg>
+      </motion.svg>
       {lastHover && <Tooltip e={lastHover} vb={vb} open={!!hover && hover.id !== focusId} />}
     </div>
   );
@@ -224,14 +228,12 @@ function GoalCallouts({ goals }: { goals: MatchEvent[] }) {
 function FocusCallout({ e }: { e: MatchEvent }) {
   const reduce = useReducedMotion();
   const y = sy(e.y!);
-  const above = y > 8;
   return (
     <g>
       <circle cx={e.x!} cy={y} r={2.4} fill="none" stroke="var(--ink)" strokeWidth={0.2}>
         {!reduce && <animate attributeName="r" values="2;3.6;2" dur="1.8s" repeatCount="indefinite" />}
         {!reduce && <animate attributeName="opacity" values="0.9;0.1;0.9" dur="1.8s" repeatCount="indefinite" />}
       </circle>
-      <Pill x={e.x!} y={above ? y - 4.6 : y + 4.6} text={describe(e)} side={e.team} anchor={e.x! > L - 14 ? "end" : e.x! < 14 ? "start" : "middle"} />
     </g>
   );
 }
@@ -274,4 +276,45 @@ function Tooltip({ e, vb, open }: { e: MatchEvent; vb: typeof VB; open: boolean 
       </div>
     </div>
   );
+}
+
+/** Lite matches have no event stream: an empty pitch that says so, instead of a blank or broken one. */
+function NoReplay() {
+  return (
+    <div className="relative h-full w-full">
+      <svg viewBox={`${VB.x} ${VB.y} ${VB.w} ${VB.h}`} className="block h-full w-full opacity-60" preserveAspectRatio="xMidYMid slice" aria-hidden>
+        <PitchMarkings pad={PAD} />
+      </svg>
+      <div className="absolute inset-0 grid place-items-center p-6">
+        <p className="glass max-w-[36ch] rounded-2xl px-5 py-4 text-center text-[14px] leading-[1.5] text-ink-2">
+          <span className="block font-semibold text-ink">No pitch replay for this match</span>
+          We have the score and the key moments, but not every touch of the ball.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+type Box = { x: number; y: number; w: number; h: number };
+
+/** A viewBox around the events (with room for labels), at the container's aspect, never smaller than a third of the pitch. */
+function zoomTo(evs: MatchEvent[], full: Box, aspect: number): Box {
+  const xs: number[] = [], ys: number[] = [];
+  for (const e of evs) {
+    if (e.x == null || e.y == null) continue;
+    xs.push(e.x); ys.push(sy(e.y));
+    if (e.end_x != null && e.end_y != null) { xs.push(e.end_x); ys.push(sy(e.end_y)); }
+  }
+  if (!xs.length) return full;
+  const pad = 7;
+  let x0 = Math.min(...xs) - pad, x1 = Math.max(...xs) + pad;
+  let y0 = Math.min(...ys) - pad - 3, y1 = Math.max(...ys) + pad;
+  let w = Math.max(x1 - x0, full.w / 2.4), h = Math.max(y1 - y0, w / aspect);
+  w = Math.max(w, h * aspect);
+  h = w / aspect;
+  if (w >= full.w || h >= full.h) return full;
+  const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
+  x0 = Math.min(Math.max(cx - w / 2, full.x), full.x + full.w - w);
+  y0 = Math.min(Math.max(cy - h / 2, full.y), full.y + full.h - h);
+  return { x: x0, y: y0, w, h };
 }

@@ -20,6 +20,7 @@ for (const [vp, size] of [["phone", { width: 480, height: 960 }], ["desktop", { 
   check(await page.evaluate(() => window.isSecureContext) === base.startsWith("http://localhost"), `${vp}: secure context is ${base.startsWith("http://localhost")}`);
 
   // analyst
+  await page.getByRole("tab", { name: "Ask" }).click();
   const box = page.getByRole("textbox", { name: /ask/i }).first();
   await box.click();
   await box.fill("Who scored the first goal?");
@@ -34,7 +35,7 @@ for (const [vp, size] of [["phone", { width: 480, height: 960 }], ["desktop", { 
 
   // what-if
   await page.goto(base + MATCH, { waitUntil: "networkidle" });
-  await page.getByRole("button", { name: /what if/i }).first().click();
+  await page.getByRole("tab", { name: "What if" }).click();
   await page.waitForTimeout(600);
   const goal = page.locator("[data-whatif-option]").first();
   if (await goal.count()) await goal.click();
@@ -45,12 +46,25 @@ for (const [vp, size] of [["phone", { width: 480, height: 960 }], ["desktop", { 
   await page.waitForTimeout(800);
   await page.screenshot({ path: `${out}/whatif-${vp}.png` });
 
-  // search
+  // moment card -> ask about this / what if, from the story
+  await page.goto(base + MATCH, { waitUntil: "networkidle" });
+  await page.getByRole("button", { name: /Replay on the pitch/ }).first().click();
+  const card = await page.getByRole("region", { name: "Selected moment" }).first().waitFor({ timeout: 8000 }).then(() => true).catch(() => false);
+  check(card, `${vp}: tapping a story moment opens the moment card`);
+  await page.getByRole("region", { name: "Selected moment" }).getByRole("button", { name: /What if/ }).first().click();
+  const handed = await page.waitForSelector("[data-whatif-result]", { timeout: 30000 }).then(() => true).catch(() => false);
+  check(handed, `${vp}: moment card hands the moment to What if`);
+  await page.screenshot({ path: `${out}/moment-whatif-${vp}.png` });
+
+  // search: a team pairing finds the match, a description finds moments
   await page.goto(base + "/", { waitUntil: "networkidle" });
-  await page.getByRole("button", { name: /search/i }).first().click();
-  await page.keyboard.type("Messi free kick");
-  const hits = await page.waitForSelector("[data-search-hit]", { timeout: 20000 }).then(() => true).catch(() => false);
-  check(hits, `${vp}: search returned hits`);
+  await page.getByRole("button", { name: /search matches, players and moments/i }).first().click();
+  await page.keyboard.type("Spain v England");
+  const match = await page.getByRole("button", { name: /Spain.*England/ }).first().waitFor({ timeout: 8000 }).then(() => true).catch(() => false);
+  check(match, `${vp}: search finds Spain v England`);
+  await page.getByRole("textbox").fill("Messi free kick");
+  const hits = await page.waitForFunction(() => document.querySelectorAll("[data-search-hit]").length > 2, null, { timeout: 20000 }).then(() => true).catch(() => false);
+  check(hits, `${vp}: search returned moments`);
   await page.screenshot({ path: `${out}/search-${vp}.png` });
   check(errors.length === 0, `${vp}: no page errors ${errors.join(" | ")}`);
   await ctx.close();

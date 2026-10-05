@@ -3,7 +3,7 @@ import { Explain } from "@/components/ui/explain";
 import type { GlossaryKey } from "../../lib/glossary";
 import type { Side } from "../../api/types";
 import { useMatch } from "../../store/match";
-import { pct, undash, xg } from "../../lib/format";
+import { pct, xg } from "../../lib/format";
 import { usePitchEvents } from "../pitch/Pitch";
 import { AnimatePresence, motion } from "motion/react";
 import { SkipForward, X } from "@phosphor-icons/react";
@@ -22,7 +22,6 @@ export function PitchOverlays() {
   const stopReplay = useMatch((s) => s.stopReplay);
   const focusTurningPoint = useMatch((s) => s.focusTurningPoint);
   const { mode, events, seq } = usePitchEvents();
-  const caption = useMatch((st) => (seq ? st.commentaryBySeq.get(seq.id) : undefined));
   const reel = useMatch((st) => st.reel);
   const replay = useMatch((st) => st.replay);
   const nextHighlight = useMatch((st) => st.nextHighlight);
@@ -45,10 +44,11 @@ export function PitchOverlays() {
   }, [data, win]);
   if (!data || !stats) return null;
   const turning = focus?.kind === "turning";
+  const moment = !!replay || focus?.kind === "event" || focus?.kind === "sequence";
   const { home, away } = data.match.teams;
   const what = mode === "sequence"
-    ? `${seq ? data.match.teams[seq.team].name : ""} move from ${seq?.start.label ?? ""}`
-    : mode === "detail" ? `${events.length} actions` : "Shot map";
+    ? `${seq ? data.match.teams[seq.team].name : ""} attack`
+    : mode === "detail" ? `Every touch, ${events.length}` : "Every shot";
   const reset = () => { setWindow(null); setFocus(null); stopReplay(); };
 
   const reelItem = reel ? reel.items[reel.index] : null;
@@ -106,7 +106,9 @@ export function PitchOverlays() {
         <div className="glass pointer-events-auto flex h-10 items-center gap-3 rounded-full pl-3.5 pr-1 md:h-11 md:pl-4 md:pr-1.5">
           <span className="flex items-baseline gap-2 whitespace-nowrap">
             {turning && <span className="text-[13.5px] font-semibold tracking-[-0.01em] text-ai">Turning point</span>}
-            {stats.range
+            {stats.range && stats.range[0] === stats.range[1]
+              ? <span className="numeral text-[19px] leading-none text-ink">{stats.range[0]}</span>
+              : stats.range
               ? <span className="text-ink"><span className="numeral text-[19px] leading-none">{stats.range[0]}</span><span className="mx-1.5 text-[13px] text-ink-3">to</span><span className="numeral text-[19px] leading-none">{stats.range[1]}</span></span>
               : <span className="text-[14px] font-semibold tracking-[-0.01em] text-ink">Full match</span>}
           </span>
@@ -135,7 +137,7 @@ export function PitchOverlays() {
         )}
       </div>
 
-      <div className={`glass pointer-events-none absolute bottom-4 right-4 hidden items-center gap-4 rounded-2xl px-4 py-2.5 transition-opacity duration-200 md:flex ${mode === "sequence" ? "opacity-0" : ""}`}>
+      <div className={`glass pointer-events-none absolute bottom-4 right-4 hidden items-center gap-4 rounded-2xl px-4 py-2.5 transition-opacity duration-200 xl:flex ${moment || !win ? "opacity-0" : ""}`}>
         <div className="flex max-w-[104px] flex-col gap-1.5 text-[12px] font-semibold text-ink">
           <span className="flex min-w-0 items-center gap-1.5" title={home.name}><span className="size-2 shrink-0 rounded-full bg-home" aria-hidden /><span className="truncate">{home.name}</span></span>
           <span className="flex min-w-0 items-center gap-1.5" title={away.name}><span className="size-2 shrink-0 rounded-full bg-away" aria-hidden /><span className="truncate">{away.name}</span></span>
@@ -157,22 +159,7 @@ export function PitchOverlays() {
         })}
       </div>
 
-      {mode === "sequence" && caption && (
-        <div className="pointer-events-none absolute inset-x-0 bottom-3 flex justify-center px-3 md:bottom-4 md:px-4">
-          <div className="glass flex max-w-[720px] items-stretch overflow-hidden rounded-2xl">
-            <span className="w-1.5 shrink-0" style={{ background: `var(--${caption.team})` }} aria-hidden />
-            <div className="flex items-start gap-3 py-2.5 pl-3.5 pr-4">
-              <span className="numeral pt-px text-[20px] leading-none text-ink">{caption.start.label}</span>
-              <div className="min-w-0">
-                <p className="text-pretty text-[14.5px] font-medium leading-snug text-ink">{undash(caption.text)}</p>
-                <p className="mt-0.5 text-[12px] text-ink-3">{data.match.teams[caption.team].name}, <span className="text-ai">commentary by Luna</span></p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <div className={`glass pointer-events-none absolute bottom-4 left-4 hidden items-center gap-3 rounded-full px-3.5 py-2 text-[12px] text-ink-2 md:flex ${mode === "sequence" && caption ? "md:hidden" : ""}`}>
+      <div className={`glass pointer-events-none absolute bottom-4 left-4 hidden items-center gap-3 rounded-full px-3.5 py-2 text-[12px] text-ink-2 transition-opacity duration-200 md:flex ${moment ? "opacity-0" : ""}`}>
         <span className="flex items-center gap-1.5"><svg width="12" height="12" aria-hidden><circle cx="6" cy="6" r="4.5" fill="var(--ink)" fillOpacity={0.25} stroke="var(--ink)" strokeWidth="1" /></svg>Shot, bigger means a better chance</span>
         <span className="flex items-center gap-1.5"><svg width="12" height="12" aria-hidden><circle cx="6" cy="6" r="5" fill="var(--ink)" /><circle cx="6" cy="6" r="1.8" fill="var(--grass-2)" /></svg>Goal</span>
         {mode !== "overview" && <span className="flex items-center gap-1.5"><svg width="18" height="8" aria-hidden><line x1="1" y1="4" x2="17" y2="4" stroke="var(--ink)" strokeWidth="1.5" /></svg>Pass</span>}
