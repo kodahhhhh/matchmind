@@ -2,16 +2,21 @@
 
 ## Needs owner
 
-- Wyscout/Figshare is blocked (403); supply CC BY 4.0 local files if desired.
-  No alternate mirror or blocker bypass is being used.
-- FotMob prohibits systematic/regular automation. Provider permission is needed
-  for the requested daily feed; only the already cached spike is parsed.
-- Impect forbids commercial use and redistribution; football-data.co.uk excludes
-  commercial/training bots. Neither will be expanded into a product feed.
-- Understat has no open data licence located: publication rights need review.
-- Orchestrator/API ownership: catalogue discovery is demo-filtered and metrics
-  assume full StatsBomb-shaped events. Production exposure and lite endpoint
-  gating need coordinated changes; W13 will not modify those shared files.
+- **Run the home-connection WhoScored fetcher:** EC2 returns Cloudflare 403 on
+  competition, fixtures and match-centre pages, unchanged after 30 seconds in a
+  genuine headed browser. See `WHOSCORED_LOCAL.md`. No recent full WhoScored
+  streams can be claimed until captures arrive and pass the importer.
+- Wyscout archives now downloaded successfully with genuine Chromium; no manual
+  download needed. The article itself remained HTTP 202, but the public download
+  host delivered all five files normally. No challenge solver was used.
+- Round 2 supersedes round 1's terms/licence exclusions. The owner takes that
+  responsibility. Source terms remain documented, without blocking ingestion.
+- Frontend integration: minute-only shots expose null `period` when unknown,
+  `second`, elapsed `t` and `duration_t`. Shot navigation should use list order
+  and displayed minute; do not animate a continuous event replay for lite data.
+- Review ten FotMob/Understat date or score disagreements before treating them
+  as extra fixtures. The source records and richer FotMob payloads are retained;
+  `sources/round2_final_inventory.json` lists both sides. Details are below.
 
 ## 2026-10-05 — start
 
@@ -140,3 +145,199 @@
   quality clipping provenance and this completed log. Nothing was pushed/merged.
 - Next is orchestrator integration/rights review and W14 transfer validation;
   no background collection or production change is pending from W13.
+
+## Round 2 — 2026-10-05
+
+Owner changed external-data rules: terms/licences are now owner responsibility,
+ordinary headed Chromium is authorized, and IP blocks should use an owner-run
+home-connection fetcher. This explicitly changes PLAN's original source policy.
+W13 also owns API changes and additive lite fixtures for this round. Production
+DB/models/service restrictions remain. Initial raw cache is 19 GB, root free 160 GB;
+raw budget is 40 GB total. Prior round's terms-based holds are superseded.
+
+Next: headed WhoScored reachability, cached local fetch/import path if blocked,
+Wyscout browser/manual path, FotMob bulk lite acquisition, and compatible lite API.
+
+### Round 2 — acquisition and implementation in progress
+
+- Wyscout full archive and metadata are cached under `raw/wyscout/incoming/`;
+  expected JSON files extracted under `raw/wyscout/dataset/`. Original archives
+  and receipt hashes retained. All conversion is offline.
+- Full importer writes the standard SPADL parquet schema to
+  `sources/wyscout/spadl/` for W14, scored parquet to `scored/`, normalized raw
+  metadata to `normalized/`, and loads staging transactionally. Existing trained
+  xG/VAEP/xT files are read only. Synthetic socceraction carries are explicitly
+  marked inferred and do not claim native source event IDs.
+- Wyscout own goals can be tagged on touches; normalized observed goals and
+  pre-action VAEP score context now account for those. Strict score agreement
+  quarantines incomplete or mismatched streams.
+- FotMob sequential bulk refresh has started for six competitions and seasons
+  2026/27 and 2025/26, newest first. Only finished fixtures are fetched; details
+  are immutable and discovery is cached by day for the active season.
+- New lite API dispatch reads `source_lite_matches`. Shots remain separate from
+  full `events`/minute metrics in the database; API timeline full-event series
+  are null. What-if, pass alternatives and analyst endpoints reject lite data.
+- Source reconciliation prefers StatsBomb, then other full streams, then rich
+  FotMob, then Understat. Understat PPDA/deep aggregates supplement overlapping
+  FotMob payloads under separate provider provenance.
+
+### Additional recent-full pilot: Impect
+
+- Checked the official Impect V3 documentation and cached recent Bundesliga
+  events/rosters. Appendix 1 proves centred 105×68 coordinates, positive y up;
+  adjusted coordinates make both teams attack +x. Documented game-time periods
+  start at 0, 10,000, etc.; they are not elapsed match seconds.
+- Attempted a strict converter on recent cached matches. All eight inspected
+  newest examples failed: seven had neutral pass outcomes without unambiguous
+  receiver/contact evidence, one had an unlinked goal marker. Sample 123136 has
+  52 neutral passes with no reported receiver; some can be resolved by observed
+  opposition blocks/receipts, while foul interruptions leave outcome uncertain.
+- No Impect match is published as model-ready full tier. Acquisition stopped;
+  successful raw responses remain cached for W14. This is a data-semantics gate,
+  **not** a terms/licence exclusion. W14 needs an explicit missing/neutral outcome
+  convention before those actions can join the standard binary-result SPADL.
+  `sources/impect_feasibility_report.json` records the pilot. No fabricated pass
+  completion, foul location or own-goal touch was used to force acceptance.
+- Wyscout bulk completed 1,850 matches initially; corrected scoreET's documented
+  final-score convention recovered the two Euro extra-time matches, giving
+  **1,852** accepted exports/staged matches. Four score mismatches remain
+  quarantined. StatsBomb-preferred dated duplicates include every World Cup 2018
+  match; none is added as a duplicate Wyscout card.
+- All **20 unchanged StatsBomb contract tests passed** after loading the missing
+  reconstructed reference match's cached raw events into staging. Production DB,
+  model files and services remain untouched.
+
+### Round 2 — final accepted coverage
+
+Literal unicode in Wyscout team/player labels was repaired in generated exports
+and staging metadata, with original raw records retained. The reviewed Korea
+Republic/South Korea alias exposed ten further StatsBomb duplicates. Final
+Wyscout acceptance is **1,842**, superseding the intermediate 1,852 above:
+1,941 raw matches minus 95 StatsBomb duplicates and four quarantines.
+
+| New/retained full source | Competition | Season | Accepted and staged |
+|---|---|---|---:|
+| Wyscout | Bundesliga | 2017/18 | 306 |
+| Wyscout | La Liga | 2017/18 | 348 |
+| Wyscout | Ligue 1 | 2017/18 | 380 |
+| Wyscout | Premier League | 2017/18 | 379 |
+| Wyscout | Serie A | 2017/18 | 378 |
+| Wyscout | Euro | 2016 | 51 |
+| Dynasty | Nigeria youth league | 2024 | 37 |
+| WhoScored | Target top five + Champions League | 2023/24–current | 0 |
+
+All 64 Wyscout World Cup 2018 matches prefer existing StatsBomb. The four score
+mismatches are `wy:2499781`, `wy:2576181`, `wy:2576063`, `wy:2565863`; incomplete
+goal evidence is not fabricated to force acceptance. Final exports plus the
+unchanged 2,924 StatsBomb demo matches yield **4,803 available full matches**.
+The complete **74 source/competition/season rows**, including every StatsBomb
+season, are in [COVERAGE.md](COVERAGE.md). No new recent CL full stream is claimed.
+
+FotMob bootstrap completed **2,209 finished lite matches**, all staged. This
+includes **207 Champions League** matches: 189 in 2025/26 and 18 in 2026/27.
+COVERAGE.md lists all twelve competition/season counts. The latest returned date
+is **2026-09-20**, despite collection on October 5; this is returned coverage,
+not a claim of complete coverage through today. FotMob provides 56,969 shot-map
+records: 56,784 own-xG predictions and 185 own-goal markers without shot xG.
+
+Understat retains **2,002** exports with 51,244 shots, 51,086 own-xG predictions
+and 158 own-goal markers. **1,992** overlap FotMob after reviewed club aliases;
+their PPDA/deep aggregates, available roster/minute context and source provenance
+enrich the richer FotMob payload. Provider xG, ratings and momentum remain
+separate from our model values. If a FotMob shot collection is absent, available
+Understat fallback shots keep their original provenance and receive primary
+FotMob event IDs; overlapping complete shot collections are not double-counted.
+
+The source-only preferred catalogue has **4,098 entries**, including ten unresolved
+possible duplicates. Nine disagree on dates: `us:29218`, `us:29720`, `us:29722`,
+`us:29723`, `us:29724`, `us:29820`, `us:29821`, `us:29822`, `us:29824`; corresponding
+FotMob dates differ by one or two days. `us:31948` reports PSG–Rennes 0–0 on
+2026-08-23, whereas `fm:5803105` reports Rennes–PSG 2–2 that day. These records
+remain visible and are not called ten confirmed additional matches. The ten
+Understat records are also staged; with the retained 40-match sample, staging
+has **50 Understat**, **2,209 FotMob**, **1,842 Wyscout**, **37 Dynasty**. Loaded
+discovery prefers richer/full matches and advertises **7,022 cards**, including
+the unchanged 2,924 StatsBomb baseline and the ten unresolved entries.
+
+### Final data quality and model evidence
+
+`sources/round2_quality_report.json` audits exports one file at a time:
+
+| Source | Full matches | SPADL actions | Mean actions/match | Own xG rows | VAEP rows | Valued xT rows |
+|---|---:|---:|---:|---:|---:|---:|
+| StatsBomb reference | 2,924 | 5,962,767 | 2,039.25 | Existing models | Existing models | Existing models |
+| Wyscout | 1,842 | 2,335,341 | 1,267.83 | 43,486 | 2,335,341 | 1,470,719 |
+| Dynasty | 37 | 30,402 | 821.68 | 866 | 30,402 | 14,065 |
+
+All new full exports have the exact **18-column StatsBomb SPADL order**, 105×68
+metres and home attacking +x in storage. No full or lite coordinates are invalid.
+Attacking-relative shot median x is 91.35 m for Wyscout and 89.79 m for Dynasty.
+Wyscout contains **134,024 explicitly inferred converter carries**. Native source
+event IDs and qualifiers are preserved separately from namespaced public IDs;
+inferred actions do not claim native event IDs. W14 training parquets are under
+`data/sources/wyscout/spadl/` and `data/sources/dynasty/spadl/`, with `scored/`
+and `normalized/` companions. Nothing is written under `data/models/`.
+
+FotMob y orientation was cross-checked against the cached Understat shot renderer
+and matched sample shots: retained-y median error 0.256 m versus mirrored-y
+13.046 m. `sources/fotmob_coordinate_crosscheck.json` retains the paired evidence.
+Away shots rotate exactly once at the API boundary. Minute-only sources keep
+precise seconds/elapsed time unknown instead of inventing a continuous clock.
+
+Identity evidence reuses reviewed team aliases and exact player aliases within
+observed historical team membership: **382 source teams, 265 mapped to StatsBomb;
+11,705 source players, 1,894 mapped**. Ambiguous/unobserved identities remain
+source-local. `sources/identity_map.json` records method and unmatched identities.
+W14 transfer calibration, new-source game-state IO and canonical player-rating
+support remain unvalidated. New full sources declare game_state/pass_options
+false until those paths are supported; the existing StatsBomb paths are preserved.
+
+### Final verification and operational handoff
+
+- `uv run --group models --with playwright==1.58.0 --with json5 pytest
+  tests/test_sources*.py -q`: **35 passed**. Cached provider parsers, SPADL/coordinate
+  conventions, own goals, strict final-period evidence, dedupe, tier isolation,
+  idempotent refresh, complete-cache replay/pacing and staging-only guards covered.
+- Unchanged `tests/test_contract.py`: **20 passed**, against matchpulse_staging
+  using an isolated original StatsBomb catalogue. New discovery is probed
+  separately because the original test intentionally fixes the baseline count.
+- Byte comparison with round-1 commit `0bace27`: reference StatsBomb meta, events,
+  timeline, default sequences, players and turning-points responses are identical;
+  all **2,924 existing match cards** are identical. Saved in
+  `sources/byte_compatibility_report.json`.
+- Actual worktree API on **8013**: **70 match GET sets** passed meta/timeline/replay
+  event schemas and ID/coordinate checks: 20 Wyscout, 20 FotMob, 20 Dynasty and ten
+  unresolved Understat. `sources/api_sample_report.json` retains endpoint evidence.
+  Wyscout penalty sample `wy:1694426` shows 1–1 plus observed shootout 4–5.
+- Added real lite response fixtures under `fixtures/matches/fm_5795459/`; original
+  full fixtures and `tests/test_contract.py` were not modified. Optional tier,
+  capabilities/provider fields and nullable unknown metrics are documented in
+  CONTRACT_PROPOSAL.md. Lite unsupported analytic collections are empty and
+  full-event model endpoints return 422 before invoking unavailable analytics.
+- FotMob repeat refresh: **0 new, 2,209 skipped, 0 network responses**, raw cache
+  byte-identical. Evidence: `sources/fotmob_idempotence_report.json`.
+- Backend `uv run ruff check . && uv run ruff format --check .`: passed,
+  **133 files** formatted. Standalone local fetcher Ruff checks passed separately.
+- Raw cache is **22,508,897,883 bytes**, below the **40 GiB** ceiling; root free
+  space **156 GB** at final inspection. The home fetcher's default 10 GiB budget
+  fits this allowance. No push/merge, production DB/model/service writes or live
+  server restarts. Refresh/run instructions are in REFRESH.md.
+- Staging continuous aggregates refreshed after the full backfill:
+  **334,013 Wyscout** and **5,535 Dynasty** minute-metric rows, with **zero lite
+  minute-metric rows**. Staging holds 2,335,493 Wyscout normalized events and
+  33,734 Dynasty normalized events; model-row counts agree with exported actions.
+  `sources/round2_staging_metrics.json` records this final database evidence.
+- Verification API shut down cleanly after the final probes. No W13 scraper,
+  importer watcher, training job or dev server remains running at handoff.
+- Round-2 implementation commits: `79237d5` (full-source imports/local capture),
+  `9b73b9e` (label repair/resumability), `17d9db7` (FotMob/reconciliation/exports),
+  `a9002f9` (lite API plus schemas and fixtures). Final documentation records the
+  accepted coverage, unresolved pairs and operational commands. Nothing pushed
+  or merged.
+
+The owner needs the home WhoScored fetcher; no Wyscout manual download is needed.
+SofaScore still reaches a CAPTCHA redirect and adds no demonstrated full stream.
+Impect neutral/missing outcomes remain a W14 data-semantics request. Orchestrator
+should merge the canonical source catalogue once, review the ten disagreements,
+and promote API/data changes through its normal production process. W15 needs
+nullable shot-clock/jersey handling and provider-labelled stat panels.
