@@ -82,6 +82,25 @@ class Inference:
         xg = self.shots(match, events)
         result["xg"] = result.original_event_id.map(xg)
         score_context = goalscore([actions]).set_index(actions.action_id)
+        # Wyscout can encode an own goal as a bad touch, outside socceraction's
+        # shot-only goalscore helper. Use the observed normalized goal stream.
+        if any(e["type"]["name"] == "Own Goal Against" for e in events):
+            scores = {match[s]["id"]: 0 for s in ("home", "away")}
+            contexts = {}
+            for event in events:
+                team = event["team"]["id"]
+                other = next(t for t in scores if t != team)
+                contexts[event["id"]] = (scores[team], scores[other])
+                if event["type"]["name"] == "Own Goal Against":
+                    scores[other] += 1
+                elif (
+                    event["type"]["name"] == "Shot"
+                    and event["shot"]["outcome"]["name"] == "Goal"
+                ):
+                    scores[team] += 1
+            for action in actions.itertuples():
+                a, b = contexts[action.original_event_id]
+                score_context.loc[action.action_id] = [a, b, a - b]
         vaep = VAEP(nb_prev_actions=3)
         outputs = []
         for _, group in actions.groupby("period_id", sort=False):
