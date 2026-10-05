@@ -31,7 +31,8 @@ nice -n 10 env OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 \
   uv run --group models python -m matchpulse.sources.pipeline refresh
 ```
 
-Defaults: all five Understat leagues, 2026 and 2025. Override `--seasons` and
+Defaults: all five Understat leagues, current July-start season and its predecessor
+(2026 and 2025 at this collection). Override `--seasons` and
 `--leagues`; `--limit 20` bounds newly imported matches. Discovery uses an immutable
 UTC collection-date URL, `?mp_snapshot=YYYY-MM-DD`. The parameter names our snapshot;
 the provider does not filter by it. Only unknown `isResult=true` fixtures fetch

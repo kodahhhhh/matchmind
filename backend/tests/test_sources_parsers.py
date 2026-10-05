@@ -56,6 +56,14 @@ def test_dedupe_prefers_statsbomb_and_quarantines_conflicts() -> None:
         {"match_id": "wy:1", "preferred": "sb:1", "reason": "duplicate"},
         {"match_id": "wy:2", "preferred": "sb:1", "reason": "score_conflict"},
     ]
+    swapped = {
+        **row("wy:4"),
+        "home": {"name": "Peru"},
+        "away": {"name": "France"},
+        "home_score": 0,
+        "away_score": 2,
+    }
+    assert dedupe([swapped], [row("sb:1")])[1][0]["reason"] == "duplicate"
 
 
 @pytest.mark.parametrize(

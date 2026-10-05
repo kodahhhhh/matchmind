@@ -41,6 +41,13 @@ with a lite catalogue entry returns 503 for missing events; that is an integrati
 gap, not a successful lite endpoint. The orchestrator should implement typed
 dispatch and capability checks before exposing the entry.
 
+Schema-valid full responses also need semantic availability checks. The current
+shared metrics layer defaults absent pressure to `false`, requires integer jersey
+numbers, and substitutes a threat proxy when a row lacks VAEP. W13 retains missing
+context/model values in source exports and DB rows; shared serialization should
+preserve unavailable values and identify any deliberate proxy rather than label
+it as our model's result. Passing the legacy schema does not validate these defaults.
+
 ## Example lite metadata (proposal)
 
 ```json
@@ -60,6 +67,7 @@ dispatch and capability checks before exposing the entry.
     "shots": true,
     "lineups": true,
     "team_stats": false,
+    "provider_team_stats": true,
     "player_ratings": false,
     "provider_momentum": false,
     "full_events": false,
@@ -91,6 +99,8 @@ fixture and doesn't authorize changing existing response shapes.
   50%/0/empty complete-event statistics just to satisfy the old full schema.
 - Provider momentum must have a separate method/provenance and axis; it has a
   different scale and meaning from our VAEP momentum.
+- Understat league-history PPDA/deep entries are joined only by exact team/date/
+  side. Preserve these as `provider_team_stats`, not our full-event metrics.
 - Unknown statistics remain unavailable; a genuine zero shot count is zero only
   when complete provider shot coverage is established.
 - Model transfer uncertainty matters even for a full source: Dynasty is youth

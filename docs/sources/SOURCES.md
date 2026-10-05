@@ -3,7 +3,7 @@
 Each acquisition uses an honest `MatchPulse/0.1 (public football data research)`
 User-Agent, a persistent per-host delay of 1.1 seconds, a global acquisition lock,
 and immutable raw response caches under `/home/ubuntu/hackathon/data/raw/<source>/`.
-403/429/challenges persistently disable that host. No cookies, signatures,
+403/429/challenges persistently disable that host and source. No cookies, signatures,
 proxies, solvers or browser automation were used. Documentation browsing is not
 proof of EC2 reachability; the HTTP results below are from this machine.
 
@@ -52,5 +52,9 @@ top-left canvas, establishing bottom-left source Y. Our conversion is therefore
 - Every `data/raw/<source>/<sha256>.json` has URL, status, fetch time, content type,
   byte count and blocked flag; `.body` retains raw bytes (including error bodies).
 - `data/raw/source_host_policy.json` persists refusal state and host timings.
-- `data/sources/dynasty_eligibility.json` records accepted IDs and rejection reasons.
+- `data/sources/dynasty_eligibility.json` is the initial coverage-only spike.
+  Final accepted IDs are in `catalogue_dynasty.json`; `dynasty_report.json`
+  records the stricter parser/clock/score rejections and quarantine moves.
 - Actual imported counts and verification are recorded in `LOG.md`.
+- OpenFootball's Git tree shows Champions League JSON through 2024/25; probed
+  2025/26 and 2026/27 CL URLs return cached 404s. No recent CL coverage is claimed.

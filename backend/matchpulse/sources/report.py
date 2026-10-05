@@ -35,6 +35,16 @@ def summarize(data_dir: Path) -> dict:
         shots.team_id == shots.home_team_id, shots.start_x, 105 - shots.start_x
     )
     spatial = full[["start_x", "start_y", "end_x", "end_y"]]
+    clipped = {"start": 0, "end": 0}
+    for native in full_ids:
+        document = json.loads((root / f"dynasty/normalized/{native}.json").read_text())
+        for event in document["events"]:
+            if not event.get("spadl_type"):
+                continue
+            raw = event["source_extra"]
+            for end in clipped:
+                x, y = float(raw[f"event_{end}_x"]), float(raw[f"event_{end}_y"])
+                clipped[end] += int(not (0 <= x <= 497 and 0 <= y <= 328))
     invalid = (
         (~np.isfinite(spatial)).any(axis=1)
         | ~spatial.start_x.between(0, 105)
@@ -98,6 +108,7 @@ def summarize(data_dir: Path) -> dict:
                 c: [float(spatial[c].min()), float(spatial[c].max())] for c in spatial
             },
             "invalid_coordinates": int(invalid.sum()),
+            "source_coordinate_clips": clipped,
             "shots": len(shots),
             "attacking_shot_x_median": float(np.median(attacking_x)),
             "training_files": full_ids,

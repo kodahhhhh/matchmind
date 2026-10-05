@@ -259,7 +259,9 @@ def main() -> None:
     sub.add_parser("inventory")
     sub.add_parser("rebuild-understat")
     job = sub.add_parser("refresh")
-    job.add_argument("--seasons", type=int, nargs="+", default=[2026, 2025])
+    today = datetime.now(UTC).date()
+    season = today.year if today.month >= 7 else today.year - 1
+    job.add_argument("--seasons", type=int, nargs="+", default=[season, season - 1])
     job.add_argument(
         "--leagues", choices=list(LEAGUES), nargs="+", default=list(LEAGUES)
     )

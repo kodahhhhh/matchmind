@@ -277,4 +277,6 @@ def score_shots(match: dict, bundle: dict, inference: object) -> dict:
     bundle["xg_provenance"] = (
         "MatchPulse current model; missing context; cross-source transfer unvalidated"
     )
+    bundle["capabilities"]["own_xg"] = bool(ratings)
+    match["capabilities"] = dict(bundle["capabilities"])
     return bundle

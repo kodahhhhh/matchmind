@@ -27,7 +27,7 @@ def normal_name(name: str) -> str:
 def dedupe(
     matches: list[dict], existing: list[dict], aliases: dict[str, str] | None = None
 ) -> tuple[list[dict], list[dict]]:
-    """Prefer StatsBomb for dated, same-side team pairs; retain undated matches.
+    """Prefer StatsBomb for dated team pairs; retain undated matches.
 
     Ambiguous rematches and score conflicts are quarantined rather than silently
     discarded. Reviewed aliases are explicit; team-name similarity is insufficient.
@@ -38,7 +38,19 @@ def dedupe(
         if not m.get("match_date"):
             return None
         teams = [normal_name(m[s]["name"]) for s in ("home", "away")]
-        return (m["match_date"], m.get("gender"), *(aliases.get(t, t) for t in teams))
+        return (
+            m["match_date"],
+            m.get("gender"),
+            *sorted(aliases.get(t, t) for t in teams),
+        )
+
+    def scores(m: dict) -> dict:
+        return {
+            aliases.get(
+                normal_name(m[side]["name"]), normal_name(m[side]["name"])
+            ): m.get(f"{side}_score")
+            for side in ("home", "away")
+        }
 
     seen: dict[tuple, list[dict]] = {}
     for m in sorted(existing, key=lambda m: not m["match_id"].startswith("sb:")):
@@ -53,9 +65,7 @@ def dedupe(
             reason = "duplicate"
             if len(same) > 1:
                 reason = "ambiguous_same_day"
-            elif any(
-                m.get(s) != candidate.get(s) for s in ("home_score", "away_score")
-            ):
+            elif scores(m) != scores(candidate):
                 reason = "score_conflict"
             duplicates.append(
                 {
