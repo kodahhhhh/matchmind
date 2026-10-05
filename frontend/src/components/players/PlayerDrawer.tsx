@@ -157,7 +157,7 @@ function Profile({ p }: { p: PlayerProfile }) {
           <Block title="In this match">
             <dl className="grid grid-cols-2 gap-x-4 gap-y-5 rounded-2xl bg-surface-2 p-5 ring-1 ring-line sm:grid-cols-4">
               <Big label="Minutes" value={`${Math.round(p.in_match.minutes)}'`} />
-              <Big label="Value added" value={`${p.in_match.vaep >= 0 ? "+" : ""}${p.in_match.vaep.toFixed(2)}`} />
+              <Big label="Impact" value={`${p.in_match.vaep >= 0 ? "+" : ""}${p.in_match.vaep.toFixed(2)}`} />
               <Big label="Rank in match" value={`#${p.in_match.rank_in_match}`} />
               <Big label="Market value then" value={eur(p.in_match.market_value_eur)} />
             </dl>
@@ -175,10 +175,10 @@ function Profile({ p }: { p: PlayerProfile }) {
           <Block title="Career in our data" meta={`${p.career.matches} matches`}>
             <dl className="grid grid-cols-3 gap-x-4 gap-y-5 rounded-2xl bg-surface-2 p-5 ring-1 ring-line sm:grid-cols-5">
               <Big small label="Minutes" value={Math.round(p.career.minutes).toLocaleString("en-GB")} />
-              <Big small label="Value added per 90" value={p.career.vaep_per90.toFixed(2)} />
-              <Big small label="Expected goals" value={p.career.xg.toFixed(1)} />
+              <Big small label="Impact per 90 minutes" value={p.career.vaep_per90.toFixed(2)} />
+              <Big small label="Chance quality (xG)" value={p.career.xg.toFixed(1)} />
               <Big small label="Goals" value={String(p.career.goals)} />
-              <Big small label="Progression per 90" value={p.career.prog_per90.toFixed(1)} />
+              <Big small label="Moving the ball forward, per 90" value={p.career.prog_per90.toFixed(1)} />
             </dl>
           </Block>
         )}
@@ -191,7 +191,7 @@ function Profile({ p }: { p: PlayerProfile }) {
               <Heatmap h={p.heatmap} />
               <p className="mt-2 text-[12.5px] text-ink-3">Attacking left to right, all matches</p>
             </Block>
-            <Block title="Value split">
+            <Block title="Attack and defence">
               <Split off={p.career.vaep_off} def={p.career.vaep_def} />
             </Block>
           </div>
@@ -228,7 +228,7 @@ function Profile({ p }: { p: PlayerProfile }) {
                 </tbody>
               </table>
             </div>
-            <p className="mt-2 text-[12.5px] text-ink-3">Per 90 is value added per 90 minutes.</p>
+            <p className="mt-2 text-[12.5px] text-ink-3">Per 90 is impact per 90 minutes: how much a player raised their team's chance of scoring, or lowered the opponent's.</p>
           </Block>
         )}
 
@@ -346,7 +346,7 @@ function Split({ off, def }: { off: number; def: number }) {
           <div className="h-1.5 rounded-full bg-surface-4"><div className="h-1.5 rounded-full bg-ink-2" style={{ width: `${(Math.abs(v) / total) * 100}%` }} /></div>
         </div>
       ))}
-      <p className="mt-3 text-[12.5px] leading-[1.5] text-ink-3">Total value added from attacking and defending actions.</p>
+      <p className="mt-3 text-[12.5px] leading-[1.5] text-ink-3">Impact from attacking and from defending.</p>
     </div>
   );
 }
@@ -370,7 +370,7 @@ function Moments({ p }: { p: PlayerProfile }) {
   const rows = useMemo(() => p.top_moments.slice(0, 6), [p]);
   const inDb = useMemo(() => new Set(p.matches.filter((m) => m.in_db).map((m) => m.match_id)), [p]);
   return (
-    <Block title="Best moments by value added">
+    <Block title="Best moments">
       <ul className="space-y-0.5 rounded-[18px] bg-surface-2 p-1.5 ring-1 ring-line">
         {rows.map((m, i) => {
           const can = inDb.has(m.match_id);

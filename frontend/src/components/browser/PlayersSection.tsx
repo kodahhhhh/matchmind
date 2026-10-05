@@ -71,7 +71,7 @@ export function PlayersSection() {
             <span id="players-title">The players the market missed</span>
           </Line>
           <Line n={2} as="p" className="mt-3 max-w-[60ch] text-pretty text-[15.5px] leading-[1.6] text-ink-3">
-            Ranked by value added per 90 minutes, set against what Transfermarkt said they were worth.
+            Ranked by impact on the pitch, set against what Transfermarkt said they were worth.
           </Line>
         </Stagger>
         <div role="group" aria-label="Tournament" className="-mx-5 flex shrink-0 gap-1 overflow-x-auto px-5 lg:mx-0 lg:px-0">
@@ -158,7 +158,7 @@ function Featured({ pick, maxRank, where }: { pick: Pick; maxRank: number; where
 
         <dl className="mt-7 grid grid-cols-2 gap-4">
           <div className="flex flex-col-reverse justify-end gap-1">
-            <dt className="text-[13px] text-ink-3">Value added per 90</dt>
+            <dt className="text-[13px] text-ink-3">Impact per 90 minutes</dt>
             <dd className="numeral text-[34px] leading-none text-ink">{row.value.toFixed(2)}</dd>
           </div>
           <div className="flex flex-col-reverse justify-end gap-1">
@@ -189,7 +189,7 @@ function RankGap({ perf, price, maxRank }: { perf: number; price: number | null;
       <div ref={ref} className="relative h-6">
         {width > 0 && (
           <svg width={width} height={24} className="block overflow-visible" role="img"
-            aria-label={`Ranked ${ordinal(perf)} for value added and ${ordinal(price)} by market value`}>
+            aria-label={`Ranked ${ordinal(perf)} for impact and ${ordinal(price)} by market value`}>
             <line x1={x(1)} x2={x(maxRank)} y1={12} y2={12} stroke="var(--axis)" strokeWidth={1} />
             <motion.line x1={x(perf)} y1={12} y2={12} stroke="var(--ink-3)" strokeWidth={2}
               initial={{ x2: x(perf) }} whileInView={{ x2: x(price) }} viewport={{ once: true }} transition={{ duration: 0.9, delay: 0.2, ease: EASE }} />
@@ -200,7 +200,7 @@ function RankGap({ perf, price, maxRank }: { perf: number; price: number | null;
         )}
       </div>
       <div className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-[12.5px] text-ink-3">
-        <span className="flex items-center gap-2"><span className="size-2.5 rounded-full bg-ink" />{ordinal(perf)} for value added</span>
+        <span className="flex items-center gap-2"><span className="size-2.5 rounded-full bg-ink" />{ordinal(perf)} for impact</span>
         <span className="flex items-center gap-2"><span className="size-2.5 rounded-full border-2 border-ink-2" />{ordinal(price)} by market value</span>
       </div>
     </div>

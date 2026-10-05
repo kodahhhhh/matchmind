@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { Link } from "react-router";
 import { motion, MotionConfig, useReducedMotion } from "motion/react";
-import { CheckCircle, Scales, XCircle } from "@phosphor-icons/react";
+import { CaretDown, CheckCircle, Scales, XCircle } from "@phosphor-icons/react";
 import { scaleLinear } from "d3-scale";
 import { area, line } from "d3-shape";
 import { api } from "../../api/client";
@@ -10,6 +10,8 @@ import { LoadError, PageFooter } from "../ui/PageFooter";
 import { Line, Stagger } from "../ui/motion";
 import { SiteHeader } from "../ui/SiteHeader";
 import { useSize } from "../ui/useSize";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { bookiesAnswer } from "../../lib/plain";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 const dateFmt = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric" });
@@ -64,7 +66,7 @@ export function BacktestPage() {
           <section className="mx-auto grid max-w-[1280px] grid-cols-1 items-start gap-12 px-5 pb-4 pt-8 md:px-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:pt-14">
             <Stagger onMount>
               <Line n={1} as="h1" className="max-w-[16ch] text-balance text-[38px] font-semibold leading-[1.06] tracking-[-0.04em] text-ink md:text-[48px]">
-                Would MatchPulse have beaten the market?
+                Would MatchPulse beat the bookies?
               </Line>
               <Line n={2} as="p" className="mt-6 max-w-[48ch] text-pretty text-[17px] leading-[1.6] text-ink-2">
                 We replayed our models against real prices from before and during matches, using only what was known at the time, and counted every bet. If we had lost money, this page would say so.
@@ -91,16 +93,22 @@ export function BacktestPage() {
 
             {bt && (
               <>
-                <Section id="headline" title="The two headline strategies"
-                  intro="One per market: Pinnacle at closing odds with flat stakes, and Polymarket with a cent of slippage on every fill.">
+                <Section id="headline" title="The two main tests"
+                  intro="One against a bookmaker (Pinnacle, the sharpest odds there are) and one against a prediction market (Polymarket), paying a little extra on every trade to be realistic.">
                   <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
                     {head.map((s, i) => <InView key={s.id} i={i}><StrategyCard s={s} /></InView>)}
                   </div>
                 </Section>
-                <Sensitivity bt={bt} />
-                <PlayerDataComparison bt={bt} />
-                <EveryBet head={head} />
-                <Sources bt={bt} />
+                <div className="mx-auto max-w-[1280px] px-4 pt-16 sm:px-5 md:px-8 md:pt-24">
+                  <h2 className="text-[22px] font-semibold tracking-[-0.025em] text-ink md:text-[26px]">See the numbers</h2>
+                  <p className="mt-1 max-w-[64ch] text-pretty text-[14.5px] text-ink-3">Every bet, the robustness checks and the fine print, for anyone who wants to check our work.</p>
+                </div>
+                <div className="pt-5">
+                  <EveryBet head={head} />
+                  <Sensitivity bt={bt} />
+                  <PlayerDataComparison bt={bt} />
+                  <Sources bt={bt} />
+                </div>
               </>
             )}
           </div>
@@ -112,19 +120,39 @@ export function BacktestPage() {
   );
 }
 
-function Section({ id, title, intro, children, aside }: { id: string; title: string; intro?: ReactNode; children: ReactNode; aside?: ReactNode }) {
+function Section({ id, title, intro, children, aside, fold }: { id: string; title: string; intro?: ReactNode; children: ReactNode; aside?: ReactNode; fold?: boolean }) {
+  if (fold) {
+    // the analyst-grade detail: one line each, opened on demand
+    return (
+      <section aria-labelledby={`${id}-title`} className="mx-auto max-w-[1280px] px-4 pt-3 sm:px-5 md:px-8">
+        <Collapsible className="group/fold rounded-[20px] bg-surface-1 ring-1 ring-line">
+          <CollapsibleTrigger className="flex w-full items-start justify-between gap-4 p-5 text-left md:p-6">
+            <span className="min-w-0">
+              <span id={`${id}-title`} className="block text-[17px] font-semibold tracking-[-0.015em] text-ink md:text-[19px]">{title}</span>
+              {intro && <span className="mt-1 block max-w-[72ch] text-pretty text-[14px] leading-[1.55] text-ink-3">{intro}</span>}
+            </span>
+            <CaretDown size={16} weight="bold" className="mt-1 shrink-0 text-ink-3 transition-transform duration-200 group-data-[state=open]/fold:rotate-180" aria-hidden />
+          </CollapsibleTrigger>
+          <CollapsibleContent className="px-3 pb-3 md:px-4 md:pb-4">
+            {aside && <div className="mb-3 px-2">{aside}</div>}
+            {children}
+          </CollapsibleContent>
+        </Collapsible>
+      </section>
+    );
+  }
   return (
-    <section aria-labelledby={`${id}-title`} className="mx-auto max-w-[1280px] px-5 pt-24 md:px-8 md:pt-28">
+    <section aria-labelledby={`${id}-title`} className="mx-auto max-w-[1280px] px-4 pt-16 sm:px-5 md:px-8 md:pt-24">
       <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
         <Stagger>
-          <Line n={1} as="h2" className="text-balance text-[30px] font-semibold leading-[1.1] tracking-[-0.03em] text-ink md:text-[38px]">
+          <Line n={1} as="h2" className="text-balance text-[28px] font-semibold leading-[1.1] tracking-[-0.03em] text-ink md:text-[36px]">
             <span id={`${id}-title`}>{title}</span>
           </Line>
           {intro && <Line n={2} as="p" className="mt-3 max-w-[64ch] text-pretty text-[15.5px] leading-[1.6] text-ink-3">{intro}</Line>}
         </Stagger>
         {aside}
       </div>
-      <div className="mt-10">{children}</div>
+      <div className="mt-8">{children}</div>
     </section>
   );
 }
@@ -154,11 +182,7 @@ function Verdict({ bt }: { bt: Backtest }) {
   const sig = bt.strategies.filter((s) => s.roi_ci95[0] > 0);
   const neg = bt.strategies.filter((s) => s.roi_ci95[1] < 0);
   const allNeg = neg.length === bt.strategies.length;
-  const text = sig.length
-    ? `Yes, with ${sig.map((s) => s.name).join(" and ")} profitable beyond the noise.`
-    : allNeg
-      ? "No. Both strategies lost money; the markets were sharper."
-      : "Not conclusively. Every result sits inside its 95% confidence interval around zero.";
+  const text = bookiesAnswer(bt);
   const Icon = sig.length ? CheckCircle : allNeg ? XCircle : Scales;
   return (
     <p className="inline-flex max-w-[52ch] items-start gap-3 rounded-2xl bg-surface-1 px-4 py-3.5 text-[15px] font-medium leading-[1.45] text-ink ring-1 ring-line">
@@ -184,8 +208,8 @@ function ForestPlot({ bt, head }: { bt: Backtest; head: BacktestStrategy[] }) {
   return (
     <figure className="rounded-[20px] bg-surface-1 p-6 ring-1 ring-line md:p-8">
       <figcaption>
-        <h2 className="text-[17px] font-semibold tracking-[-0.015em] text-ink">Return on stake, with 95% intervals</h2>
-        <p className="mt-1.5 text-[13.5px] leading-[1.55] text-ink-3">A bar that crosses break-even means the result could be luck.</p>
+        <h2 className="text-[17px] font-semibold tracking-[-0.015em] text-ink">Profit for every 100 staked</h2>
+        <p className="mt-1.5 text-[13.5px] leading-[1.55] text-ink-3">The dot is what happened. The bar is the range luck alone could explain: if it crosses break even, the result could be luck.</p>
       </figcaption>
       <div ref={ref} className="mt-6">
         <ul className="space-y-3.5">
@@ -253,22 +277,33 @@ function StrategyCard({ s }: { s: BacktestStrategy }) {
           <dd className="numeral text-[32px] leading-none text-ink-2">{pctS(s.roi)}</dd>
         </div>
         <div className="flex flex-col-reverse justify-end gap-1.5">
-          <dt className="text-[13px] text-ink-3">95% interval</dt>
+          <dt className="text-[13px] text-ink-3">Range luck allows</dt>
           <dd className="tabular pb-0.5 text-[15px] font-medium text-ink-2">{pctS(s.roi_ci95[0])} to {pctS(s.roi_ci95[1])}</dd>
         </div>
       </dl>
 
       <EquityChart s={s} />
 
-      <dl className="mt-6 grid grid-cols-3 gap-x-4 gap-y-5 border-t border-line pt-5">
-        <Stat label="Bets" value={String(s.n_bets)} />
-        <Stat label="Staked" value={money(s, s.staked)} />
-        <Stat label="Hit rate" value={pctS(s.hit_rate, false)} />
-        <Stat label="Max drawdown" value={money(s, s.max_drawdown)} />
-        <Stat label="Closing line value" value={s.clv == null ? "n/a" : pctS(s.clv)} />
-        <Stat label="Brier score" value={s.brier_model.toFixed(3)} sub={`Market ${s.brier_market.toFixed(3)}${brierBetter ? ", ours lower" : ""}`} />
-      </dl>
-      <p className="mt-6 text-pretty text-[13.5px] leading-[1.6] text-ink-3"><Emph text={s.description} /></p>
+      <Collapsible className="group/sn mt-6 border-t border-line pt-4">
+        <CollapsibleTrigger className="flex w-full items-center justify-between gap-3 text-left text-[13.5px] font-medium text-ink-2 transition-colors duration-150 hover:text-ink">
+          See the numbers
+          <CaretDown size={14} weight="bold" className="shrink-0 text-ink-3 transition-transform duration-200 group-data-[state=open]/sn:rotate-180" aria-hidden />
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <dl className="grid grid-cols-3 gap-x-4 gap-y-5 pt-3">
+            <Stat label="Bets" value={String(s.n_bets)} />
+            <Stat label="Staked" value={money(s, s.staked)} />
+            <Stat label="Hit rate" value={pctS(s.hit_rate, false)} />
+            <Stat label="Max drawdown" value={money(s, s.max_drawdown)} />
+            <Stat label="Closing line value" value={s.clv == null ? "n/a" : pctS(s.clv)} />
+            <Stat label="Brier score" value={s.brier_model.toFixed(3)} sub={`Market ${s.brier_market.toFixed(3)}${brierBetter ? ", ours lower" : ""}`} />
+          </dl>
+          <p className="mt-4 text-pretty text-[12.5px] leading-[1.6] text-ink-3">
+            {isPoly(s) ? "" : "A unit is one flat stake. "}Hit rate is the share of bets that won. Closing line value says whether we got better prices than the market settled on. Brier score measures how accurate the probabilities were: lower is better.
+          </p>
+          <p className="mt-3 text-pretty text-[12.5px] leading-[1.6] text-ink-3">How it bets: <Emph text={s.description} /></p>
+        </CollapsibleContent>
+      </Collapsible>
     </article>
   );
 }
@@ -372,7 +407,7 @@ function Sensitivity({ bt }: { bt: Backtest }) {
   const rest = bt.strategies.filter((s) => !head.has(s.id));
   if (!rest.length) return null;
   return (
-    <Section id="sensitivity" title="Sensitivity checks"
+    <Section fold id="sensitivity" title="Sensitivity checks"
       intro="The same models with other staking rules, opening prices and more slippage. Opening-price rows test payouts only and are not evidence of tradable profit.">
       <div className={TABLE_WRAP}>
         <table className="w-full min-w-[760px] border-collapse text-[13.5px]">
@@ -410,7 +445,7 @@ function PlayerDataComparison({ bt }: { bt: Backtest }) {
   const byId = new Map(bt.strategies.map((s) => [s.id, s]));
   const pm = bt.comparison.find((c) => c.strategy_id.startsWith("pinnacle"));
   return (
-    <Section id="player-data" title="Did player data help?"
+    <Section fold id="player-data" title="Did player data help?"
       intro={<>
         We added squad information from Transfermarkt (CC0): each starting XI's market value at kick-off, age, caps, and which regular starters were missing.
         {pm && <> It made the pre-match model more accurate (Brier score from {pm.before.brier_model.toFixed(3)} to <span className="tabular font-medium text-ink">{pm.after.brier_model.toFixed(3)}</span>, lower is better), but not more profitable. The in-play version got worse, so we kept the original.</>}
@@ -465,7 +500,7 @@ function EveryBet({ head }: { head: BacktestStrategy[] }) {
   const s = head[tab];
   if (!s) return null;
   return (
-    <Section id="bets" title="Every bet" intro="Each bet the headline strategies placed, with our probability, the market's and the result."
+    <Section fold id="bets" title="Every bet" intro="Each bet the headline strategies placed, with our probability, the market's and the result."
       aside={
         <div role="group" aria-label="Strategy" className="-mx-5 overflow-x-auto px-5 md:mx-0 md:px-0">
           <div className="flex w-max gap-1 rounded-full bg-surface-1 p-1 ring-1 ring-line">
@@ -529,7 +564,7 @@ function BetsTable({ s }: { s: BacktestStrategy }) {
 function Sources({ bt }: { bt: Backtest }) {
   const stamp = new Date(bt.generated_at);
   return (
-    <Section id="method" title="Sources and caveats" intro="Where the prices came from, and what these numbers can and cannot tell you.">
+    <Section fold id="method" title="Sources and caveats" intro="Where the prices came from, and what these numbers can and cannot tell you.">
       <div className="grid grid-cols-1 items-start gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.35fr)]">
         <InView className="rounded-[20px] bg-surface-1 p-6 ring-1 ring-line md:p-8">
           <h3 className="text-[17px] font-semibold tracking-[-0.015em] text-ink">Data sources</h3>

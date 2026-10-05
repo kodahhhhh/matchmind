@@ -16,9 +16,9 @@ import { pickUnderrated } from "./underrated";
 const EASE = [0.22, 1, 0.36, 1] as const;
 /** [api key, control label, chart label] */
 const METRICS: [string, string, string][] = [
-  ["vaep_per90", "Value added per 90", "Value added per 90"],
-  ["xg", "Expected goals", "Expected goals"],
-  ["prog_per90", "Progression per 90", "Progression per 90"],
+  ["vaep_per90", "Impact", "Impact per 90 minutes"],
+  ["xg", "Chances", "Chance quality (xG)"],
+  ["prog_per90", "Moving the ball forward", "Forward passes and runs per 90"],
 ];
 const COMPS: [string, string, string][] = [
   ["1. Bundesliga", "2015/2016", "Bundesliga 2015/16"],
@@ -80,7 +80,7 @@ export function LeaderboardPage() {
                 Who did the market underrate?
               </Line>
               <Line n={2} as="p" className="mt-6 max-w-[58ch] text-pretty text-[17px] leading-[1.6] text-ink-2">
-                Every player with enough minutes (900 in a league season, 270 at a tournament), ranked by the value our models say they added, against what the transfer market said they were worth at the time.
+                Every player with enough minutes (900 in a league season, 270 at a tournament), ranked by how much difference they made on the pitch, against what the transfer market said they were worth at the time.
               </Line>
               <Line n={3} as="div" className="mt-9">
                 <div className="flex flex-wrap items-center gap-3">
