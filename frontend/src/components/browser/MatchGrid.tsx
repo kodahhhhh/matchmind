@@ -4,7 +4,7 @@ import { motion } from "motion/react";
 import { CaretDown } from "@phosphor-icons/react";
 import type { Competition, MatchCard } from "../../api/types";
 import { useCatalogue } from "../../store/catalogue";
-import { LITE_LABEL, matchDate, matchPath } from "../../lib/matchSearch";
+import { LITE_LABEL, compLabel, matchDate, matchPath } from "../../lib/matchSearch";
 
 const PAGE = 24;
 const ALL = "all";
@@ -48,10 +48,7 @@ export function MatchGrid() {
   // a competition picked from "More" (or a search link) gets its own pill while it's active
   const shownPills = group && !pills.includes(group) ? [...pills, group] : pills;
 
-  const filtered = useMemo(
-    () => matches.filter((m) => m.competition === group?.name && (activeSeason === ALL || m.competition_key === activeSeason)).sort(newestFirst),
-    [matches, group, activeSeason],
-  );
+  const filtered = matches.filter((m) => m.competition === group?.name && (activeSeason === ALL || m.competition_key === activeSeason)).sort(newestFirst);
   const shown = filtered.slice(0, limit);
   const seasonRow = useRef<HTMLDivElement>(null);
   const pillRow = useRef<HTMLDivElement>(null);
@@ -160,7 +157,7 @@ function Card({ m, i }: { m: MatchCard; i: number }) {
       <Link to={matchPath(m.match_id)}
         className="block rounded-2xl bg-surface-1 px-4 pb-4 pt-3.5 ring-1 ring-line transition-[background-color,box-shadow,transform] duration-150 hover:bg-surface-2 hover:ring-line-strong active:scale-[0.98]">
         <div className="mb-3 flex items-baseline justify-between gap-3 text-[12.5px] text-ink-3">
-          <span className="truncate">{m.stage ?? m.competition}</span>
+          <span className="truncate">{m.stage && m.stage !== "Regular Season" ? m.stage : compLabel(m.competition, m.season)}</span>
           {m.data_tier === "lite" && <span className="shrink-0 rounded-full bg-surface-3 px-2 text-[11.5px] leading-5 text-ink-3">{LITE_LABEL}</span>}
           <span className="tabular ml-auto shrink-0">{matchDate(m)}</span>
         </div>

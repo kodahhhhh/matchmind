@@ -9,6 +9,7 @@ import { useMatch } from "../../store/match";
 import { useCatalogue } from "../../store/catalogue";
 import { FAMOUS, LITE_LABEL, compLabel, matchDate, matchPath, searchCompetitions, searchMatches } from "../../lib/matchSearch";
 import { initials, trapTab } from "../ui/focusTrap";
+import { undash } from "../../lib/format";
 
 const EXAMPLES = ["Spain v England", "Champions League", "Messi", "header from a corner", "counter-attack goal"];
 
@@ -78,10 +79,12 @@ function Palette({ onClose }: { onClose: () => void }) {
   const searching = query.length >= 2;
   const key = `${scope}|${query}`;
   const loading = searching && moments?.key !== key;
-  const results = moments?.key === key ? moments.hits : [];
+  // when the query clearly names matches, moments are a secondary guess: show fewer
+  const allMoments = moments?.key === key ? moments.hits : [];
   const players = people?.key === key ? people.hits : [];
 
   const matches = useMemo(() => (searching && scope === "all" ? searchMatches(catalogue.matches, query, 5).map((h) => h.m) : []), [catalogue.matches, query, searching, scope]);
+  const results = matches.length ? allMoments.slice(0, 3) : allMoments;
   const comps = useMemo(() => (searching && scope === "all" ? searchCompetitions(catalogue.competitions, query, 3) : []), [catalogue.competitions, query, searching, scope]);
   const famous = useMemo(() => FAMOUS.slice(0, 4).map((f) => ({ ...f, m: catalogue.byId.get(f.id) })).filter((f): f is typeof f & { m: MatchCard } => !!f.m), [catalogue.byId]);
 
@@ -275,7 +278,7 @@ function Palette({ onClose }: { onClose: () => void }) {
                           <span className="hidden shrink-0 text-ink-4 sm:inline">· {compLabel(r.match.competition, r.match.season)}</span>
                         </span>
                       )}
-                      <span className="block text-[14px] leading-[1.45] text-ink-2"><Highlight text={r.text} q={q} /></span>
+                      <span className="block text-[14px] leading-[1.45] text-ink-2"><Highlight text={undash(r.text)} q={q} /></span>
                     </span>
                     <Enter on={at(r.sequence_id) === sel} />
                   </button>
