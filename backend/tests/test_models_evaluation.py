@@ -321,3 +321,34 @@ def test_new_source_shot_context_is_missing_and_score_is_pre_shot() -> None:
     assert np.isnan(rows[0]["under_pressure"])
     assert np.isnan(rows[0]["technique"])
     assert rows[0]["freeze_frame_present"] == 0
+
+
+def test_distributional_result_probabilities_keep_tail_and_symmetry():
+    from matchpulse.backtest.inplay_poisson import result_probabilities
+
+    diff = np.array([0, 1, -2, 0])
+    home = np.array([1.2, 0.6, 2.5, 0.0])
+    away = np.array([0.9, 2.0, 0.2, 0.0])
+    p = result_probabilities(diff, home, away)
+    reverse = result_probabilities(-diff, away, home)
+    np.testing.assert_allclose(p.sum(axis=1), 1)
+    np.testing.assert_allclose(p, reverse[:, ::-1], atol=1e-14)
+    assert p[-1, 1] > 1 - 1e-8
+    assert (p >= 0).all()
+
+
+def test_remaining_goal_labels_exclude_extra_time_and_reverse_own_goals():
+    from matchpulse.backtest.inplay_poisson import regulation_goals
+
+    def event(period, team, kind):
+        return {
+            "period": period,
+            "team": {"id": team},
+            "type": {"name": kind},
+            "shot": {"outcome": {"name": "Goal"}},
+        }
+
+    assert regulation_goals(
+        {"home": {"id": 1}},
+        [event(1, 1, "Shot"), event(2, 1, "Own Goal Against"), event(3, 1, "Shot")],
+    ) == (1, 1)

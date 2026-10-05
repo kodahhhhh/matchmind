@@ -153,7 +153,7 @@ def run(out: Path) -> dict:
 def main() -> None:
     """Run candidate-local quantile experiment."""
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--run", default="gamestate-v1")
+    parser.add_argument("--run", default="gamestate-v2")
     args = parser.parse_args()
     run(destination(args.run))
 

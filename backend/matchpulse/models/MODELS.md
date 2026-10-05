@@ -541,3 +541,12 @@ eight source matches / 180 shots are held out by identity hash. StatsBomb log-lo
 delta -0.000001411 (CI [-0.000204884, 0.000204743]) is inconclusive. Source-held-out
 Brier improves 0.195516 → 0.106022; this tiny cohort and missing source context
 limit the claim. Unknown fields remain missing. No global xG promotion.
+
+`inplay-poisson-v1` is a fixed remaining-goal distributional model with symmetric
+home/away features, pre-2018 fitting and pre-2020 temperature calibration. On
+112 previously excluded post-2022-11-01 matches, Brier improves 0.469522 → 0.464906
+against current (CI [-0.013406673, 0.003553391], inconclusive) and
+0.478474 → 0.464906 against naive (CI [-0.023854322, -0.003504340]). Old evaluation
+and tournaments are diagnostic only; market checkpoints remain mixed. Hold
+promotion. The serialized model needs the new PoissonResult class, documented in
+PROMOTION.md; existing public inference signatures and feature order are retained.

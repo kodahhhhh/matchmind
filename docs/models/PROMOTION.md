@@ -109,3 +109,31 @@ production windows, live rating feature construction and model inference remain
 unchanged. Rebuilding validation uses `python -m matchpulse.models.corrected_windows`
 with a fresh run name if inputs changed; never run production window/training
 entry points against main data as an experiment.
+
+## Distributional in-play — hold for confirmation
+
+`inplay-poisson-v1/backtest_inplay.joblib` preserves the outer bundle and existing
+inference signatures, but contains the new serializable
+`matchpulse.backtest.inplay_poisson.PoissonResult` class. Merge this module before
+loading that joblib anywhere. It implements `predict_proba` and bounded-thread
+`set_params` and delegates to the fitted Poisson-rate regressor. No network or
+feature writes occur during prediction. Save/load through the common adapter
+was exercised. The new `feature_frame` helper reads existing upstream artifacts;
+its original cache-writing wrapper keeps the previous signature and behavior.
+
+Fresh-cohort scores beat the naive baseline but not conclusively the incumbent;
+market results are mixed. Do not promote now. Any later accepted in-play swap
+also requires the staged served-JSON regeneration described above, not event or
+DB backfill. Current API contract/fixtures are unchanged.
+
+Additional fixed experiments through the common entry point (fresh run names):
+
+```sh
+nice -n 10 uv run --group models python -m matchpulse.models.evaluate inplay-poisson --fit --run inplay-poisson-reproduction
+nice -n 10 uv run --group models python -m matchpulse.models.evaluate xg-dynasty --fit --run xg-dynasty-reproduction
+```
+
+The source run pins accepted catalogue/file hashes and tests a source holdout;
+new W13 data requires a fresh run. VAEP remains on hold until its changed action
+values, player totals and dependent windows are evaluated together. Its candidate
+OOF values must never be mistaken for global-fit training values in outer folds.

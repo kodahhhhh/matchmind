@@ -130,10 +130,18 @@ def load_worker() -> None:
 
 
 def feature_match(match: dict) -> list[dict]:
-    """Minute boundaries strictly exclude actions at/after that minute."""
+    """Cache minute features for the original production training command."""
     path = output() / f"features/{match['native_id']}.parquet"
     if path.exists():
         return []
+    frame = feature_frame(match)
+    path.parent.mkdir(exist_ok=True)
+    frame.to_parquet(path, index=False)
+    return []
+
+
+def feature_frame(match: dict) -> pd.DataFrame:
+    """Read local inputs without writing; strictly exclude future actions."""
     events = json.loads(
         (root() / f"raw/statsbomb/data/events/{match['native_id']}.json").read_text()
     )
@@ -157,7 +165,7 @@ def feature_match(match: dict) -> list[dict]:
     actions = pd.concat(valued, ignore_index=True)
     # Shared extracted pre-shot features, predictions regenerated with historical model.
     shots = pd.read_parquet(
-        output() / "inplay_shots.parquet",
+        root() / "processed/backtest/inplay_shots.parquet",
         filters=[("game_id", "==", match["native_id"])],
     )
     shots["xg"] = _XG.predict(shots[XG_FEATURES], num_threads=1)
@@ -226,9 +234,7 @@ def feature_match(match: dict) -> list[dict]:
                 )
             row["score_diff"] = row["score_home"] - row["score_away"]
             rows.append(row)
-    path.parent.mkdir(exist_ok=True)
-    pd.DataFrame(rows).to_parquet(path, index=False)
-    return []
+    return pd.DataFrame(rows)
 
 
 def prepare() -> pd.DataFrame:

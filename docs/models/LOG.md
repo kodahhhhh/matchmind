@@ -282,3 +282,62 @@ previously excluded from every in-play evaluation: 52 AFCON, 34 Leverkusen,
 20 Ligue 1, six MLS. This selected-team sample limits generalisation. Old validation
 and tournament scores are diagnostic only. All new features remain candidate-local
 and use the original disjoint pre-2015 upstream models. In progress.
+
+### In-play distributional result
+
+The fresh 112-match cohort was fixed before feature extraction or labels were
+read. One existing feature-cache match reproduced exactly after extracting the
+read-only `feature_frame` helper. Count targets agree with current regulation
+result labels for every match; own goals reverse correctly and extra time is
+excluded. Candidate joblib reload/inference succeeded with the existing bundle
+adapter. Fitted pre-2020 temperature is 1.133530.
+
+| Cohort / metric | Current | Poisson candidate | Delta 95% match-bootstrap CI |
+|---|---:|---:|---|
+| Fresh Brier | 0.469522384 | 0.464905957 | [-0.013406673, 0.003553391] |
+| Fresh log loss | 0.793791980 | 0.785587194 | [-0.020827469, 0.003668827] |
+| Fresh vs naive Brier | 0.478474381 | 0.464905957 | [-0.023854322, -0.003504340] |
+| Fresh vs naive log loss | 0.813674279 | 0.785587194 | [-0.043792815, -0.012929037] |
+| Old validation Brier (diagnostic) | 0.457439147 | 0.454564763 | [-0.006630081, 0.001004281] |
+| Tournament Brier (diagnostic) | 0.485924800 | 0.477711997 | [-0.013612744, -0.002530344] |
+
+This candidate measurably beats the naive baseline on the fresh cohort. Its
+improvement over the incumbent is not conclusive on that cohort; hold promotion.
+At cached market checkpoints its Briers are 0.629746 / 0.565922 / 0.564418 /
+0.560331 / 0.513630, better than market at three checkpoints and worse at two.
+No market-superiority or profitability claim. Do not tune the recipe using these
+new test results. `inplay-poisson-v1/backtest_inplay.json` includes baseline,
+naive, market, ECE curves, proper scores and paired intervals for all cohorts.
+
+### Session boundary / next work
+
+Only **goals-v2** is recommended for orchestrator promotion review. Every model
+family has a reproduced comparison or an explicit derived-rating limitation;
+not every family improved. No production data/model/service changed, no push or
+merge, no background training or servers remain after the final checks.
+
+Next independent work:
+1. Rebuild candidate VAEP past-window sums and training-only lineup ratings;
+   refit downstream goals/game-state on matching outer folds before considering
+   VAEP promotion. Do not swap VAEP while leaving dependent windows stale.
+2. Develop later recipes on chronological development folds, keeping a new
+   confirmation cohort sealed. Previously reported test cohorts cannot select
+   new hyperparameters. Current fresh in-play confirmation is now spent.
+3. Obtain broader full-event adult data via W13/owner-authorized local files.
+   Existing youth transfer result does not establish adult improvement.
+4. Test a predeclared possession-only quantile/calibration change with clean
+   inner calibration folds. Do not reuse archived band calibrators.
+
+The standalone player-ratings/squad work has no new accuracy claim: player
+ranking checks are descriptive, the validation leakage was repaired, and the
+chronological downstream squad experiment remains worse than current/market.
+
+Final verification: `uv run --group models ruff check .` and
+`uv run --group models ruff format --check .` passed (123 files);
+`uv run --group models pytest tests/test_models_* tests/test_whatif.py tests/test_backtest.py`
+passed **64 tests**, with four pre-existing multimethod deprecation warnings.
+`evaluate --help` exposes all frozen experiments, including distributional in-play
+and W13 xG augmentation. `git diff --check` passed. The actual goals-v2 boosters
+passed public `rates` / `outlook` feature-order, positive-finite-rate and identical
+intervention parity checks. Ten production cards still match initial hashes;
+source inputs match the augmentation manifest. No W14 job/server remains.

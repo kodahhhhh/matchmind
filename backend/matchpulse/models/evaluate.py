@@ -263,7 +263,9 @@ def main() -> None:
         choices=[
             "inventory",
             "inplay",
+            "inplay-poisson",
             "xg",
+            "xg-dynasty",
             "gamestate",
             "prematch",
             "goals",
@@ -286,8 +288,10 @@ def main() -> None:
 
         modules = {
             "inplay": "matchpulse.backtest.inplay_experiment",
+            "inplay-poisson": "matchpulse.backtest.inplay_poisson",
             "prematch": "matchpulse.backtest.prematch_experiment",
             "xg": "matchpulse.models.xg_experiment",
+            "xg-dynasty": "matchpulse.models.xg_augmentation",
             "goals": "matchpulse.models.goals_experiment",
             "gamestate": "matchpulse.models.gamestate_experiment",
             "vaep": "matchpulse.models.vaep_experiment",

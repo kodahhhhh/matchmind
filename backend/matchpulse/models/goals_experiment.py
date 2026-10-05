@@ -202,7 +202,7 @@ def run(out: Path) -> dict:
 def main() -> None:
     """Run a candidate without rebuilding or writing any production cache."""
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--run", default="goals-v1")
+    parser.add_argument("--run", default="goals-v2")
     args = parser.parse_args()
     run(destination(args.run))
 
