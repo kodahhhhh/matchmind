@@ -13,7 +13,7 @@ export function PageFooter({ className = "mt-28" }: { className?: string }) {
         <nav aria-label="Footer" className="flex flex-wrap gap-x-5 gap-y-2 text-[13.5px] text-ink-3">
           <Link to="/" className="transition-colors duration-150 hover:text-ink">Matches</Link>
           <Link to="/players" className="transition-colors duration-150 hover:text-ink">Underrated players</Link>
-          <Link to="/backtest" className="transition-colors duration-150 hover:text-ink">Market backtest</Link>
+          <Link to="/backtest" className="transition-colors duration-150 hover:text-ink">Versus the bookies</Link>
         </nav>
       </div>
     </footer>

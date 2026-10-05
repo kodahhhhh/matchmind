@@ -2,7 +2,9 @@ import { useMemo, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { area, curveMonotoneX } from "d3-shape";
 import { scaleLinear } from "d3-scale";
-import type { MatchCard, MatchEvent, TimelineMinute, TurningPoint } from "../../api/types";
+import type { MatchCard, Side, TimelineMinute, TurningPoint } from "../../api/types";
+
+type Goal = { id: string; period: number; minute: number; team: Side };
 import { useSize } from "../ui/useSize";
 
 const H = 168;
@@ -13,7 +15,7 @@ const PERIOD_NAME: Record<number, string> = { 1: "1st half", 2: "2nd half", 3: "
 
 /** Compact momentum chart for the landing page: one diverging area around zero, the top-ranked turning point shaded. */
 export function MomentumPreview({ m, minutes, turning, goals }: {
-  m: MatchCard; minutes: TimelineMinute[]; turning: TurningPoint | null; goals: MatchEvent[];
+  m: MatchCard; minutes: TimelineMinute[]; turning: TurningPoint | null; goals: Goal[];
 }) {
   const [ref, { width }] = useSize<HTMLDivElement>();
   const [hover, setHover] = useState<number | null>(null);
@@ -35,7 +37,7 @@ export function MomentumPreview({ m, minutes, turning, goals }: {
   }, [width, minutes]);
 
   const goalAt = useMemo(() => {
-    const map = new Map<number, MatchEvent>();
+    const map = new Map<number, Goal>();
     for (const g of goals) {
       const d = minutes.find((t) => t.period === g.period && t.minute === g.minute);
       if (d) map.set(d.index, g);
