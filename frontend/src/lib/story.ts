@@ -46,7 +46,7 @@ export function matchVerdict(d: MatchData): Verdict {
     const from = `${name(comeback)} came back from ${w.opp}-${w.own} down`;
     if (winner === comeback) headline = `${from} to win${pens ? " on penalties" : extra ? " after extra time" : ""}.`;
     else if (!winner) headline = `${from} to draw ${h}-${a}.`;
-    else notes.push(`${from}, but still lost.`);
+    else notes.push(`${from}, but ${pens ? "lost on penalties" : "still lost"}.`);
     if (pens && winner === comeback) notes.push(`It finished ${h}-${a} before the shoot-out.`);
   }
 
