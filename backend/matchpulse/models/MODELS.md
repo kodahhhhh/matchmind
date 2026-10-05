@@ -565,3 +565,13 @@ External Understat (2,002 matches / 51,086 shots) improves Brier
 Provider xG is reference only, with unknown training overlap. FotMob currently
 has one cached test match; broader support is not validated. Inference, capability
 limits and source backfill responsibilities are in INTEGRATION/PROMOTION.
+
+`prematch-lite-v1` evaluates 1,200 recent Understat matches after an 802-match warmup
+using atomic daily folds. Fixed W10 team recipe with shot-only xG: Brier 0.614560
+versus legacy-lite 0.685478 and league-frequency naive 0.654146, but worse than
+actual-goal-history ratings 0.607293. Hold; recent market odds are unavailable.
+`lite-goals-v1` uses a matched pre-2015 reduced shot model and pre-2018 Poisson
+result fit. Degraded StatsBomb validation Brier 0.453780 versus 0.457439 current
+(CI [-0.008630407, 0.001492920]); inconclusive. Summary/snapshot reductions checked
+on 2,526 matches. Hold outlook: Understat has unknown periods and new-provider
+in-play calibration is untested. No WhoScored full-event artifacts available yet.

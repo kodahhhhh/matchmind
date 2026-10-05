@@ -129,3 +129,30 @@ red-card or pass-option counterfactuals are not provided by this lite interface.
 These are pure model interfaces, not changes to API response schemas. W13/API owns
 capability dispatch, conversion of NaN to null, fixture/schema changes and staged
 backfill of lite payloads. Preserve provider metrics under provider names.
+
+### Lite outlook research artifact (not promoted)
+
+```python
+import joblib
+from matchpulse.models.lite import snapshot
+from matchpulse.models.lite_goals import outlook
+
+model = joblib.load(candidate_dir / "lite_goals.joblib")
+# For this prototype, shots.xg MUST come from its xg_shot_historical.txt.
+state = snapshot(shots, period=2, minute=65, score={"home": 1, "away": 0})
+modelled = outlook(state, model)
+```
+
+`lite-goals-v1` contains the matched historical shot model and outlook artifact.
+It predicts each side's remaining actual goals and calibrated home/draw/away
+probabilities through regulation plus added time. Unknown shot periods, unsupported
+anchors and nonfinite/unscored genuine shots fail closed. The score comes from an
+independent verified feed, including own goals; never count only scored shots to
+construct it. The current minute is excluded because seconds are unavailable.
+
+Degrading 2,526 StatsBomb matches validated summary and snapshot calculations.
+On the chronological 259-match diagnostic split, Brier is 0.453780 versus current
+0.457439, paired interval [-0.008630, 0.001493]. This is **not** a demonstrated
+improvement or new-source validation. Keep outlook disabled in production for
+now. In particular, feeding `xg-shot-v1` display values into this historical-upstream
+prototype is an unvalidated distribution change; do not mix these artifacts.

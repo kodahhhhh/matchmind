@@ -140,6 +140,7 @@ def run(out: Path) -> dict:
     inputs = [
         path,
         root / "models/xg.json",
+        root / "models/xg.txt",
         *(root / f"models/xg_fold_{f}.txt" for f in range(5)),
     ]
     inputs += [p for paths in files.values() for p in paths]
@@ -194,6 +195,16 @@ def run(out: Path) -> dict:
         "promotion_recommended": False,
         "intended_use": "separate lite xG, never replace full-context xG",
     }
+    audit = report["source_audit"].get("understat", {})
+    report["promotion_recommended"] = bool(
+        audit.get("legacy_replay_max_error", 1) == 0
+        and audit.get("vs_legacy_missing_context")
+        and all(
+            v["ci95"][1] < 0
+            for v in audit["vs_legacy_missing_context"]["paired_ci"].values()
+        )
+    )
+    report["promotion_scope"] = "Understat lite only; no full xG or FotMob replacement"
     write_report(out / "xg_shot.json", report)
     print(json.dumps({"paired_ci": report["paired_ci"]}, indent=2), flush=True)
     return report

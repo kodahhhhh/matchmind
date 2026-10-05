@@ -6,6 +6,17 @@ import numpy as np
 import pandas as pd
 
 
+def _total(shots: pd.DataFrame) -> float | None:
+    genuine = pd.Series(True, index=shots.index)
+    if "result" in shots:
+        genuine &= ~shots.result.isin(["OwnGoal", "Own Goal Against", "Own Goal For"])
+    if "is_own_goal" in shots:
+        genuine &= ~shots.is_own_goal.fillna(False).astype(bool)
+    if shots.loc[genuine, "xg"].isna().any():
+        return None
+    return float(shots.loc[genuine, "xg"].sum())
+
+
 def chance_summary(shots: pd.DataFrame) -> dict[str, Any]:
     """Observed chance totals; never possession, field tilt, VAEP or xT.
 
@@ -30,16 +41,17 @@ def chance_summary(shots: pd.DataFrame) -> dict[str, Any]:
         teams[side] = {
             "shots_with_xg": int(g.xg.notna().sum()),
             "unscored_annotations": int(g.xg.isna().sum()),
-            "xg": float(g.xg.sum()),
+            "xg": _total(g),
             "evidence_ids": g.loc[g.xg.notna(), "id"].tolist(),
         }
-    total = sum(t["xg"] for t in teams.values())
+    complete = all(t["xg"] is not None for t in teams.values())
+    total = sum(t["xg"] for t in teams.values()) if complete else 0
     share = teams["home"]["xg"] / total if total > 0 else None
     bins = [
         {
             "team": side,
             "minute": int(minute),
-            "xg": float(g.xg.sum()),
+            "xg": _total(g),
             "evidence_ids": g.loc[g.xg.notna(), "id"].tolist(),
         }
         for (side, minute), g in shots.groupby(["team", "minute"], sort=True)
@@ -87,7 +99,10 @@ def snapshot(
         (shots.period == period) & (shots.minute < minute)
     )
     past = shots[eligible & (shots.period < 3)]
-    if past.xg.isna().any():
+    if (
+        not np.isfinite(past.xg.to_numpy(dtype=float)).all()
+        or not past.xg.between(0, 1).all()
+    ):
         raise ValueError(
             "Exclude own-goal annotations; every genuine shot needs own xG"
         )

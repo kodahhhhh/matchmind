@@ -98,3 +98,51 @@ def test_lite_snapshot_respects_periods_and_excludes_current_minute():
     assert report["teams"]["home"]["xg"] == pytest.approx(0.6)
     assert report["teams"]["home"]["evidence_ids"] == ["a", "c"]
     assert not report["capabilities"]["possession"]
+
+
+def test_daily_rolling_predictions_never_read_same_day_or_future_labels():
+    from matchpulse.backtest.lite_rolling import rolling_predictions
+
+    def row(mid, date, home, away, h, a):
+        return {
+            "match_id": mid,
+            "match_date": date,
+            "competition": "Test",
+            "home": {"id": home},
+            "away": {"id": away},
+            "home_score": h,
+            "away_score": a,
+            "legacy_home": float(h),
+            "legacy_away": float(a),
+            "shot_home": float(h),
+            "shot_away": float(a),
+        }
+
+    rows = pd.DataFrame(
+        [
+            row("a", "2025-01-01", 1, 2, 1, 0),
+            row("b", "2025-01-01", 1, 3, 0, 1),
+            row("c", "2025-01-02", 1, 2, 2, 2),
+        ]
+    )
+    before = rolling_predictions(rows)
+    rows.loc[0, ["home_score", "legacy_home", "shot_home"]] = 100
+    rows.loc[2, ["away_score", "legacy_away", "shot_away"]] = 100
+    after = rolling_predictions(rows)
+    for key in ["legacy", "shot", "naive", "goals"]:
+        np.testing.assert_array_equal(
+            before.loc[:1, key].tolist(), after.loc[:1, key].tolist()
+        )
+    assert before.loc[2, "train_end_date"] == "2025-01-01"
+    assert before.loc[:1, "train_end_date"].isna().all()
+
+
+def test_missing_genuine_xg_is_not_a_zero_chance_total():
+    shots = pd.DataFrame(
+        [{"id": "x", "team": "home", "minute": 10, "result": "Miss", "xg": np.nan}]
+    )
+    result = chance_summary(shots)
+    assert result["teams"]["home"]["xg"] is None
+    assert result["home_chance_share"] is None
+    shots["result"] = "OwnGoal"
+    assert chance_summary(shots)["teams"]["home"]["xg"] == 0

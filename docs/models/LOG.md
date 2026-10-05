@@ -2,14 +2,15 @@
 
 ## Needs owner
 
-**Recommend review of `goals-v2` and `xg-shot-v1` for Understat lite only.** It improves both goal-rate
-targets and block-result proper scores after repairing indirect upstream leakage.
+**Promotion recommendations:** `goals-v2` for the existing full-data pipeline;
+`xg-shot-v1` for **Understat lite only**, with its chance-summary interface.
 Never promote `goals-v1` or `gamestate-v1`: their original validation was invalid.
 Production promotion remains orchestrator-owned; exact steps are in PROMOTION.md.
 
-Optional data need: W13 stopped Wyscout/Figshare after HTTP 403. A licensed local
-copy could broaden event coverage; no blocking evasion or W14 fetching is planned.
-W13 has supplied 37 accepted Dynasty youth matches for a separate transfer test.
+**Data needed next:** W13 WhoScored SPADL plus normalized shot/event metadata;
+verified periods/clock provenance for recent lite in-play; W10/orchestrator
+match-aligned recent closing and in-play odds. All three remain unavailable in
+this round's local snapshots. W13 owns collection; W14 makes no source requests.
 
 ## Protocol — 2026-10-05
 
@@ -379,3 +380,79 @@ Pure inference and chance-summary interfaces are documented in INTEGRATION.md.
 Summaries expose chance totals/share and evidence IDs, never fake possession or
 VAEP. A strict snapshot refuses missing shot periods: Understat cannot support a
 verified minute-level outlook until W13 supplies clock provenance.
+
+### Round 2: recent pre-match rolling folds
+
+`prematch-lite-v1` uses the complete frozen 2,002-match Understat snapshot. The
+shot model's latest dated upstream match is 2024-07-15; undated StatsBomb matches
+are Bundesliga 2015/16 and La Liga 2007/08, both before the new 2025/26 season.
+Each entire date is predicted before any same-date result enters team/league
+history. Fixed W10 decay 0.95, prior 8, xG weight 1; no new parameter search.
+802 matches before 2026-01-01 warm up histories; 1,200 later matches are evaluated
+with expanding daily folds and monthly reports. Missing recent market odds are
+explicitly unavailable, never borrowed from a different season.
+
+| Comparator / Brier | Baseline | Shot candidate | Delta 95% CI |
+|---|---:|---:|---|
+| Same team recipe, legacy lite xG | 0.685478426 | 0.614559587 | [-0.083659031, -0.058087433] |
+| Prior-smoothed league result frequency | 0.654146064 | 0.614559587 | [-0.047961199, -0.031409735] |
+| Same team recipe, actual-goal histories | 0.607292949 | 0.614559587 | [0.000266127, 0.014229142] |
+
+Candidate log loss 1.025392 versus legacy 1.150615, naive 1.080557 and goals-only
+1.016065. Hold promotion: the candidate loses to the goals-only team comparator.
+This is a like-for-like W10 recipe on new data, not a claim to reproduce W12 squad
+features for unmatched recent players. Intervals resample matches; they do not
+capture all season/team dependence. Same-date/future-label mutation tests verify
+prediction independence before updates.
+
+### Round 2: validated lite outlook prototype
+
+`lite-goals-v1` freezes the round-1 Poisson recipe and removes every non-shot input.
+A separate reduced xG fit uses only pre-August-2015 matches; this is the required
+upstream for the prototype. Result training stays pre-2018, temperature calibration
+2018–2019. Both comparison and candidate share actual regulation-goal labels.
+All 2,526 eligible StatsBomb matches were degraded to verified-period, minute-only
+shots; pure chance totals and strict snapshot calculations were checked against
+independent reductions. Current-minute shots never enter their own snapshot.
+
+| Diagnostic cohort / Brier | Current full-context | Lite candidate | Delta 95% CI |
+|---|---:|---:|---|
+| 259 original validation matches | 0.457439147 | 0.453780342 | [-0.008630407, 0.001492920] |
+| 147 tournaments | 0.485924800 | 0.480803948 | [-0.015198305, 0.005090505] |
+| 112 later matches | 0.469522384 | 0.464407979 | [-0.016023489, 0.005388491] |
+
+These cohorts were reported in round 1 and are explicitly diagnostic; no new
+recipe search used their scores. Candidate point estimates are competitive, but
+no interval establishes a current-model win. Hold promotion. Existing Understat
+shots have null period, so the prototype correctly refuses those outlooks. Do
+not substitute full-corpus xg-shot-v1 predictions for the prototype's historical
+upstream without a matched retraining/validation. FotMob recent transfer awaits
+more verified-period data. No causal intervention effects are claimed.
+
+### Round 2 remaining data dependencies
+
+- WhoScored source directory still has zero SPADL artifacts; cross-provider
+  xG/VAEP/xT calibration and joint training cannot be run yet. W13's round-2 log
+  describes acquisition preparation, not a completed Opta corpus. Do not infer
+  full-event capabilities from Understat shots or train VAEP on invented actions.
+- Thousands of recent lite results support the completed pre-match evaluation,
+  but Understat's unknown periods block honest in-play clocks. W13 must supply
+  verified periods/clock provenance, or new full/verified-period matches.
+- W10/orchestrator: recent match-aligned closing/in-play odds are needed for a
+  real market comparison; only the old cohorts have cached market coverage.
+- No extra SB hyperparameter search was run: new lite capability and source
+  failure modes have materially greater impact than fourth-decimal tuning.
+
+
+Round-2 final checks: full backend `uv run --group models ruff check .` and
+`ruff format --check .` passed (131 files). Requested pytest selection passed
+**70 tests**, with four existing multimethod warnings. The public LiteOutlook
+artifact reload, finite/probability-sum checks and modelled output passed on
+100 saved snapshots. Frozen xg-shot source/model inputs still match their hashes.
+FotMob audit after FastBreak mapping: 41 shots, own Brier 0.040842 versus provider
+reference 0.036981; a single match gives no defensible transfer CI. Historical
+shot upstream has a sibling JSON (397 matches / 10,049 regulation training shots;
+held-out Brier 0.080384 versus historical full-model 0.075562).
+
+Only candidates were written. No production model, source payload, DB or service
+was changed by W14; no push/merge or W14 training/server process remains.

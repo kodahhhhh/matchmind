@@ -1,9 +1,10 @@
 # W14 promotion procedure (orchestrator only)
 
-**Recommend `goals-v2` for review. Never promote `goals-v1` or `gamestate-v1`:**
+**Recommend `goals-v2` for full-data goals and `xg-shot-v1` for Understat lite.**
+Never promote `goals-v1` or `gamestate-v1`:
 their original windows leaked held-out information through player ratings. V2
 rebuilds ratings using only upstream models that exclude each outer fold and
-refits both competitors. Other complete candidates are rejected or inconclusive.
+refits both competitors. Other candidates remain held or rejected.
 No candidate has been promoted. W14 has not changed production models, served
 artifacts, the database or services. The orchestrator performs promotion.
 
@@ -166,3 +167,34 @@ payload shot xG and derived chance totals only; no SPADL/event/VAEP/xT backfill 
 `minute_metrics` refresh is appropriate for lite data. Do not run the generic
 StatsBomb `models.backfill` on lite matches. Forecast capability stays false until
 verified shot periods and a separately validated lite outlook model are available.
+
+## Round 2 held research artifacts
+
+- `prematch-lite-v1`: recent daily rolling evaluation improves against legacy
+  lite xG and league-frequency baseline, but loses to goals-only team ratings.
+  No market odds or W12 squad parity; do not promote.
+- `lite-goals-v1`: matched `xg_shot_historical.txt` + `lite_goals.joblib` (class
+  `matchpulse.models.lite_goals.LiteOutlook`). Merge the class before deserializing.
+  Inference and serialization were exercised; improvement over incumbent is
+  inconclusive, and current Understat clocks are insufficient. Do not promote.
+  The full-data `xg-shot-v1` model cannot replace this prototype's upstream without
+  retraining the outlook and repeating chronological validation.
+- WhoScored xG/VAEP/xT: no candidate exists while the event corpus is unavailable.
+  No current model is certified for that provider by these lite tests.
+
+Safe recommendation now: separate **xg-shot-v1 for Understat lite xG and chance
+summaries**, plus the already recommended goals-v2 for the existing full-data
+pipeline. FotMob, lite outlook, recent pre-match and WhoScored remain held.
+
+
+Round-2 reproduction (from backend, same thread environment as above):
+
+```sh
+nice -n 10 uv run --group models python -m matchpulse.models.evaluate xg-shot --fit --run xg-shot-reproduction
+nice -n 10 uv run --group models python -m matchpulse.models.evaluate prematch-lite --fit --run prematch-lite-reproduction
+nice -n 10 uv run --group models python -m matchpulse.models.evaluate lite-goals --fit --run lite-goals-reproduction
+```
+
+The last two consume the explicitly pinned round-1/shot-v1 inputs described in
+their manifests; a new shot model is not silently substituted. Inputs are local
+files only; these commands cannot fetch data or write to the database.
