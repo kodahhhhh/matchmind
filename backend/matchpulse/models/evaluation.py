@@ -106,6 +106,7 @@ def paired_bootstrap(
     candidate: np.ndarray,
     draws: int = 5000,
     seed: int = 2026,
+    weights: np.ndarray | None = None,
 ) -> dict[str, Any]:
     """CI for candidate minus current, resampling complete matches with replacement.
 
@@ -122,9 +123,16 @@ def paired_bootstrap(
     delta = candidate - baseline
     if delta.ndim != 1 or not np.isfinite(delta).all() or draws < 1:
         raise ValueError("Invalid bootstrap losses or draws")
+    weights = np.ones(len(delta)) if weights is None else np.asarray(weights)
+    if (
+        weights.shape != delta.shape
+        or not np.isfinite(weights).all()
+        or (weights <= 0).any()
+    ):
+        raise ValueError("Bootstrap weights must be aligned, finite and positive")
     _, inverse = np.unique(groups, return_inverse=True)
-    counts = np.bincount(inverse)
-    sums = np.bincount(inverse, weights=delta)
+    counts = np.bincount(inverse, weights=weights)
+    sums = np.bincount(inverse, weights=delta * weights)
     rng, sampled = np.random.default_rng(seed), np.empty(draws)
     for start in range(0, draws, 100):
         ids = rng.integers(len(counts), size=(min(100, draws - start), len(counts)))
@@ -132,7 +140,7 @@ def paired_bootstrap(
             axis=1
         )
     return {
-        "delta": float(delta.mean()),
+        "delta": float(np.average(delta, weights=weights)),
         "ci95": np.quantile(sampled, [0.025, 0.975]).tolist(),
         "matches": len(counts),
         "draws": draws,
@@ -150,4 +158,28 @@ def compare(
         "baseline_metrics": probability_metrics(y, current),
         "metrics": probability_metrics(y, candidate),
         "paired_ci": {k: paired_bootstrap(groups, before[k], after[k]) for k in before},
+    }
+
+
+def quantile_metrics(y: np.ndarray, p: np.ndarray) -> dict[str, Any]:
+    """Pinball loss and empirical interval calibration for p10/p50/p90."""
+    y, p = np.asarray(y), np.asarray(p)
+    if p.shape != (len(y), 3) or not len(y) or not np.isfinite(p).all():
+        raise ValueError("Invalid quantile forecasts")
+    if not np.isfinite(y).all() or (np.diff(p, axis=1) < 0).any():
+        raise ValueError("Invalid outcomes or crossing quantiles")
+    errors = y[:, None] - p
+    q = np.array([0.1, 0.5, 0.9])
+    pinball = np.maximum(q * errors, (q - 1) * errors)
+    return {
+        "n": len(y),
+        "pinball": {
+            f"p{int(100 * a)}": float(pinball[:, i].mean()) for i, a in enumerate(q)
+        },
+        "mean_pinball": float(pinball.mean()),
+        "coverage_p10_p90": float(((y >= p[:, 0]) & (y <= p[:, 2])).mean()),
+        "fraction_at_or_below": {
+            f"p{int(100 * a)}": float((y <= p[:, i]).mean()) for i, a in enumerate(q)
+        },
+        "mean_width": float((p[:, 2] - p[:, 0]).mean()),
     }

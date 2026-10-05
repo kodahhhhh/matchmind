@@ -49,15 +49,18 @@ def poisson_losses(y: np.ndarray, mu: np.ndarray) -> dict[str, np.ndarray]:
 def run(out: Path) -> dict:
     """Refit both recipes on each original outer-fold feature rebuild."""
     root = data_dir()
+    windows_dir = root / "models/candidates/corrected-windows-v1"
+    if not (windows_dir / "outputs.json").exists():
+        raise ValueError("Build corrected-windows-v1 before goals evaluation")
     paths = [
-        root / "processed/gamestate_windows.parquet",
+        windows_dir / "gamestate_windows.parquet",
         root / "models/goals.json",
         root / "catalogue/matches.json",
     ]
     for f in range(5):
         paths += [
-            root / f"processed/gamestate_windows_fold_{f}.parquet",
-            root / f"processed/gamestate_windows_fold_{f}.provenance.json",
+            windows_dir / f"gamestate_windows_fold_{f}.parquet",
+            windows_dir / "outputs.json",
         ]
     freeze_manifest(
         out / "split.json",
@@ -90,7 +93,7 @@ def run(out: Path) -> dict:
         for t in TARGETS
     }
     for f in range(5):
-        nested = pd.read_parquet(root / f"processed/gamestate_windows_fold_{f}.parquet")
+        nested = pd.read_parquet(windows_dir / f"gamestate_windows_fold_{f}.parquet")
         if not nested[KEYS].equals(production[KEYS]):
             raise ValueError("Outer fold window alignment changed")
         for col in ("block_minutes_left", "is_extra_time"):
@@ -123,7 +126,7 @@ def run(out: Path) -> dict:
         "baseline_metrics": {},
         "metrics": {},
         "paired_ci": {},
-        "validation": "fixed recipe on five original fold-rebuilt match folds",
+        "validation": "fixed recipe; outer-revalued ratings; rebuilt match folds",
         "promotion_recommended": False,
     }
     for t in TARGETS:

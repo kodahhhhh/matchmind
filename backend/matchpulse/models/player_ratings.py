@@ -13,7 +13,7 @@ from functools import lru_cache
 import numpy as np
 import pandas as pd
 
-from matchpulse.models.common import catalogue, data_dir, fold_map
+from matchpulse.models.common import catalogue, data_dir
 
 # Minutes of corpus-average play added to every player; 900 = ten full matches.
 PRIOR_MINUTES = 900.0
@@ -22,7 +22,7 @@ PATH = "processed/player_match_vaep.parquet"
 
 def build() -> pd.DataFrame:
     """Per (player, match) playing minutes and out-of-fold VAEP."""
-    with ProcessPoolExecutor(max_workers=16) as pool:
+    with ProcessPoolExecutor(max_workers=8) as pool:
         frames = list(pool.map(_rows, catalogue()))
     result = pd.DataFrame([r for frame in frames for r in frame])
     result = result[result.minutes > 0].reset_index(drop=True)
@@ -50,7 +50,7 @@ def _totals() -> tuple[pd.DataFrame, float]:
 
 
 def per90(
-    vaep: np.ndarray | float, minutes: np.ndarray | float, mean_rate: float
+    vaep: np.ndarray | float, minutes: np.ndarray | float, mean_rate: np.ndarray | float
 ) -> np.ndarray:
     """Shrunk VAEP per 90 from the remaining (non-excluded) minutes."""
     return (
@@ -84,19 +84,33 @@ def lineup_features(windows: pd.DataFrame, exclude_fold: int | None) -> pd.DataF
     The row's own match is always excluded; exclude_fold also drops that
     whole fold (used to build training and test rows for fold validation).
     """
-    t = table()
-    if exclude_fold is not None:
-        folds = fold_map()
-        t = t.assign(fold=t.game_id.map(folds))
-        dropped = t[t.fold == exclude_fold]
-        kept = t[t.fold != exclude_fold]
-    else:
-        dropped, kept = t.iloc[:0], t
+    t = table() if exclude_fold is None else outer_table(exclude_fold)
+    return lineup_from_table(windows, t, exclude_own_prior=exclude_fold is not None)
+
+
+@lru_cache(maxsize=1)
+def outer_table(fold: int) -> pd.DataFrame:
+    """Revalue training matches with VAEP models excluding this outer fold."""
+    from matchpulse.models.outer_player_ratings import rebuild
+
+    return rebuild(fold, table())
+
+
+def lineup_from_table(
+    windows: pd.DataFrame, t: pd.DataFrame, *, exclude_own_prior: bool = False
+) -> pd.DataFrame:
+    """Aggregate an explicitly supplied, already outer-safe rating table."""
+    kept = t
     totals = kept.groupby("player_id")[["minutes", "vaep"]].sum()
+    match_totals = kept.groupby("game_id")[["minutes", "vaep"]].sum()
+    corpus = match_totals.sum()
+    remaining_minutes = corpus.minutes - match_totals.minutes
     mean_rate = float(kept.vaep.sum() / kept.minutes.sum())
+    prior_by_game = ((corpus.vaep - match_totals.vaep) / remaining_minutes).where(
+        remaining_minutes > 0, 0.0
+    )
     own = t.set_index(["player_id", "game_id"])[["minutes", "vaep"]]
     own = own[~own.index.duplicated()]
-    dropped_games = set(dropped.game_id)
     out = pd.DataFrame(index=windows.index)
     for side in ("for", "against"):
         long = (
@@ -110,10 +124,15 @@ def lineup_features(windows: pd.DataFrame, exclude_fold: int | None) -> pd.DataF
         # Subtract the row's own match unless the fold exclusion already did.
         keys = pd.MultiIndex.from_arrays([long.player_id, long.game_id])
         mine = own.reindex(keys).fillna(0).to_numpy()
-        mine[np.isin(long.game_id.to_numpy(), list(dropped_games))] = 0
         remaining = base - mine  # columns: minutes, vaep (VAEP may be negative)
         long["rating"] = per90(
-            remaining[:, 1], np.clip(remaining[:, 0], 0, None), mean_rate
+            remaining[:, 1],
+            np.clip(remaining[:, 0], 0, None),
+            (
+                long.game_id.map(prior_by_game).fillna(mean_rate).to_numpy()
+                if exclude_own_prior
+                else mean_rate
+            ),
         )
         out[f"lineup_vaep_{side}"] = (
             long.groupby(level=0).rating.sum().reindex(windows.index).fillna(0)

@@ -275,6 +275,7 @@ def provenance(fold: int | None = None) -> str:
         Path(__file__).with_name("gamestate_model.py"),
         Path(__file__).with_name("common.py"),
         Path(__file__).with_name("player_ratings.py"),
+        Path(__file__).with_name("outer_player_ratings.py"),
     ]
     for path in paths:
         digest.update(path.read_bytes())
@@ -298,7 +299,7 @@ def load_or_build(fold: int | None = None) -> pd.DataFrame:
 
 def build(fold: int | None = None) -> pd.DataFrame:
     with ProcessPoolExecutor(
-        max_workers=16,
+        max_workers=8,
         initializer=initialize,
         initargs=(fold,),
         mp_context=multiprocessing.get_context("spawn"),

@@ -499,17 +499,31 @@ All six booster filenames and inference feature order remain compatible.
 Full results, negative experiments and remaining work: `docs/models/LOG.md`.
 Candidate swap/backfill/dependency instructions: `docs/models/PROMOTION.md`.
 
-`goals-v1` improves both actual-goal targets on the original fold-rebuilt windows:
-next-15 Poisson deviance 0.701116 → 0.700207 (paired delta CI
-[-0.001362269, -0.000459031]); remaining-goals deviance 0.968718 → 0.964635
-(CI [-0.005431471, -0.002781265]). Block-result Brier improves
-0.406829 → 0.405779 (CI [-0.001524948, -0.000591461]). The frozen recipe uses
-500 trees, seven leaves, minimum child 500 and L2 20. No candidate tuning used
-outer labels. Both incumbent targets were refitted and exactly reproduce the
-original reported deviance. Recommend orchestrator review for promotion.
+The first `goals-v1` and `gamestate-v1` results are **withdrawn**. Dropping outer
+matches from global OOF player totals did not exclude those matches from the
+upstream VAEP estimators. `outer_player_ratings` now revalues training-only matches
+using the held-out fold's VAEP boosters, then aggregates ratings; training rows
+also exclude themselves from the shrinkage prior. Production rating construction
+is unchanged. `corrected_windows` writes audited candidate-local caches, and
+future `windows` builds use the repaired outer path.
 
-Block-result comparison normalizes the incumbent helper's truncated Poisson mass
-for **both** models; maximum omitted mass is 0.00002894 current / 0.00005075
-candidate. The existing API helper remains unchanged. Goal-rate booster feature
-order and public inference signatures are unchanged; only the label extraction
-worker cap changes from 16 to eight. All outcomes remain modelled, not causal.
+`goals-v2` keeps the original predeclared 500-tree/seven-leaf/min-child-500/L2-20
+recipe. Both it and the current recipe are refitted on identical repaired folds:
+next-15 Poisson deviance 0.701315 → 0.700360 (paired delta CI
+[-0.001398762, -0.000499137]); remaining-goals deviance 0.968991 → 0.965367
+(CI [-0.004933028, -0.002319564]); block-result Brier 0.406973 → 0.406049
+(CI [-0.001382730, -0.000465010]). Recommend orchestrator review of **v2 only**.
+The comparison normalizes truncated Poisson mass identically for both models and
+records missing mass. API helper, booster feature order and signatures remain
+unchanged. All what-if outputs remain modelled, not causal.
+
+`gamestate-v2` refits raw quantiles on repaired folds. Possession p50 pinball
+improves 0.0443413 → 0.0442824 (CI [-0.000104324, -0.000012014]); its p10 and p90
+also improve. xG-target results are mixed; hold the bundle. Archived calibrated
+metrics are explicitly labelled historically invalid, not used as a comparator.
+`prematch-v1` worsens Brier 0.584927 → 0.585351, still worse than market 0.573955.
+`passes-v1` has inconclusive, opposing Brier/log-loss changes on 293 match folds.
+`xt-v1` tests fixed lateral-symmetry pooling, preserving grid format: 99-class
+next-action log loss 2.791217 → 2.789602 improves, Brier 0.883531 → 0.883575 worsens.
+Both changes have paired intervals excluding zero; hold. Player rank Spearman
+0.999923 and 20/20 top-rank overlap are descriptive sanity checks only.

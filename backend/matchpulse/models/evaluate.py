@@ -141,27 +141,40 @@ def inplay_markets(
     data: pd.DataFrame, current: dict, candidate: dict | None, out: Path
 ) -> dict[str, Any]:
     """Replay cached market checkpoints with the original three-minute lag."""
+    from matchpulse.backtest.markets import last_price
     from matchpulse.models.evaluation import compare
 
     root = data_dir()
-    records, paths = [], []
+    records = []
+    paths = [
+        root / f"processed/backtest/{name}.json"
+        for name in ("polymarket_histories", "polymarket_alignment")
+    ]
+    audits = {a["match_id"]: a for a in json.loads(paths[1].read_text())}
     keys = data.set_index(["match_id", "period", "minute"])
-    for path in sorted((root / "processed/backtest").glob("market_sb_*.json")):
-        market = json.loads(path.read_text())
-        if not market["aligned"]:
+    for item in json.loads(paths[0].read_text()):
+        mid = item["match"]["match_id"]
+        audit = audits[mid]
+        if not audit["aligned"]:
             continue
-        paths.append(path)
-        for point in market["series"]:
-            minute, period = point["minute"], point["period"]
-            if minute not in (15, 30, 45, 60, 75) or (minute == 45 and period != 1):
+        for minute in (15, 30, 45, 60, 75):
+            period = 1 if minute <= 45 else 2
+            moment = (
+                item["kickoff"] + minute * 60 + audit["period_offsets"][str(period)]
+            )
+            prices = [
+                last_price(item["markets"][side]["prices"]["YES"], moment)
+                for side in ("home", "draw", "away")
+            ]
+            if any(p is None for p in prices):
                 continue
-            row = keys.loc[(market["match_id"], period, minute - 3)].to_dict()
-            row.update(match_id=market["match_id"], period=period, minute=minute - 3)
+            row = keys.loc[(mid, period, minute - 3)].to_dict()
+            row.update(match_id=mid, period=period, minute=minute - 3)
             row["checkpoint"] = minute
-            row["market"] = [point["market"][k] for k in ("home", "draw", "away")]
+            row["market"] = prices
             records.append(row)
     freeze_manifest(
-        out / "market_inputs.json",
+        out / "market_checkpoint_inputs.json",
         {
             "lag_minutes": 3,
             "inputs": {str(p.relative_to(root)): file_hash(p) for p in paths},
@@ -245,19 +258,64 @@ def xg(out: Path, candidate: Path | None = None) -> dict[str, Any]:
 def main() -> None:
     """Dispatch safe evaluation adapters."""
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("name", choices=["inventory", "inplay", "xg"])
+    parser.add_argument(
+        "name",
+        choices=[
+            "inventory",
+            "inplay",
+            "xg",
+            "gamestate",
+            "prematch",
+            "goals",
+            "vaep",
+            "passes",
+            "xt",
+        ],
+    )
     parser.add_argument("--run", default="baseline-v1")
     parser.add_argument("--candidate", type=Path)
+    parser.add_argument(
+        "--fit",
+        action="store_true",
+        help="Run the frozen candidate experiment and score its incumbent",
+    )
     args = parser.parse_args()
     out = destination(args.run)
-    if args.name == "inventory":
+    if args.fit:
+        from importlib import import_module
+
+        modules = {
+            "inplay": "matchpulse.backtest.inplay_experiment",
+            "prematch": "matchpulse.backtest.prematch_experiment",
+            "xg": "matchpulse.models.xg_experiment",
+            "goals": "matchpulse.models.goals_experiment",
+            "gamestate": "matchpulse.models.gamestate_experiment",
+            "vaep": "matchpulse.models.vaep_experiment",
+            "passes": "matchpulse.models.pass_experiment",
+            "xt": "matchpulse.models.xt_experiment",
+        }
+        if args.name not in modules or args.candidate:
+            parser.error("--fit requires a model name and no --candidate")
+        import_module(modules[args.name]).run(out)
+    elif args.name == "inventory":
         result = inventory(out)
         print(json.dumps({k: v["status"] for k, v in result.items()}, indent=2))
     elif args.name == "inplay":
         result = inplay(out, args.candidate)
         print(json.dumps(result, indent=2))
-    else:
+    elif args.name == "xg":
         print(json.dumps(xg(out, args.candidate), indent=2))
+    elif args.name in ("gamestate", "prematch"):
+        from matchpulse.models.evaluation_archives import gamestate, prematch
+
+        result = (
+            gamestate(out)
+            if args.name == "gamestate"
+            else prematch(out, args.candidate)
+        )
+        print(json.dumps(result, indent=2))
+    else:
+        parser.error("This model requires --fit and a fresh --run to rebuild its folds")
 
 
 if __name__ == "__main__":

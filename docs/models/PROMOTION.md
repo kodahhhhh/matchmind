@@ -1,9 +1,11 @@
 # W14 promotion procedure (orchestrator only)
 
-Goals v1 is recommended for orchestrator review; xG is inconclusive and in-play
-v1 is rejected. No candidate has been promoted. W14 has not changed production
-models, served artifacts, the database, or services. Promotion requires review
-of same-split comparisons, paired intervals and downstream effects.
+**Recommend `goals-v2` for review. Never promote `goals-v1` or `gamestate-v1`:**
+their original windows leaked held-out information through player ratings. V2
+rebuilds ratings using only upstream models that exclude each outer fold and
+refits both competitors. Other complete candidates are rejected or inconclusive.
+No candidate has been promoted. W14 has not changed production models, served
+artifacts, the database or services. The orchestrator performs promotion.
 
 ## Artifacts and replay
 
@@ -59,17 +61,18 @@ reload by the orchestrator after a coordinated promotion.
 
 ## Goals / what-if
 
-`models/candidates/goals-v1/` has `goals_goals_next15.txt`,
+`models/candidates/goals-v2/` has `goals_goals_next15.txt`,
 `goals_goals_rest.txt`, and `goals.json`. The baseline is faithfully refitted on
-identical existing outer-fold windows; no all-corpus predictions enter validation.
+identical corrected outer-fold windows; no held-out match enters an upstream
+VAEP estimator or rating aggregate. Full-data boosters retain production features.
 The boosters use the existing FEATURES and `rates()`/`outlook()` signatures.
 
-Only after the candidate qualifies for promotion:
+After reviewing goals-v2 metrics and archiving the three existing files:
 
 ```sh
 export DATA_DIR=/home/ubuntu/hackathon/data
-cp "$DATA_DIR/models/candidates/goals-v1/"goals_goals_*.txt "$DATA_DIR/models/"
-cp "$DATA_DIR/models/candidates/goals-v1/goals.json" "$DATA_DIR/models/goals.json"
+cp "$DATA_DIR/models/candidates/goals-v2/"goals_goals_*.txt "$DATA_DIR/models/"
+cp "$DATA_DIR/models/candidates/goals-v2/goals.json" "$DATA_DIR/models/goals.json"
 ```
 
 No database backfill or table change is needed for goals alone: API inference
@@ -91,3 +94,18 @@ original lag/settlement rules and unchanged current pre-match predictions; updat
 all served comparison/version fields consistently. No DB table changes or event
 backfill are needed. Do not run `backtest train` or `squads` as a promotion command:
 those refit other models and can overwrite retained production choices.
+
+## Remaining candidates — no promotion
+
+`gamestate-v2` shows a possession-only improvement, but xG quantiles are mixed and
+the comparison uses raw, uncalibrated bands. Do not copy the bundle over the live
+calibrated model. `prematch-v1` loses to both current and market. `passes-v1` is
+inconclusive. `xt-v1` improves transition log loss but worsens Brier. None needs
+production backfill while held. VAEP/source-augmentation decisions are recorded
+in LOG.md when their evaluations complete.
+
+The code-level outer-rating repair affects future training only. Existing
+production windows, live rating feature construction and model inference remain
+unchanged. Rebuilding validation uses `python -m matchpulse.models.corrected_windows`
+with a fresh run name if inputs changed; never run production window/training
+entry points against main data as an experiment.
