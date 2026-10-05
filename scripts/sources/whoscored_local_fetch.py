@@ -44,7 +44,7 @@ def write_json(path: Path, value: object) -> None:
 
 def embedded(text: str, variable: str) -> object | None:
     """Parse a balanced JSON/JSON5 object without executing captured JS."""
-    for match in re.finditer(r"\b" + re.escape(variable) + r"\s*[:=]\s*", text):
+    for match in re.finditer(r"\b" + re.escape(variable) + r"[\"']?\s*[:=]\s*", text):
         start = match.end()
         if text[start : start + 1] not in ("{", "["):
             continue
@@ -174,6 +174,31 @@ class BrowserCache:
         if tasks:
             await asyncio.gather(*tasks)
 
+    def variable(self, url: str, html: str, name: str) -> object | None:
+        """Read captured public runtime variables when they weren't inline JSON."""
+        value = embedded(html, name)
+        if value is not None:
+            return value
+        key = hashlib.sha256(url.encode()).hexdigest()
+        path = self.pages / f"{key}.variables.json"
+        return json.loads(path.read_text()).get(name) if path.exists() else None
+
+    def json_document(self, url: str, html: str) -> object:
+        """Prefer actual cached JSON bytes to Chromium's rendered JSON viewer."""
+        key = hashlib.sha256(url.encode()).hexdigest()
+        record = json.loads((self.pages / f"{key}.json").read_text())
+        final_url = record.get("final_url", url)
+        raw_key = hashlib.sha256(("GET " + final_url + " ").encode()).hexdigest()
+        raw = self.responses / f"{raw_key}.body"
+        if raw.exists():
+            try:
+                return json.loads(raw.read_bytes())
+            except ValueError:
+                pass
+        from html import unescape
+
+        return json.loads(unescape(re.sub("<[^>]+>", "", html)))
+
     async def open(self, page: object, url: str, wait: float) -> str:
         key = hashlib.sha256(url.encode()).hexdigest()
         snapshot = self.pages / f"{key}.html"
@@ -203,6 +228,21 @@ class BrowserCache:
             raise RuntimeError("Raw cache budget reached before saving rendered page")
         snapshot.write_text(html)
         self.bytes += len(html.encode())
+        if not blocked:
+            # Read documented public page data after its own JavaScript executes;
+            # this never generates signatures or runs captured scripts ourselves.
+            variables = await page.evaluate("""() => ({
+                wsCalendar: typeof wsCalendar !== 'undefined'
+                    ? {mask: wsCalendar.mask} : null,
+                matchCentreData: typeof require !== 'undefined'
+                    && require.config && require.config.params
+                    ? require.config.params['args']?.matchCentreData ?? null : null
+            })""")
+            encoded = json.dumps(variables, ensure_ascii=False, indent=2).encode()
+            if self.bytes + len(encoded) > self.budget:
+                raise RuntimeError("Raw cache budget reached while saving page data")
+            write_json(self.pages / f"{key}.variables.json", variables)
+            self.bytes += len(encoded)
         write_json(
             meta,
             {
@@ -303,7 +343,10 @@ async def run(args: argparse.Namespace) -> None:
                 if args.leagues and competition not in args.leagues:
                     continue
                 html = await cache.open(
-                    page, f"{BASE}/Regions/{region}/Tournaments/{tournament}", args.wait
+                    page,
+                    f"{BASE}/Regions/{region}/Tournaments/{tournament}"
+                    f"?mp_snapshot={today.isoformat()}",
+                    args.wait,
                 )
                 for option in await options(page, cache, html, "seasons"):
                     year = re.search(r"(20\d{2})", option["text"])
@@ -349,12 +392,19 @@ async def run(args: argparse.Namespace) -> None:
                     for x in stages
                     if re.search(r"/Stages/\d+", x["url"], re.I)
                 }
+                if not stage_urls:
+                    raise RuntimeError(
+                        "No fixture stage links found in cached season page"
+                    )
                 for stage_url in sorted(stage_urls):
                     stage_id = int(re.search(r"/Stages/(\d+)", stage_url, re.I)[1])
-                    html = await cache.open(
-                        page, urljoin(BASE, stage_url) + suffix, args.wait
+                    season_id = int(re.search(r"/Seasons/(\d+)", season_url, re.I)[1])
+                    calendar_url = (
+                        f"{BASE}/Regions/{_region}/Tournaments/{tournament}"
+                        f"/Seasons/{season_id}/Stages/{stage_id}" + suffix
                     )
-                    calendar = embedded(html, "wsCalendar")
+                    html = await cache.open(page, calendar_url, args.wait)
+                    calendar = cache.variable(calendar_url, html, "wsCalendar")
                     if not calendar:
                         raise RuntimeError(
                             "No wsCalendar found; report the cached page markup change"
@@ -374,11 +424,8 @@ async def run(args: argparse.Namespace) -> None:
                             f"&mp_snapshot={today}" if current else ""
                         )
                         html = await cache.open(page, url, args.wait)
-                        from html import unescape
-
-                        content = unescape(re.sub("<[^>]+>", "", html))
                         try:
-                            fixture_data = json.loads(content)
+                            fixture_data = cache.json_document(url, html)
                         except ValueError:
                             raise RuntimeError(
                                 "Monthly fixtures did not return JSON"
@@ -390,7 +437,12 @@ async def run(args: argparse.Namespace) -> None:
                         ]
                         for fixture in sorted(
                             fixtures,
-                            key=lambda f: f.get("startTimeUtc", ""),
+                            key=lambda f: (
+                                f.get("startTimeUtc")
+                                or f.get("startTime")
+                                or f.get("startDate")
+                                or ""
+                            ),
                             reverse=True,
                         ):
                             mid = fixture["id"]
@@ -398,7 +450,10 @@ async def run(args: argparse.Namespace) -> None:
                             if output.exists():
                                 continue
                             status = fixture.get(
-                                "status", fixture.get("matchStatus", "")
+                                "status",
+                                fixture.get(
+                                    "statusCode", fixture.get("matchStatus", "")
+                                ),
                             )
                             status = str(
                                 status.get("displayName", status)
@@ -415,10 +470,9 @@ async def run(args: argparse.Namespace) -> None:
                                 "full time",
                             ):
                                 continue
-                            html = await cache.open(
-                                page, f"{BASE}/Matches/{mid}/Live", args.wait
-                            )
-                            data = embedded(html, "matchCentreData")
+                            match_url = f"{BASE}/Matches/{mid}/Live"
+                            html = await cache.open(page, match_url, args.wait)
+                            data = cache.variable(match_url, html, "matchCentreData")
                             if not data or not data.get("events"):
                                 raise RuntimeError(f"No matchCentreData in {mid}")
                             capture = {

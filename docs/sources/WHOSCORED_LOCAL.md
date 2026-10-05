@@ -32,7 +32,7 @@ sites whose ordinary browser challenge needs longer. No automatic challenge
 solution or browser fingerprint modification is attempted.
 
 Raw responses, rendered HTML and complete embedded `matchCentreData` objects
-are cached in `./whoscored-cache/`. Completed caches are never requested again.
+are cached in `~/.cache/matchpulse/whoscored/`. Completed caches are never requested again.
 Current-season discovery URLs include a dated snapshot; finished match-centre
 URLs are immutable. The native browser profile stays on your computer and is
 excluded from transfers. Cookies are not copied to the server.

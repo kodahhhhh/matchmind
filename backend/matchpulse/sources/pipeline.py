@@ -233,6 +233,8 @@ def inventory(data_dir: Path) -> dict:
     """Report imported source/tier/competition/season counts from generated files."""
     counts = Counter()
     for path in (data_dir / "sources").glob("catalogue_*.json"):
+        if path.stem == "catalogue_canonical":
+            continue
         for m in json.loads(path.read_text()):
             counts[
                 (m.get("source"), m.get("data_tier"), m["competition"], m["season"])

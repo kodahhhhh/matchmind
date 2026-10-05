@@ -31,9 +31,10 @@ def convert_capture(document: dict) -> tuple[dict, pd.DataFrame, list[dict]]:
     periods = {e.get("period", {}).get("value") for e in data.get("events", [])}
     if not {1, 2}.issubset(periods):
         raise ValueError("Incomplete two-half event stream")
+    final_period = 4 if periods & {3, 4} else 2
     if not any(
         e.get("type", {}).get("value") == 30
-        and e.get("period", {}).get("value") in (2, 4)
+        and e.get("period", {}).get("value") == final_period
         for e in data["events"]
     ):
         raise ValueError(
@@ -108,6 +109,7 @@ def convert_capture(document: dict) -> tuple[dict, pd.DataFrame, list[dict]]:
                     "player_name": name,
                     "source_player_id": pid,
                     "jersey_number": int(p.get("shirtNo") or p.get("shirtNumber") or 0),
+                    "jersey_known": bool(p.get("shirtNo") or p.get("shirtNumber")),
                     "positions": [
                         {"position": p.get("position"), "start_reason": "Starting XI"}
                     ]

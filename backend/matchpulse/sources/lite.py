@@ -56,7 +56,7 @@ def understat(
         "demo": False,
         "training": False,
         "data_tier": "lite",
-        "licence": "No open data licence found; publication rights unresolved",
+        "licence": "Owner accepts source terms responsibility",
     }
     lineups, shots = {"home": [], "away": []}, []
     for key, side in (("h", "home"), ("a", "away")):
@@ -144,7 +144,7 @@ def enrich_understat(bundle: dict, fixture: dict, discovery: dict) -> dict:
 
 
 def fotmob(detail: dict) -> tuple[dict, dict]:
-    """Inspect a cached match detail; network refresh is excluded by source terms."""
+    """Parse public shot maps and retain the richer provider detail separately."""
     general, content = detail["general"], detail["content"]
     if not general.get("finished"):
         raise ValueError("Only finished FotMob matches may be imported")
@@ -179,7 +179,7 @@ def fotmob(detail: dict) -> tuple[dict, dict]:
         "demo": False,
         "training": False,
         "data_tier": "lite",
-        "licence": "Proprietary; systematic/regular automated use prohibited",
+        "licence": "Owner accepts source terms responsibility",
     }
     shots = []
     for index, shot in enumerate((content.get("shotmap") or {}).get("shots", [])):
@@ -208,7 +208,7 @@ def fotmob(detail: dict) -> tuple[dict, dict]:
                 "y": y,
                 "xg": None,
                 "provider_xg": shot.get("expectedGoals"),
-                "result": shot["eventType"],
+                "result": "OwnGoal" if shot.get("isOwnGoal") else shot["eventType"],
                 "body_part": shot.get("shotType"),
                 "situation": shot.get("situation"),
                 "source_extra": shot,
@@ -218,16 +218,20 @@ def fotmob(detail: dict) -> tuple[dict, dict]:
         "match_id": match["match_id"],
         "data_tier": "lite",
         "shots": shots,
-        "lineups": content.get("lineup"),
+        "lineups": fotmob_lineups(content.get("lineup") or {}),
+        "provider_lineups": content.get("lineup"),
         "player_ratings": content.get("playerStats"),
         "team_stats": content.get("stats"),
         "provider_momentum": content.get("momentum"),
         "match_facts": content.get("matchFacts"),
-        "coordinate_status": (
-            "metres verified; lateral origin pending provider documentation"
-        ),
+        "coordinate_status": ("105x68 attacking-relative metres; provider y retained"),
         "capabilities": {
             "full_events": False,
+            "shots": bool(shots),
+            "lineups": bool(content.get("lineup")),
+            "provider_momentum": bool(content.get("momentum")),
+            "provider_team_stats": bool(content.get("stats")),
+            "precise_clock": False,
             "vaep": False,
             "xt": False,
             "game_state": False,
@@ -253,6 +257,8 @@ def score_shots(match: dict, bundle: dict, inference: object) -> dict:
             "DirectFreekick": "Free Kick",
             "FromCorner": "Corner",
             "OpenPlay": "Open Play",
+            "RegularPlay": "Open Play",
+            "SetPiece": "Other",
         }.get(shot["situation"], "Other")
         events.append(
             {
@@ -280,3 +286,31 @@ def score_shots(match: dict, bundle: dict, inference: object) -> dict:
     bundle["capabilities"]["own_xg"] = bool(ratings)
     match["capabilities"] = dict(bundle["capabilities"])
     return bundle
+
+
+def fotmob_lineups(lineup: dict) -> dict[str, list[dict]]:
+    """Normalize actual starting and substitute rosters, retaining provider fields."""
+    result = {"home": [], "away": []}
+    for side in result:
+        team = lineup.get(f"{side}Team") or {}
+        for role in ("starters", "subs"):
+            for player in team.get(role, []):
+                jersey = player.get("shirtNumber")
+                result[side].append(
+                    {
+                        "player_id": numeric_id("fm", player["id"]),
+                        "source_player_id": player["id"],
+                        "name": player["name"],
+                        "position": {
+                            0: "Goalkeeper",
+                            1: "Defender",
+                            2: "Midfielder",
+                            3: "Forward",
+                        }.get(player.get("usualPlayingPositionId")),
+                        "starter": role == "starters",
+                        "jersey": int(jersey) if str(jersey).isdigit() else None,
+                        "rating": (player.get("performance") or {}).get("rating"),
+                        "source_extra": player,
+                    }
+                )
+    return result

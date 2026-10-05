@@ -8,8 +8,8 @@ from pathlib import Path
 import pandas as pd
 
 from matchpulse.config import get_settings
-from matchpulse.players.matching import club, normalise
-from matchpulse.sources.common import save_json
+from matchpulse.players.matching import normalise
+from matchpulse.sources.common import canonical_team, decode_name, save_json
 
 
 def select_player(
@@ -31,7 +31,9 @@ def build(data_dir: Path) -> dict:
     teams, membership = defaultdict(set), defaultdict(set)
     for match in catalogue:
         for side in ("home", "away"):
-            teams[(match["gender"], club(match[side]["name"]))].add(match[side]["id"])
+            teams[(match["gender"], canonical_team(match[side]["name"]))].add(
+                match[side]["id"]
+            )
     for path in (data_dir / "raw/statsbomb/data/lineups").glob("*.json"):
         for team in json.loads(path.read_text()):
             membership[team["team_id"]].update(p["player_id"] for p in team["lineup"])
@@ -52,7 +54,7 @@ def build(data_dir: Path) -> dict:
         for match in json.loads(path.read_text()):
             for side in ("home", "away"):
                 team = match[side]
-                key = (match["gender"], club(team["name"]))
+                key = (match["gender"], canonical_team(team["name"]))
                 candidates = teams.get(key, set())
                 chosen = next(iter(candidates)) if len(candidates) == 1 else None
                 source_teams[team["id"]] = {
@@ -67,6 +69,9 @@ def build(data_dir: Path) -> dict:
     for source, subdirectory in (
         ("af", "dynasty/normalized"),
         ("us", "understat/lite"),
+        ("fm", "fotmob/lite"),
+        ("wy", "wyscout/normalized"),
+        ("ws", "whoscored/normalized"),
     ):
         for path in (data_dir / "sources" / subdirectory).glob("*.json"):
             document = json.loads(path.read_text())
@@ -74,7 +79,7 @@ def build(data_dir: Path) -> dict:
                 team = document["meta"][side]
                 bridge = source_teams.get(team["id"], {})
                 team_members = membership.get(bridge.get("sb_team_id"), set())
-                if source == "af":
+                if source in ("af", "wy", "ws"):
                     lineup = next(
                         t["lineup"]
                         for t in document["meta"]["lineups"]
@@ -86,6 +91,7 @@ def build(data_dir: Path) -> dict:
                         (p["player_id"], p["name"]) for p in document["lineups"][side]
                     ]
                 for pid, name in players:
+                    name = decode_name(name)
                     selected = select_player(name, team_members, aliases)
                     entry = source_players.setdefault(
                         pid,

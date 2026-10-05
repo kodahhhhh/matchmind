@@ -10,6 +10,27 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
+SPADL_COLUMNS = [
+    "game_id",
+    "original_event_id",
+    "period_id",
+    "time_seconds",
+    "team_id",
+    "player_id",
+    "start_x",
+    "start_y",
+    "end_x",
+    "end_y",
+    "type_id",
+    "result_id",
+    "bodypart_id",
+    "action_id",
+    "type_name",
+    "result_name",
+    "bodypart_name",
+    "home_team_id",
+]
+
 NOMINAL = {1: 0, 2: 45, 3: 90, 4: 105, 5: 120}
 
 
@@ -29,9 +50,21 @@ def canonical_team(name: str) -> str:
     from matchpulse.players.matching import club
 
     key = club(decode_name(name))
-    return {"korea republic": "south korea", "heidenheim 1846": "heidenheim"}.get(
-        key, key
-    )
+    return {
+        "korea republic": "south korea",
+        "heidenheim 1846": "heidenheim",
+        "afc bournemouth": "bournemouth",
+        "brighton hove albion": "brighton",
+        "west ham united": "west ham",
+        "tottenham hotspur": "tottenham",
+        "leeds united": "leeds",
+        "coventry city": "coventry",
+        "hull city": "hull",
+        "ipswich town": "ipswich",
+        "parma calcio 1913": "parma",
+        "hellas verona": "verona",
+        "deportivo a coruna": "deportivo la coruna",
+    }.get(key, key)
 
 
 def normal_name(name: str) -> str:
@@ -157,7 +190,7 @@ def spadl(match: dict, events: list[dict]) -> pd.DataFrame:
         )
     if not rows:
         raise ValueError("No classified full-stream actions")
-    return add_names(pd.DataFrame(rows))
+    return add_names(pd.DataFrame(rows))[SPADL_COLUMNS]
 
 
 def identify_events(match: dict, events: list[dict]) -> list[dict]:

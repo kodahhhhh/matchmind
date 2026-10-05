@@ -5,7 +5,12 @@ from collections import Counter
 import numpy as np
 import pandas as pd
 
-from matchpulse.sources.common import NOMINAL, identify_events, numeric_id
+from matchpulse.sources.common import (
+    NOMINAL,
+    SPADL_COLUMNS,
+    identify_events,
+    numeric_id,
+)
 
 
 def normalize_actions(
@@ -199,4 +204,4 @@ def normalize_actions(
         raise ValueError(
             f"Converted goal counts {dict(goals)} disagree with source score"
         )
-    return actions, events
+    return actions[SPADL_COLUMNS], events
