@@ -470,3 +470,46 @@ Reproduce: `DATA_DIR=/home/ubuntu/hackathon/data uv run --group models python -m
 Verification is recorded in `data/processed/backtest/w12/verification.json`; run the full suite plus `pytest matchpulse/backtest/test_squads.py`. Use :8050 for acceptance and stop it afterwards.
 
 Executed acceptance: 101 passed, 4 dependency deprecation warnings; owned-file lint/format passed; 80 market responses and 1154 series points verified on :8050. 81 original served artifacts remain byte-identical. Acceptance server stopped; shared :8000 never restarted.
+
+## W14 reproducible candidates (2026-10-05)
+
+Production artifacts above remain unchanged. `models.evaluate` writes only below
+`data/models/candidates/`, pins input hashes/splits, and distinguishes historical
+card inventory from fresh held-out predictions. Binary Brier is mean squared
+error; three-class Brier sums squared class errors. ECE uses ten fixed-width bins
+(binary positive class, multiclass mean one-vs-rest). Paired 95% intervals resample
+5,000 whole matches with seed 2026, retaining correlated windows. These intervals
+condition on the fitted models and do not include model-selection uncertainty.
+
+`inplay-v1`: six frozen regularization/feature recipes, pre-2018 fitting, 2018
+selection, 2019 temperature calibration. The selected seven-leaf full-feature
+candidate has validation Brier 0.457473 vs incumbent 0.457439; log loss 0.776516 vs
+0.775768. Both paired intervals include zero; reject promotion. Score-only baseline
+remains 0.456493 / 0.772346. No test outcomes select a recipe or calibration.
+
+`xg-v1`: nested five-match-fold recipe search; for each outer fold, the next fold
+selects from six recipes fitted on the other three folds. The selected recipe
+refits on the four outer training folds. Fresh incumbent fold predictions use
+identical held-out shots. Log-loss change -0.000164881, 95% paired interval
+[-0.000411858, 0.000072213]; Brier change -0.000009562, interval
+[-0.000084483, 0.000065408]. Small point gains are inconclusive; no promotion yet.
+The production recipe is chosen by outer-0 inner selection, never outer results.
+All six booster filenames and inference feature order remain compatible.
+
+Full results, negative experiments and remaining work: `docs/models/LOG.md`.
+Candidate swap/backfill/dependency instructions: `docs/models/PROMOTION.md`.
+
+`goals-v1` improves both actual-goal targets on the original fold-rebuilt windows:
+next-15 Poisson deviance 0.701116 → 0.700207 (paired delta CI
+[-0.001362269, -0.000459031]); remaining-goals deviance 0.968718 → 0.964635
+(CI [-0.005431471, -0.002781265]). Block-result Brier improves
+0.406829 → 0.405779 (CI [-0.001524948, -0.000591461]). The frozen recipe uses
+500 trees, seven leaves, minimum child 500 and L2 20. No candidate tuning used
+outer labels. Both incumbent targets were refitted and exactly reproduce the
+original reported deviance. Recommend orchestrator review for promotion.
+
+Block-result comparison normalizes the incumbent helper's truncated Poisson mass
+for **both** models; maximum omitted mass is 0.00002894 current / 0.00005075
+candidate. The existing API helper remains unchanged. Goal-rate booster feature
+order and public inference signatures are unchanged; only the label extraction
+worker cap changes from 16 to eight. All outcomes remain modelled, not causal.

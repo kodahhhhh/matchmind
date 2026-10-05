@@ -103,7 +103,7 @@ def window_targets(match: dict[str, Any]) -> pd.DataFrame:
 def add_targets(windows: pd.DataFrame) -> pd.DataFrame:
     """Attach goal targets and block features to window rows (team perspective)."""
     matches = {m["native_id"]: m for m in catalogue()}
-    with ProcessPoolExecutor(max_workers=16) as pool:
+    with ProcessPoolExecutor(max_workers=8) as pool:
         tables = list(pool.map(window_targets, matches.values()))
     goals = pd.concat(tables, ignore_index=True)
     blocks = goals.groupby("game_id")[
