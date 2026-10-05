@@ -255,3 +255,30 @@ Both log losses improve; scores Brier is inconclusive. Action-value/player sanit
 checks are running. Hold production promotion until ranking and dependent-model
 validation are complete. This is a predictive probability gain, not evidence that
 all derived player rankings are more accurate.
+
+VAEP value checks completed: 2,026 players with at least 900 minutes; per-90
+Spearman 0.991349, top-20 overlap 19/20. All six non-shootout World Cup final goals
+retain positive candidate action values. OOF action files and player totals are
+saved under vaep-v1; production processed values are unchanged. Keep VAEP on hold
+for a coordinated downstream validation, despite the predictive score gains.
+Incumbent booster hashes are added as an explicitly post-run provenance snapshot;
+original proper scores reproduce the historical card. Future runs pin these
+weights before fitting as well as the feature cache and model card.
+
+Market replay now reproduces all 14 aligned matches at 15/30/45/60/75 minutes.
+Current Briers: 0.621732, 0.577464, 0.581174, 0.627034, 0.524252; market Briers:
+0.639074, 0.700035, 0.492893, 0.458205, 0.569814. These small, retrospectively
+aligned cohorts are diagnostic only, not broad evidence of market superiority.
+All ten production model cards remain byte-identical to the initial inventory.
+
+### Next in-play experiment: fresh chronological confirmation
+
+`inplay-poisson-v1` fixes one 400-tree / 15-leaf Poisson-rate recipe. Pool symmetric
+home/away perspectives; fit remaining actual regulation goals with a fixed time
+exposure, then use the full Skellam count distribution for result probabilities.
+Fit the original pre-2018 set, temperature-calibrate 2018–2019 only. No recipe
+search or test tuning. The primary cohort is 112 dated post-2022-11-01 matches
+previously excluded from every in-play evaluation: 52 AFCON, 34 Leverkusen,
+20 Ligue 1, six MLS. This selected-team sample limits generalisation. Old validation
+and tournament scores are diagnostic only. All new features remain candidate-local
+and use the original disjoint pre-2015 upstream models. In progress.

@@ -110,6 +110,16 @@ def run(out: Path) -> dict:
     assignment = fold_map()
     folds = rows.game_id.map(assignment).to_numpy()
     freeze_manifest(
+        out / "baseline_weights.json",
+        {
+            f"vaep_{target}_fold_{fold}.txt": file_hash(
+                root / f"models/vaep_{target}_fold_{fold}.txt"
+            )
+            for target in ("scores", "concedes")
+            for fold in range(5)
+        },
+    )
+    freeze_manifest(
         out / "split.json",
         {
             "protocol": "fixed VAEP recipe, five match folds, period-5 excluded",

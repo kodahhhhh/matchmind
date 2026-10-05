@@ -527,3 +527,17 @@ metrics are explicitly labelled historically invalid, not used as a comparator.
 next-action log loss 2.791217 → 2.789602 improves, Brier 0.883531 → 0.883575 worsens.
 Both changes have paired intervals excluding zero; hold. Player rank Spearman
 0.999923 and 20/20 top-rank overlap are descriptive sanity checks only.
+
+`vaep-v1` streams bounded parquet batches (observed RAM about 2.1 GB) and uses
+210 rounds / 15 leaves / minimum leaf 500 / L2 10. Scores log loss improves
+0.048025873 → 0.048006806 (paired CI [-0.000030620, -0.000006909]); concedes
+0.013347199 → 0.013330712 (CI [-0.000025826, -0.000006742]). Concedes Brier
+also improves; scores Brier is inconclusive. Player per-90 rank Spearman 0.991349,
+top-20 overlap 19/20, all six non-shootout WC-final goals positive. Hold production
+promotion pending downstream ratings/window/goals validation with candidate VAEP.
+
+`xg-dynasty-v1` adds 686 shots from 29 W13 youth matches at fixed unit weight;
+eight source matches / 180 shots are held out by identity hash. StatsBomb log-loss
+delta -0.000001411 (CI [-0.000204884, 0.000204743]) is inconclusive. Source-held-out
+Brier improves 0.195516 → 0.106022; this tiny cohort and missing source context
+limit the claim. Unknown fields remain missing. No global xG promotion.
