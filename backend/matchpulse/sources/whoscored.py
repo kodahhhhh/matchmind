@@ -7,7 +7,7 @@ import pandas as pd
 
 from matchpulse.sources.common import numeric_id, save_json
 from matchpulse.sources.full import normalize_actions
-from matchpulse.sources.import_full import prefer_full, publish
+from matchpulse.sources.import_full import prefer_full, publish, staged_ids
 
 
 def convert_capture(document: dict) -> tuple[dict, pd.DataFrame, list[dict]]:
@@ -140,6 +140,7 @@ def import_incoming(
     catalogue = json.loads(target.read_text()) if target.exists() else []
     existing = {m["match_id"]: m for m in catalogue}
     imported, skipped, duplicates, quarantined = 0, 0, [], []
+    loaded = staged_ids(database_url, "ws")
     for path in paths:
         try:
             document = json.loads(path.read_text())
@@ -148,6 +149,15 @@ def import_incoming(
                 "match_id", data.get("matchId", data.get("game_id"))
             )
             if native and f"ws:{native}" in existing:
+                if database_url and f"ws:{native}" not in loaded:
+                    from matchpulse.db.load_sources import load_full
+
+                    folder = data_dir / "sources/whoscored"
+                    load_full(
+                        database_url,
+                        folder / f"normalized/{native}.json",
+                        folder / f"scored/{native}.parquet",
+                    )
                 skipped += 1
                 continue
             match, actions, events = convert_capture(document)

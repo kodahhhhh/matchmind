@@ -199,6 +199,8 @@ class BrowserCache:
                 "cf-chl-",
             )
         )
+        if self.bytes + len(html.encode()) > self.budget:
+            raise RuntimeError("Raw cache budget reached before saving rendered page")
         snapshot.write_text(html)
         self.bytes += len(html.encode())
         write_json(
@@ -419,25 +421,33 @@ async def run(args: argparse.Namespace) -> None:
                             data = embedded(html, "matchCentreData")
                             if not data or not data.get("events"):
                                 raise RuntimeError(f"No matchCentreData in {mid}")
-                            write_json(
-                                output,
-                                {
-                                    "matchCentreData": data,
-                                    "context": {
-                                        "match_id": mid,
-                                        "competition": competition,
-                                        "country": country,
-                                        "season": f"{year}/{year + 1}",
-                                        "competition_id": tournament,
-                                        "season_id": int(
-                                            re.search(
-                                                r"/Seasons/(\d+)", season_url, re.I
-                                            )[1]
-                                        ),
-                                        "fixture": fixture,
-                                    },
+                            capture = {
+                                "matchCentreData": data,
+                                "context": {
+                                    "match_id": mid,
+                                    "competition": competition,
+                                    "country": country,
+                                    "season": f"{year}/{year + 1}",
+                                    "competition_id": tournament,
+                                    "season_id": int(
+                                        re.search(r"/Seasons/(\d+)", season_url, re.I)[
+                                            1
+                                        ]
+                                    ),
+                                    "fixture": fixture,
                                 },
+                            }
+                            capture_bytes = len(
+                                json.dumps(
+                                    capture, ensure_ascii=False, indent=2
+                                ).encode()
                             )
+                            if cache.bytes + capture_bytes > cache.budget:
+                                raise RuntimeError(
+                                    "Raw cache budget reached before saving match JSON"
+                                )
+                            write_json(output, capture)
+                            cache.bytes += capture_bytes
                             saved += 1
                             print(
                                 json.dumps(

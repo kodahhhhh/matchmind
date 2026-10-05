@@ -57,7 +57,9 @@ cd ~/hackathon-W13-sources/backend
 nice -n 10 env DATABASE_URL=postgresql://matchmind:matchmind@localhost:5432/matchpulse_staging OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 uv run --group models python -m matchpulse.sources.import_full whoscored --load
 ```
 
-Run it again as new transfers arrive; completed match IDs are skipped. It does
+Run it again as new transfers arrive, or add `--watch 60` to keep scanning in
+the foreground once per minute. Completed match IDs are skipped; offline exports
+are loaded if `--load` is added later. It does
 not request WhoScored from EC2. It requires both halves and an observed final
 period-end event, validates converted goal counts against the score, retains
 Opta qualifiers, exports standard 105×68 SPADL and scores our xG/VAEP/xT. Raw

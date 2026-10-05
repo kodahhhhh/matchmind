@@ -78,7 +78,7 @@ def catalogue_entry(raw: dict, country: str, teams: dict, players: dict) -> dict
     """Real source dates/scores/rosters; source has no jersey-number coverage."""
     from datetime import datetime
 
-    from matchpulse.sources.common import numeric_id
+    from matchpulse.sources.common import decode_name, numeric_id
 
     if raw["status"] != "Played":
         raise ValueError("Only played matches")
@@ -123,8 +123,15 @@ def catalogue_entry(raw: dict, country: str, teams: dict, players: dict) -> dict
     for side in ("home", "away"):
         team = sides[side]
         native = team["teamId"]
-        match[side] = {"id": numeric_id("wy", native), "name": teams[native]["name"]}
-        match[f"{side}_score"] = int(team["score"])
+        match[side] = {
+            "id": numeric_id("wy", native),
+            "name": decode_name(teams[native]["name"]),
+        }
+        match[f"{side}_score"] = int(
+            team["scoreET"]
+            if raw["duration"] in ("ExtraTime", "Penalties")
+            else team["score"]
+        )
         roster = []
         for starter, group in ((True, "lineup"), (False, "bench")):
             for player in team.get("formation", {}).get(group, []):
@@ -137,6 +144,7 @@ def catalogue_entry(raw: dict, country: str, teams: dict, players: dict) -> dict
                     or info.get("shortName")
                     or "Unknown"
                 )
+                name = decode_name(name)
                 match["player_names"][str(pid)] = name
                 roster.append(
                     {
@@ -177,7 +185,7 @@ def import_dataset(
 
     from matchpulse.sources.common import save_json
     from matchpulse.sources.full import normalize_actions
-    from matchpulse.sources.import_full import prefer_full, publish
+    from matchpulse.sources.import_full import prefer_full, publish, staged_ids
 
     root = prepare_files(data_dir)
     required = [root / f"{name}.json" for name in ("teams", "players")]
@@ -192,6 +200,7 @@ def import_dataset(
     catalogue = json.loads(path.read_text()) if path.exists() else []
     existing = {m["match_id"]: m for m in catalogue}
     imported, skipped, duplicates, quarantined = 0, 0, [], []
+    loaded = staged_ids(database_url, "wy")
     for country in COMPETITIONS:
         matches_path, events_path = (
             root / f"matches_{country}.json",
@@ -219,6 +228,14 @@ def import_dataset(
             mid = match["match_id"]
             target = data_dir / f"sources/wyscout/scored/{match['native_id']}.parquet"
             if mid in existing and target.exists():
+                if database_url and mid not in loaded:
+                    from matchpulse.db.load_sources import load_full
+
+                    load_full(
+                        database_url,
+                        target.parent.parent / "normalized" / f"{target.stem}.json",
+                        target,
+                    )
                 skipped += 1
                 continue
             try:

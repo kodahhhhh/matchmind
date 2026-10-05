@@ -2,6 +2,7 @@
 
 import hashlib
 import json
+import re
 import unicodedata
 from pathlib import Path
 from typing import Any
@@ -18,9 +19,24 @@ def numeric_id(source: str, native: object) -> int:
     return (1 << 48) + int.from_bytes(digest[:6], "big")
 
 
+def decode_name(name: str) -> str:
+    """Decode literal JSON unicode escapes without re-decoding real UTF-8 text."""
+    return re.sub(r"\\u([0-9a-fA-F]{4})", lambda m: chr(int(m[1], 16)), name)
+
+
+def canonical_team(name: str) -> str:
+    """Reuse reviewed club aliases plus explicit national-team/source spellings."""
+    from matchpulse.players.matching import club
+
+    key = club(decode_name(name))
+    return {"korea republic": "south korea", "heidenheim 1846": "heidenheim"}.get(
+        key, key
+    )
+
+
 def normal_name(name: str) -> str:
     """Accent/case normalization only; no fuzzy automatic identity merges."""
-    text = unicodedata.normalize("NFKD", name).casefold()
+    text = unicodedata.normalize("NFKD", decode_name(name)).casefold()
     return " ".join("".join(c for c in text if not unicodedata.combining(c)).split())
 
 
