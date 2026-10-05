@@ -107,12 +107,18 @@ export function Timeline() {
   const goalLabels = geo ? goals.map((g) => {
     const i = idxOf(g) ?? 0;
     const full = `${nameOf(g.player_id) || "Own goal"} ${clock(g.period, g.minute)}`;
-    // phones: minute only, so labels don't pile up in lanes over a narrow chart
-    const text = narrow ? clock(g.period, g.minute) : full;
-    const w = text.length * 7.1 + (narrow ? 38 : 36);
-    const x0 = Math.min(Math.max(geo.cx(i) - w / 2, 0), width - w);
-    let lane = laneEnds.findIndex((l) => l.every((end) => x0 > end + 6));
-    if (lane < 0) lane = 1;
+    const short = clock(g.period, g.minute);
+    // try the full label, then the minute only (always on phones), in whichever of the two lanes is free
+    const place = (text: string) => {
+      const w = text.length * 7.1 + (text === short ? 38 : 36);
+      const x0 = Math.min(Math.max(geo.cx(i) - w / 2, 0), width - w);
+      const lane = laneEnds.findIndex((l) => l.every((end) => x0 > end + 6));
+      return { text, w, x0, lane };
+    };
+    let p = narrow ? place(short) : place(full);
+    if (p.lane < 0 && !narrow) p = place(short);
+    if (p.lane < 0) p = { ...p, lane: Math.max(...laneEnds[0]) <= Math.max(...laneEnds[1]) ? 0 : 1 };
+    const { text, w, x0, lane } = p;
     laneEnds[lane].push(x0 + w);
     return { g, i, text, full, x0, w, lane };
   }) : [];

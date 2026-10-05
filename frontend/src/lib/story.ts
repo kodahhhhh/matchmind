@@ -29,8 +29,28 @@ export function matchVerdict(d: MatchData): Verdict {
     headline = `${name(winner)} beat ${name(other(winner))} ${w}-${l}${extra ? " after extra time" : ""}.`;
   } else headline = h === 0 ? `A goalless draw between ${name("home")} and ${name("away")}.` : `${name("home")} and ${name("away")} drew ${h}-${a}.`;
 
-  let lead: string | null = null;
+  // comebacks: the biggest deficit each side overturned, from the goal markers in order
+  let run = { home: 0, away: 0 };
+  const worst: Record<Side, { gap: number; own: number; opp: number }> = { home: { gap: 0, own: 0, opp: 0 }, away: { gap: 0, own: 0, opp: 0 } };
+  for (const m of [...markers].filter((k) => k.type === "goal" && k.period < 5).sort((x, y) => x.period - y.period || x.t - y.t)) {
+    run = { ...run, [m.team]: run[m.team] + 1 };
+    for (const side of ["home", "away"] as Side[]) {
+      const gap = run[other(side)] - run[side];
+      if (gap > worst[side].gap) worst[side] = { gap, own: run[side], opp: run[other(side)] };
+    }
+  }
+  const comeback = (["home", "away"] as Side[]).find((side) => worst[side].gap >= 2);
   const notes: string[] = [];
+  if (comeback) {
+    const w = worst[comeback];
+    const from = `${name(comeback)} came back from ${w.opp}-${w.own} down`;
+    if (winner === comeback) headline = `${from} to win${pens ? " on penalties" : extra ? " after extra time" : ""}.`;
+    else if (!winner) headline = `${from} to draw ${h}-${a}.`;
+    else notes.push(`${from}, but still lost.`);
+    if (pens && winner === comeback) notes.push(`It finished ${h}-${a} before the shoot-out.`);
+  }
+
+  let lead: string | null = null;
   const tl = d.timeline;
   if (tl.length) {
     const last = tl[tl.length - 1];

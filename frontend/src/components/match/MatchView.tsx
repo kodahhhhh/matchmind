@@ -220,6 +220,12 @@ function LoadError({ error }: { error: string | null }) {
         <p className="mt-1 max-w-[42ch] text-pretty text-[14px] text-ink-3">{notFound ? "The link may be out of date. Search for the match, or pick one from the list." : "Check your connection and try again."}</p>
       </div>
       <div className="flex flex-wrap justify-center gap-2">
+        {notFound && (
+          <button type="button" onClick={() => useUi.getState().setSearchOpen(true)}
+            className="inline-flex h-10 items-center rounded-full bg-ink px-4 text-[13.5px] font-semibold text-bg transition-[transform,background-color] duration-150 ease-out hover:bg-ink-2 active:scale-[0.97]">
+            Search for a match
+          </button>
+        )}
         {!notFound && (
           <button type="button" onClick={() => { const st = useMatch.getState(); if (st.matchId) void st.load(st.matchId); }}
             className="inline-flex h-10 items-center rounded-full bg-ink px-4 text-[13.5px] font-semibold text-bg transition-[transform,background-color] duration-150 ease-out hover:bg-ink-2 active:scale-[0.97]">
