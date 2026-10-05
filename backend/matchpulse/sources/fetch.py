@@ -62,6 +62,8 @@ class PublicFetcher:
             return body
         host = urlparse(url).netloc
         state = json.loads(self.policy.read_text()) if self.policy.exists() else {}
+        if source in state.get("_blocked_sources", []):
+            raise SourceBlocked(f"Source previously refused access: {source}")
         if state.get(host, {}).get("blocked"):
             raise SourceBlocked(f"Host previously refused access: {host}")
         delay = self.interval - (time.time() - state.get(host, {}).get("last", 0))
@@ -98,6 +100,9 @@ class PublicFetcher:
         meta.write_text(json.dumps(record, indent=2))
         if blocked:
             state[host]["blocked"] = True
+            state["_blocked_sources"] = sorted(
+                set(state.get("_blocked_sources", [])) | {source}
+            )
             self.policy.write_text(json.dumps(state, indent=2))
             raise SourceBlocked(f"HTTP {response.status_code}/challenge: {url}")
         if response.is_redirect:

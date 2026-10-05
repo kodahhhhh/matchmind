@@ -48,6 +48,8 @@ def test_refusal_blocks_host_across_instances_and_sources(
         PublicFetcher(tmp_path).fetch("one", "https://example.test/first")
     with pytest.raises(SourceBlocked):
         PublicFetcher(tmp_path).fetch("two", "https://example.test/other")
+    with pytest.raises(SourceBlocked):
+        PublicFetcher(tmp_path).fetch("one", "https://alternate.test/other")
     assert len(requests) == 1
     assert next((tmp_path / "raw/one").glob("*.body")).read_text() == "refused"
 
