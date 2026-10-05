@@ -42,3 +42,36 @@
 - Implementation exports SPADL with the same standard 18 columns to
   `data/sources/dynasty/spadl/`, scored rows to `scored/`, normalized raw metadata
   to `normalized/`; all data remains gitignored. Youth model transfer unvalidated.
+
+### Conversion and staging verification
+
+- Tightened period bounds and corrected free-kick shot/short-corner/cross mappings.
+  Retained observed recovery/block/duel/foul-won annotations without inventing
+  SPADL equivalents. Final strict gate currently accepts **37**, quarantines 99;
+  one previously accepted match's generated files moved to `dynasty/quarantine/`.
+- Accepted Dynasty dates: 2024-02-27 through 2024-10-17. Totals: 35,538 raw
+  annotations, 33,734 normalized events, 30,402 SPADL actions; 866 own xG rows,
+  30,402 VAEP rows, 14,065 valued xT moves. Per-match attacking shot-x medians
+  range 80.282–94.014 metres. All 18 SPADL columns match the StatsBomb export.
+- Staging loader rejects every parsed database name except `matchpulse_staging`.
+  New full timestamps use observed elapsed period time; displayed minute/second
+  remain nominal match-clock values. Reloads are transactional/idempotent.
+- Loaded 20 full matches (17,582 normalized DB events) and verified 40 lite
+  entries retained across sample reloads as the historical download progressed.
+  Lite payloads are separate JSONB rows, with no invented actions or sequences.
+- Worktree API on localhost:8013 used an isolated `sources/verification-runtime`
+  catalogue with only staged source entries temporarily demo-enabled. All 20
+  full matches passed match-meta/timeline/replay-event Pydantic checks and pitch
+  bounds; all 40 lite entries returned the expected current-API 503 limitation.
+  Main catalogue and production API were unchanged. Report: `sources/api_sample_report.json`.
+- Commands passed: `uv run ruff check . && uv run ruff format --check .` (122
+  Python files formatted); `uv run python -m compileall -q matchpulse/sources
+  matchpulse/db/load_sources.py`; staging `uv run --group models pytest
+  tests/test_sources* -q` (**23 passed**), including real duplicate-load checks.
+- Applicable existing contract selection passed **13 tests, 7 deselected**.
+  First run exposed staging's missing commentary `facts` migration; applied the
+  existing migration to staging and reran successfully. Azure-backed search,
+  game-state/counterfactual coverage remain outside this source sample's verified
+  capabilities. Exact StatsBomb reference event/orientation fixture remains valid.
+- Understat bulk refresh continues sequentially; final counts, identity bridge,
+  offline parser rebuild and API-process cleanup will be recorded below.
