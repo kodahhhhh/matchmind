@@ -49,7 +49,7 @@ export function MomentCard({ placement }: { placement: "overlay" | "below" }) {
                 </button>
               </div>
               <div className="mt-2.5 flex flex-wrap gap-1.5">
-                {info.seq && !reel && (
+                {info.seq && !reel && data?.has.events && (
                   <Action onClick={() => useMatch.getState().startReplay(info.seq!)} icon={replay?.playing ? <ArrowCounterClockwise size={13} weight="bold" /> : <Play size={12} weight="fill" />}>
                     {replay?.playing ? "Replay again" : replay ? "Replay" : "Replay the move"}
                   </Action>

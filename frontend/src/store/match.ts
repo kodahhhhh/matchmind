@@ -52,7 +52,20 @@ interface MatchData {
   eventsBySeq: Map<string, MatchEvent[]>;
   seqCache: Map<string, Sequence>;
   /** Which sections loaded. "Lite" matches (no event stream) have only the match detail. */
-  has: { events: boolean; timeline: boolean; sequences: boolean; players: boolean; turningPoints: boolean };
+  has: {
+    /** A full event stream: pitch replay, every touch, What if. */
+    events: boolean;
+    /** At least a shot map (lite matches send shots only). */
+    shots: boolean;
+    timeline: boolean;
+    /** Per-minute possession and territory (lite timelines carry only chances). */
+    possession: boolean;
+    momentum: boolean;
+    sequences: boolean;
+    players: boolean;
+    turningPoints: boolean;
+    lite: boolean;
+  };
 }
 
 /** Top sequences come from the API; any other sequence is rebuilt from its events. */
@@ -219,9 +232,25 @@ export const useMatch = create<State>((set, get) => ({
         if (list) list.push(e);
         else eventsBySeq.set(e.sequence_id, [e]);
       }
+      const caps = match.capabilities ?? {};
+      const lite = match.data_tier === "lite" || caps.full_events === false;
+      // lite timelines may send nulls for series they can't measure: keep the numbers numeric, flag what's missing
+      const num = (v: number | null | undefined) => (typeof v === "number" && Number.isFinite(v) ? v : 0);
+      const known = (pick: (m: TimelineMinute) => unknown) => timeline.v.some((m) => typeof pick(m) === "number");
+      const possession = known((m) => m.home.possession);
+      const momentum = known((m) => m.momentum);
+      for (const m of timeline.v) {
+        m.momentum = num(m.momentum);
+        for (const side of [m.home, m.away]) {
+          side.possession = num(side.possession); side.field_tilt = num(side.field_tilt); side.xg = num(side.xg);
+          side.xg_cum = num(side.xg_cum); side.shots = num(side.shots); side.passes = num(side.passes); side.vaep = num(side.vaep);
+        }
+      }
       const has = {
-        events: events.v.length > 0, timeline: timeline.v.length > 0, sequences: sequences.v.length > 0,
-        players: players.v.length > 0, turningPoints: turningPoints.v.length > 0,
+        events: events.v.length > 0 && !lite, shots: events.v.some((e) => isShot(e.type)),
+        timeline: timeline.v.length > 0, possession, momentum,
+        sequences: sequences.v.length > 0 && !lite, players: players.v.length > 0 && caps.vaep !== false,
+        turningPoints: turningPoints.v.length > 0, lite,
       };
       set({
         status: "ready",

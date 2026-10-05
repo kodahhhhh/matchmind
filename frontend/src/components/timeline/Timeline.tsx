@@ -149,16 +149,22 @@ export function Timeline() {
               return (
                 <g key={p.period}>
                   <rect x={x0} y={geo.waveTop} width={x1 - x0} height={H_WAVE} rx={8} fill="var(--surface-2)" />
-                  <g clipPath={`url(#reveal-${uid})`}>
-                    <path d={wave(pts) ?? ""} fill={`url(#wave-home-${uid})`} clipPath={`url(#above-${uid})`} />
-                    <path d={wave(pts) ?? ""} fill={`url(#wave-away-${uid})`} clipPath={`url(#below-${uid})`} />
-                  </g>
+                  {data.has.momentum && (
+                    <g clipPath={`url(#reveal-${uid})`}>
+                      <path d={wave(pts) ?? ""} fill={`url(#wave-home-${uid})`} clipPath={`url(#above-${uid})`} />
+                      <path d={wave(pts) ?? ""} fill={`url(#wave-away-${uid})`} clipPath={`url(#below-${uid})`} />
+                    </g>
+                  )}
                   <line x1={x0} x2={x1} y1={geo.yMom(0)} y2={geo.yMom(0)} stroke="var(--ink-4)" strokeOpacity={0.5} />
                   <line x1={x0} x2={x1} y1={geo.yXg(0)} y2={geo.yXg(0)} stroke="var(--axis)" />
                   {showName && <text x={x0 + 2} y={geo.height - 5} fontSize={11} fill="var(--ink-3)" fontWeight={500}>{name}</text>}
                 </g>
               );
             })}
+
+            {!data.has.momentum && (
+              <text x={(width - M.r) / 2} y={geo.waveTop + H_WAVE / 2 - 10} textAnchor="middle" fontSize={12} fill="var(--ink-3)">Who was on top isn't available for this match</text>
+            )}
 
             {tp && data.turningPoints.map((t) => (
               <rect key={t.id} x={geo.x(t.start.index) - 3} y={geo.waveTop - 6} width={geo.x(t.end.index) - geo.x(t.start.index) + geo.step + 6}
@@ -204,7 +210,7 @@ export function Timeline() {
               <text x={width - M.r + 24} y={geo.waveTop + 14} fill="var(--ink)">{fit(teams.home.name)}<title>{teams.home.name}</title></text>
               <rect x={width - M.r + 12} y={geo.waveTop + H_WAVE - 16} width={8} height={8} rx={2} fill="var(--away)" />
               <text x={width - M.r + 24} y={geo.waveTop + H_WAVE - 8} fill="var(--ink)">{fit(teams.away.name)}<title>{teams.away.name}</title></text>
-              <text x={width - M.r + 12} y={geo.yMom(0) + 3.5} fill="var(--ink-4)" fontWeight={500}>Who's on top<title>Who is on top: which team's recent actions are making a goal more likely</title></text>
+              {data.has.momentum && <text x={width - M.r + 12} y={geo.yMom(0) + 3.5} fill="var(--ink-4)" fontWeight={500}>Who's on top<title>Who is on top: which team's recent actions are making a goal more likely</title></text>}
             </g>
 
             {goalLabels.map(({ g, i, lane }) => (
@@ -258,7 +264,7 @@ export function Timeline() {
             </button>
           ))}
           {cardMinute && <HoverCard m={cardMinute} open={hovered != null} left={geo.cx(cardMinute.index)} width={width} top={geo.waveTop}
-            teams={teams} mkt={market?.series.find((p) => p.index === cardMinute.index)} />}
+            teams={teams} poss={data.has.possession} mkt={market?.series.find((p) => p.index === cardMinute.index)} />}
         </>
       )}
     </div>
@@ -302,8 +308,8 @@ function XgLines({ tl, x, step, y, periods }: {
 const CARD_W = 236;
 
 /** Minute card beside the crosshair (transitions.dev tooltip: 150ms in, 50ms out; position follows instantly). */
-function HoverCard({ m, open, left, width, top, teams, mkt }: {
-  m: TimelineMinute; open: boolean; left: number; width: number; top: number;
+function HoverCard({ m, open, left, width, top, teams, mkt, poss }: {
+  m: TimelineMinute; open: boolean; left: number; width: number; top: number; poss: boolean;
   teams: Record<Side, { name: string }>; mkt?: { market: { home: number }; model: { home: number } };
 }) {
   const flip = left > width - CARD_W - 32;
@@ -314,7 +320,7 @@ function HoverCard({ m, open, left, width, top, teams, mkt }: {
       <div data-open={open} className="t-tt glass rounded-xl px-3.5 py-2.5 text-[12px] shadow-2xl" style={{ width: CARD_W }}>
         <div className="mb-1.5 flex items-baseline justify-between">
           <span className="numeral text-[17px] leading-none text-ink">{m.label}</span>
-          <span className="flex gap-3 text-[11px] text-ink-3"><span className="w-9 text-right">Chances</span><span className="w-[62px] text-right">Possession</span></span>
+          <span className="flex gap-3 text-[11px] text-ink-3"><span className="w-9 text-right">Chances</span>{poss && <span className="w-[62px] text-right">Possession</span>}</span>
         </div>
         {(["home", "away"] as Side[]).map((s) => (
           <div key={s} className="flex items-center gap-2 py-0.5 tabular text-ink-2">
@@ -322,7 +328,7 @@ function HoverCard({ m, open, left, width, top, teams, mkt }: {
             <span className="min-w-0 flex-1 truncate">{teams[s].name}</span>
             <span className="flex gap-3 font-semibold text-ink">
               <span className="w-9 text-right">{xg(m[s].xg_cum)}</span>
-              <span className="w-[62px] text-right">{pct(m[s].possession)}</span>
+              {poss && <span className="w-[62px] text-right">{pct(m[s].possession)}</span>}
             </span>
           </div>
         ))}

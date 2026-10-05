@@ -32,6 +32,11 @@ export function StoryPanel() {
 
   return (
     <div className="scroll-thin h-full overflow-y-auto px-5 pb-6">
+      {data.has.lite && (
+        <p className="mb-4 rounded-2xl bg-surface-2 px-4 py-3 text-pretty text-[13px] leading-[1.5] text-ink-2 ring-1 ring-line">
+          <span className="font-semibold text-ink">Shots and stats only.</span> We have the score, line-ups and shots for this match, but not every touch, so there's no replay or What if.
+        </p>
+      )}
       <motion.section {...enter(0)} aria-labelledby="story-title" className="pt-1">
         <p className="text-[12.5px] font-medium text-ink-3">The story</p>
         <h2 id="story-title" className="mt-1 text-balance text-[20px] font-semibold leading-[1.25] tracking-[-0.02em] text-ink">{verdict.headline}</h2>
@@ -158,12 +163,14 @@ function WhoWasOnTop() {
     const tl = data.timeline;
     const sum = (s: Side, k: "shots" | "xg") => tl.reduce((a, m) => a + m[s][k], 0);
     const avg = (s: Side, k: "possession" | "field_tilt") => tl.reduce((a, m) => a + m[s][k], 0) / Math.max(tl.length, 1);
-    return [
+    const rows = [
       { label: "Chances", term: "chances" as GlossaryKey, a: sum("home", "xg"), b: sum("away", "xg"), fmt: xg },
       { label: "Territory", term: "territory" as GlossaryKey, a: avg("home", "field_tilt"), b: avg("away", "field_tilt"), fmt: (v: number) => pct(v) },
       { label: "Possession", term: "possession" as GlossaryKey, a: avg("home", "possession"), b: avg("away", "possession"), fmt: (v: number) => pct(v) },
       { label: "Shots", term: "shots" as GlossaryKey, a: sum("home", "shots"), b: sum("away", "shots"), fmt: (v: number) => String(v) },
     ];
+    // lite matches only measure chances and shots
+    return data.has.possession ? rows : rows.filter((r) => r.term === "chances" || r.term === "shots");
   }, [data]);
   return (
     <section aria-labelledby="ontop-title" className="mt-7">

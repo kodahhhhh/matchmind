@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useRef, type CSSProperties, type KeyboardEvent } from "react";
-import { Link, useParams } from "react-router";
+import { Link, useParams, useSearchParams } from "react-router";
 import { AnimatePresence, MotionConfig, motion, useReducedMotion } from "motion/react";
 import { ArrowLeft, Keyboard } from "@phosphor-icons/react";
 import { useMatch, type RightTab } from "../../store/match";
@@ -30,7 +30,14 @@ export function MatchView() {
   const panelPing = useMatch((s) => s.panelPing);
   const reduce = useReducedMotion();
 
-  useEffect(() => { void load(decodeURIComponent(id)); }, [id, load]);
+  // deep links can open a panel straight away: /match/<id>?tab=ask
+  const [params] = useSearchParams();
+  const wantTab = params.get("tab");
+  useEffect(() => {
+    void load(decodeURIComponent(id)).then(() => {
+      if (wantTab === "ask" || wantTab === "players" || wantTab === "whatif" || wantTab === "story") useMatch.getState().setRightTab(wantTab);
+    });
+  }, [id, load, wantTab]);
   useMatchShortcuts();
 
   // On phones the pitch and the panel are stacked: bring whichever the user just asked for into view.
@@ -98,7 +105,7 @@ export function MatchView() {
           <motion.div ref={pitchRef} initial={{ opacity: 0, scale: 0.99 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, ease: EASE }}
             className="relative aspect-[1.5] scroll-mt-3 overflow-hidden rounded-[20px] shadow-[0_30px_80px_-40px_rgba(0,0,0,0.9)] ring-1 ring-line-strong lg:aspect-auto lg:min-h-0 lg:flex-1">
             <Pitch />
-            {has.events && <PitchOverlays />}
+            {(has.events || has.shots) && <PitchOverlays />}
             <div className="hidden md:block"><MomentCard placement="overlay" /></div>
           </motion.div>
           <div className="md:hidden"><MomentCard placement="below" /></div>

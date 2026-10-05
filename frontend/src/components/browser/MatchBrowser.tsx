@@ -6,7 +6,7 @@ import { api } from "../../api/client";
 import type { Backtest, MatchCard, MatchDetail, TimelineMinute, TurningPoint } from "../../api/types";
 import { useUi } from "../../store/ui";
 import { useCatalogue } from "../../store/catalogue";
-import { FAMOUS, compLabel, matchDate, matchPath } from "../../lib/matchSearch";
+import { FAMOUS, LITE_LABEL, compLabel, matchDate, matchPath } from "../../lib/matchSearch";
 import { bookiesAnswer } from "../../lib/plain";
 import { LearnChevron, Line, SpinningNumber, Stagger } from "../ui/motion";
 import { SiteHeader } from "../ui/SiteHeader";
@@ -190,7 +190,7 @@ function MatchTile({ m, hook, i }: { m: MatchCard; hook?: string; i: number }) {
         className="flex h-full flex-col rounded-2xl bg-surface-1 px-4 pb-4 pt-3.5 ring-1 ring-line transition-[background-color,box-shadow,transform] duration-150 ease-out hover:bg-surface-2 hover:ring-line-strong active:scale-[0.98]">
         <div className="mb-3 flex items-baseline justify-between gap-3 text-[12.5px] text-ink-3">
           <span className="truncate">{compLabel(m.competition, m.season)}{m.stage && m.stage !== "Regular Season" ? `, ${m.stage.toLowerCase()}` : ""}</span>
-          <span className="tabular shrink-0">{hook ? "" : matchDate(m)}</span>
+          <span className="tabular shrink-0">{m.data_tier === "lite" ? LITE_LABEL : hook ? "" : matchDate(m)}</span>
         </div>
         {(["home", "away"] as const).map((s) => (
           <div key={s} className="flex items-center gap-2.5 py-[3px]">
@@ -210,8 +210,8 @@ function Showcase() {
   const final = matchPath(FEATURED);
   const items: { icon: ReactNode; title: string; body: string; cta: string; to?: string; onClick?: () => void; ai?: boolean }[] = [
     { icon: <Sparkle size={18} weight="fill" />, title: "The story in one glance", body: "Who was on top, the moments that decided it and the biggest swing, in a sentence or two.", cta: "See the 2022 final", to: final },
-    { icon: <ChatCircleDots size={18} weight="fill" />, title: "Ask why, get the receipts", body: "Ask in your own words. Every answer links to the moments behind it, and the pitch jumps there.", cta: "Ask about the final", to: final, ai: true },
-    { icon: <GitFork size={18} weight="bold" />, title: "What if it went differently", body: "Take away a goal, a red card or a substitution and see how the rest of the match was likely to go. Always labelled as modelled.", cta: "Try it on the final", to: final },
+    { icon: <ChatCircleDots size={18} weight="fill" />, title: "Ask why, get the receipts", body: "Ask in your own words. Every answer links to the moments behind it, and the pitch jumps there.", cta: "Ask about the final", to: `${final}?tab=ask`, ai: true },
+    { icon: <GitFork size={18} weight="bold" />, title: "What if it went differently", body: "Take away a goal, a red card or a substitution and see how the rest of the match was likely to go. Always labelled as modelled.", cta: "Try it on the final", to: `${final}?tab=whatif` },
     { icon: <MagnifyingGlass size={18} weight="bold" />, title: "Find any moment", body: "Describe a moment the way you'd tell a friend, like “header from a corner”, and replay it.", cta: "Search moments", onClick: () => useUi.getState().setSearchOpen(true, "header from a corner") },
   ];
   return (

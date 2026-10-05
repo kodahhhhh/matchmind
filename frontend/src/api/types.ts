@@ -31,7 +31,14 @@ export interface MatchCard {
   home_score: number;
   away_score: number;
   has_detail: boolean;
+  /** Proposed by W13 (not in fixtures yet): "lite" matches have score, line-ups and shots but no full event stream. */
+  data_tier?: DataTier;
+  source?: string;
 }
+
+export type DataTier = "full" | "lite";
+/** Proposed by W13: what a match's data supports. Missing flags mean "unknown", treated as available for full matches. */
+export type Capabilities = Partial<Record<"shots" | "lineups" | "team_stats" | "full_events" | "vaep" | "game_state" | "pass_options" | "provider_momentum", boolean>>;
 
 export interface LineupPlayer {
   player_id: number;
@@ -81,6 +88,10 @@ export interface MatchDetail {
   duration_t: number;
   lineups: Record<Side, LineupPlayer[]>;
   markers: Marker[];
+  /** Proposed by W13, optional until the contract lands. */
+  data_tier?: DataTier;
+  source?: string;
+  capabilities?: Capabilities;
 }
 
 export type ActionType =

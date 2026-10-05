@@ -68,7 +68,7 @@ export function Pitch() {
   }, [reel, replay, nextHighlight]);
 
   if (!data) return <div ref={boxRef} className="h-full w-full" />;
-  if (!data.has.events) return <NoReplay />;
+  if (!data.has.events && !data.has.shots) return <NoReplay />;
   // extend the grass sideways so the pitch fills its container edge to edge
   const aspect = box.width && box.height ? box.width / box.height : VB.w / VB.h;
   const vbW = Math.max(VB.w, VB.h * aspect);

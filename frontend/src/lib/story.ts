@@ -43,7 +43,7 @@ export function matchVerdict(d: MatchData): Verdict {
     else if (decidedInPlay && winner) lead = `${name(better)} made the better chances, but ${name(winner)} took theirs.`;
     else lead = `${name(better)} made the better chances but couldn't find a winner.`;
 
-    const tilt = (s: Side) => tl.reduce((sum, m) => sum + m[s].field_tilt, 0) / tl.length;
+    const tilt = (s: Side) => !d.has.possession ? 0 : tl.reduce((sum, m) => sum + m[s].field_tilt, 0) / tl.length;
     const top: Side = tilt("home") >= tilt("away") ? "home" : "away";
     if (tilt(top) >= 0.6) notes.push(`${name(top)} spent most of the match in their opponent's half.`);
   }

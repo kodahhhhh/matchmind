@@ -69,5 +69,39 @@ for (const [vp, size] of [["phone", { width: 480, height: 960 }], ["desktop", { 
   check(errors.length === 0, `${vp}: no page errors ${errors.join(" | ")}`);
   await ctx.close();
 }
+// lite tier (W13 proposal), simulated by rewriting responses: shots only, no possession or momentum, no players
+for (const [vp, size] of [["phone", { width: 480, height: 960 }], ["desktop", { width: 1440, height: 900 }]]) {
+  const ctx = await browser.newContext({ viewport: size });
+  const page = await ctx.newPage();
+  const errors = [];
+  page.on("pageerror", (e) => errors.push(e.message));
+  const id = "sb%3A3869685";
+  await page.route(`**/api/matches/${id}`, async (r) => {
+    const res = await r.fetch(); const j = await res.json();
+    await r.fulfill({ json: { ...j, data_tier: "lite", capabilities: { shots: true, lineups: true, full_events: false, vaep: false } } });
+  });
+  await page.route(`**/api/matches/${id}/events`, async (r) => {
+    const res = await r.fetch(); const j = await res.json();
+    await r.fulfill({ json: { events: j.events.filter((e) => e.type.startsWith("shot")) } });
+  });
+  await page.route(`**/api/matches/${id}/timeline`, async (r) => {
+    const res = await r.fetch(); const j = await res.json();
+    for (const m of j.minutes) { m.momentum = null; for (const s of [m.home, m.away]) { s.possession = null; s.field_tilt = null; s.vaep = null; } }
+    await r.fulfill({ json: j });
+  });
+  for (const ep of ["sequences*", "players", "turning-points"]) await page.route(`**/api/matches/${id}/${ep}`, (r) => r.fulfill({ status: 503, body: "unavailable" }));
+  await page.route(`**/api/matches/${id}/commentary`, (r) => r.fulfill({ json: { lines: [] } }));
+  await page.goto(base + MATCH, { waitUntil: "networkidle" });
+  await page.waitForTimeout(1500);
+  check(await page.getByText("Shots and stats only.").isVisible(), `${vp} lite: story says shots and stats only`);
+  check(await page.getByRole("tab", { name: "What if" }).count() === 0, `${vp} lite: no What if tab`);
+  await page.screenshot({ path: `${out}/lite-${vp}.png`, fullPage: false });
+  await page.getByRole("tab", { name: "Players" }).click();
+  await page.waitForTimeout(800);
+  check(await page.getByRole("heading", { name: "Line-ups" }).isVisible(), `${vp} lite: players tab falls back to line-ups`);
+  check(errors.length === 0, `${vp} lite: no page errors ${errors.join(" | ")}`);
+  await ctx.close();
+}
+
 await browser.close();
 process.exit(failed ? 1 : 0);

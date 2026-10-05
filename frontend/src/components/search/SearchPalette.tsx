@@ -7,7 +7,7 @@ import type { MatchCard, PlayerHit, SearchResult } from "../../api/types";
 import { usePlayerUi, useUi } from "../../store/ui";
 import { useMatch } from "../../store/match";
 import { useCatalogue } from "../../store/catalogue";
-import { FAMOUS, compLabel, matchDate, matchPath, searchCompetitions, searchMatches } from "../../lib/matchSearch";
+import { FAMOUS, LITE_LABEL, compLabel, matchDate, matchPath, searchCompetitions, searchMatches } from "../../lib/matchSearch";
 import { initials, trapTab } from "../ui/focusTrap";
 
 const EXAMPLES = ["Spain v England", "Champions League", "Messi", "header from a corner", "counter-attack goal"];
@@ -214,7 +214,7 @@ function Palette({ onClose }: { onClose: () => void }) {
               <Section title="Matches">
                 {matches.map((m) => (
                   <button key={m.match_id} type="button" onClick={() => openMatch(m.match_id)} {...row(m.match_id)}>
-                    <MatchMini m={m} sub={`${compLabel(m.competition, m.season)}${m.stage && m.stage !== "Regular Season" ? `, ${m.stage.toLowerCase()}` : ""} · ${matchDate(m)}`} />
+                    <MatchMini m={m} sub={`${compLabel(m.competition, m.season)}${m.stage && m.stage !== "Regular Season" ? `, ${m.stage.toLowerCase()}` : ""} · ${matchDate(m)}${m.data_tier === "lite" ? ` · ${LITE_LABEL}` : ""}`} />
                     <Enter on={at(m.match_id) === sel} />
                   </button>
                 ))}

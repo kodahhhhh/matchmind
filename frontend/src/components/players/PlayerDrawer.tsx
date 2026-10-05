@@ -354,14 +354,13 @@ function Split({ off, def }: { off: number; def: number }) {
 function Moments({ p }: { p: PlayerProfile }) {
   const navigate = useNavigate();
   const matchId = useMatch((s) => s.matchId);
-  const focusEvent = useMatch((s) => s.focusEvent);
-  const focusSequence = useMatch((s) => s.focusSequence);
+  const showMoment = useMatch((s) => s.showMoment);
   const setPendingFocus = useMatch((s) => s.setPendingFocus);
   const openPlayer = usePlayerUi((s) => s.openPlayer);
   const go = (m: PlayerProfile["top_moments"][number]) => {
     openPlayer(null);
     if (m.match_id === matchId) {
-      if (m.sequence_id) focusSequence(m.sequence_id); else if (m.event_id) focusEvent(m.event_id);
+      showMoment(m.sequence_id ? { seq: m.sequence_id, replay: true } : { ev: m.event_id ?? undefined });
       return;
     }
     setPendingFocus(m.sequence_id ? { seq: m.sequence_id } : m.event_id ? { ev: m.event_id } : null);

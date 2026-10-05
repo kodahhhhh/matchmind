@@ -91,3 +91,6 @@ export function compLabel(competition: string, season: string): string {
   const s = /^\d{4}\/\d{4}$/.test(season) ? `${season.slice(0, 4)}/${season.slice(7)}` : season;
   return `${name} ${s}`;
 }
+
+/** Label for lite matches (score, line-ups and shots, no full event stream). */
+export const LITE_LABEL = "Shots & stats";
