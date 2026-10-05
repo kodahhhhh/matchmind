@@ -1,12 +1,17 @@
+import { lazy, Suspense } from "react";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router";
 import { AnimatePresence, MotionConfig, motion } from "motion/react";
 import { MatchBrowser } from "./components/browser/MatchBrowser";
-import { MatchView } from "./components/match/MatchView";
 import { SearchPalette } from "./components/search/SearchPalette";
-import { BacktestPage } from "./components/backtest/BacktestPage";
-import { LeaderboardPage } from "./components/players/LeaderboardPage";
 import { PlayerDrawer } from "./components/players/PlayerDrawer";
 import { NotFound } from "./components/ui/NotFound";
+
+// each screen is its own chunk, so the home page loads only what it shows
+const MatchView = lazy(() => import("./components/match/MatchView").then((m) => ({ default: m.MatchView })));
+const BacktestPage = lazy(() => import("./components/backtest/BacktestPage").then((m) => ({ default: m.BacktestPage })));
+// warm the match screen once the first page has settled: it's where almost every visit goes next
+if (typeof window !== "undefined") setTimeout(() => { void import("./components/match/MatchView"); }, 2000);
+const LeaderboardPage = lazy(() => import("./components/players/LeaderboardPage").then((m) => ({ default: m.LeaderboardPage })));
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -15,16 +20,18 @@ function AnimatedRoutes() {
   return (
     <AnimatePresence mode="wait">
       <motion.div key={key} className="h-full"
-        initial={{ opacity: 0, y: 8, filter: "blur(3px)" }} animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-        exit={{ opacity: 0, filter: "blur(3px)", transition: { duration: 0.15, ease: "easeOut" } }}
-        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}>
-        <Routes location={location}>
-          <Route path="/" element={<MatchBrowser />} />
-          <Route path="/match/:id" element={<MatchView />} />
-          <Route path="/backtest" element={<BacktestPage />} />
-          <Route path="/players" element={<LeaderboardPage />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, transition: { duration: 0.12, ease: "easeOut" } }}
+        transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}>
+        <Suspense fallback={<div className="h-full" aria-busy="true" />}>
+          <Routes location={location}>
+            <Route path="/" element={<MatchBrowser />} />
+            <Route path="/match/:id" element={<MatchView />} />
+            <Route path="/backtest" element={<BacktestPage />} />
+            <Route path="/players" element={<LeaderboardPage />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
       </motion.div>
     </AnimatePresence>
   );
@@ -34,9 +41,9 @@ export default function App() {
   return (
     <BrowserRouter>
       <MotionConfig reducedMotion="user">
-      <AnimatedRoutes />
-      <SearchPalette />
-      <PlayerDrawer />
+        <AnimatedRoutes />
+        <SearchPalette />
+        <PlayerDrawer />
       </MotionConfig>
     </BrowserRouter>
   );

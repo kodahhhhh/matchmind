@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { scaleLinear } from "d3-scale";
 import { area, line } from "d3-shape";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
@@ -35,7 +35,6 @@ function useEnter() {
 
 export function WhatIf() {
   const data = useMatch((s) => s.data);
-  const focusEvent = useMatch((s) => s.focusEvent);
   const pick = useMatch((s) => s.whatIfPick);
   const [allShots, setAllShots] = useState(false);
   const [picked, setPicked] = useState<Pick | null>(null);
@@ -48,6 +47,22 @@ export function WhatIf() {
     if (result) resultRef.current?.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
   }, [result, reduce]);
 
+  // latest request wins: a slow earlier answer never overwrites a newer pick
+  const reqId = useRef(0);
+  const runPick = useCallback((next: Pick, matchId: string) => {
+    const id = ++reqId.current;
+    setPicked(next);
+    setFailed(false);
+    useMatch.getState().focusEvent(next.kind === "marker" ? next.marker.event_id : next.shot.id);
+    setLoading(true);
+    const req: Promise<Outcome> = next.kind === "marker"
+      ? api.counterfactual(matchId, next.marker.event_id, CHANGE[next.marker.type].change).then((r) => ({ kind: "marker", r }))
+      : api.shotAlternatives(matchId, next.shot.id).then((r) => ({ kind: "shot", r }));
+    req.then((r) => { if (id === reqId.current) setResult(r); })
+      .catch(() => { if (id === reqId.current) setFailed(true); })
+      .finally(() => { if (id === reqId.current) setLoading(false); });
+  }, []);
+
   // a moment handed over from the moment card or the analyst: run it straight away
   const handled = useRef(0);
   useEffect(() => {
@@ -55,11 +70,9 @@ export function WhatIf() {
     handled.current = pick.n;
     const mk = data.match.markers.find((m) => m.event_id === pick.eventId && (m.type === "goal" || m.type === "sub" || (m.type === "card" && m.detail !== "yellow")));
     const ev = data.eventById.get(pick.eventId);
-    if (mk) pickMarkerRef.current?.(mk);
-    else if (ev && ev.type === "shot") pickShotRef.current?.(ev);
-  }, [pick, data]);
-  const pickMarkerRef = useRef<((m: Marker) => void) | null>(null);
-  const pickShotRef = useRef<((e: MatchEvent) => void) | null>(null);
+    if (mk) runPick({ kind: "marker", marker: mk }, data.match.match_id);
+    else if (ev && ev.type === "shot") runPick({ kind: "shot", shot: ev }, data.match.match_id);
+  }, [pick, data, runPick]);
 
   if (!data) return null;
   const nameOf = (id: number | null | undefined) =>
@@ -70,24 +83,8 @@ export function WhatIf() {
     m.type === "goal" ? `${nameOf(m.player_id)}'s goal` : m.type === "sub" ? `the ${nameOf(m.player_off_id)} substitution` : `${nameOf(m.player_id)}'s red card`;
   const label = (m: Marker) => (m.type === "sub" ? `${nameOf(m.player_off_id)} → ${nameOf(m.player_id)}` : nameOf(m.player_id));
 
-  const run = (next: Pick, request: () => Promise<Outcome>) => {
-    setPicked(next);
-    setFailed(false);
-    focusEvent(next.kind === "marker" ? next.marker.event_id : next.shot.id);
-    setLoading(true);
-    request()
-      .then(setResult)
-      .catch(() => setFailed(true))
-      .finally(() => setLoading(false));
-  };
-  const pickMarker = (m: Marker) =>
-    run({ kind: "marker", marker: m }, () =>
-      api.counterfactual(data.match.match_id, m.event_id, CHANGE[m.type].change).then((r) => ({ kind: "marker", r })));
-  const pickShot = (e: MatchEvent) =>
-    run({ kind: "shot", shot: e }, () =>
-      api.shotAlternatives(data.match.match_id, e.id).then((r) => ({ kind: "shot", r })));
-  pickMarkerRef.current = pickMarker;
-  pickShotRef.current = pickShot;
+  const pickMarker = (m: Marker) => runPick({ kind: "marker", marker: m }, data.match.match_id);
+  const pickShot = (e: MatchEvent) => runPick({ kind: "shot", shot: e }, data.match.match_id);
 
   const firsts = options.filter((m) => m.type !== "sub");
   const subs = options.filter((m) => m.type === "sub");
