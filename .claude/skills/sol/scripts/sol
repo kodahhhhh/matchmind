@@ -1,0 +1,204 @@
+#!/usr/bin/env bash
+# sol — run GPT-6.1 Sol through the Codex CLI as an investigator/reviewer.
+#
+#   sol run    [--name slug] [--effort high] [--cd DIR] [--prompt-file F]   (prompt on stdin otherwise)
+#   sol resume [RUN_DIR]     [--effort high] [--prompt-file F]              (follow-up turn, same thread)
+#   sol status [RUN_DIR]     progress of a run (defaults to the newest run)
+#   sol list   [N]           recent runs
+#
+# Every turn writes prompt.N.md, events.N.jsonl, stderr.N.log and final.N.md into the run dir.
+set -euo pipefail
+
+SKILL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+RUNS_DIR="${SOL_RUNS_DIR:-$HOME/.cache/sol-runs}"
+MODEL="${SOL_MODEL:-gpt-6.1-sol}"
+EFFORTS="low medium high xhigh max ultra"
+
+die() { echo "sol: $*" >&2; exit 1; }
+
+check_effort() {
+  [[ " $EFFORTS " == *" $1 "* ]] || die "effort must be one of: $EFFORTS"
+}
+
+read_prompt() {
+  local file="$1"
+  if [[ -n "$file" ]]; then
+    cat "$file"
+  elif [[ ! -t 0 ]]; then
+    cat
+  else
+    die "no prompt: pass --prompt-file or pipe it on stdin"
+  fi
+}
+
+newest_run() {
+  ls -1dt "$RUNS_DIR"/*/ 2>/dev/null | head -1 | sed 's:/$::'
+}
+
+resolve_run() {
+  local arg="${1:-}"
+  if [[ -z "$arg" ]]; then arg="$(newest_run)"; fi
+  [[ -n "$arg" ]] || die "no runs in $RUNS_DIR"
+  [[ -d "$arg" ]] || arg="$RUNS_DIR/$arg"
+  [[ -d "$arg" ]] || die "run not found: $1"
+  echo "$arg"
+}
+
+last_turn() {
+  local n=0 f
+  for f in "$1"/prompt.*.md; do
+    [[ -e "$f" ]] || continue
+    f="${f##*/prompt.}"; f="${f%.md}"
+    (( f > n )) && n="$f"
+  done
+  echo "$n"
+}
+
+# Snapshot of the worktree so we can tell if Sol touched files during the turn.
+git_snapshot() {
+  local dir="$1" out="$2"
+  if git -C "$dir" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    { git -C "$dir" status --porcelain=v1; git -C "$dir" diff HEAD | sha256sum; } >"$out" 2>/dev/null || true
+  else
+    echo "not a git repo" >"$out"
+  fi
+}
+
+# Runs one Codex turn (fresh or resumed) inside $run_dir as turn $turn.
+exec_turn() {
+  local run_dir="$1" turn="$2" effort="$3" cwd="$4" thread="${5:-}"
+  local p="$run_dir/prompt.$turn.md" ev="$run_dir/events.$turn.jsonl"
+  local err="$run_dir/stderr.$turn.log" fin="$run_dir/final.$turn.md"
+
+  git_snapshot "$cwd" "$run_dir/git-before.$turn.txt"
+  echo "$$" >"$run_dir/pid"
+  date +%s >"$run_dir/started.$turn"
+
+  local common=(-m "$MODEL" -c "model_reasoning_effort=\"$effort\""
+    --dangerously-bypass-approvals-and-sandbox --skip-git-repo-check --json -o "$fin")
+  local rc=0
+  if [[ -z "$thread" ]]; then
+    (cd "$cwd" && codex exec "${common[@]}" -C "$cwd" - <"$p" >"$ev" 2>"$err") || rc=$?
+  else
+    (cd "$cwd" && codex exec resume "${common[@]}" "$thread" - <"$p" >"$ev" 2>"$err") || rc=$?
+  fi
+
+  date +%s >"$run_dir/ended.$turn"
+  echo "$rc" >"$run_dir/exit.$turn"
+  rm -f "$run_dir/pid"
+
+  if [[ -z "$thread" ]]; then
+    jq -r 'select(.type=="thread.started") | .thread_id' "$ev" 2>/dev/null | head -1 >"$run_dir/thread_id" || true
+  fi
+
+  git_snapshot "$cwd" "$run_dir/git-after.$turn.txt"
+
+  echo "run:    $run_dir"
+  echo "turn:   $turn   effort: $effort   exit: $rc   thread: $(cat "$run_dir/thread_id" 2>/dev/null)"
+  summarize_usage "$ev"
+  if ! cmp -s "$run_dir/git-before.$turn.txt" "$run_dir/git-after.$turn.txt"; then
+    echo "WARNING: the worktree changed during this turn (Sol, the user, or another agent). Diff:"
+    diff "$run_dir/git-before.$turn.txt" "$run_dir/git-after.$turn.txt" | sed 's/^/  /' | head -40 || true
+  fi
+  if [[ "$rc" -ne 0 || ! -s "$fin" ]]; then
+    echo "--- stderr (tail) ---"
+    grep -vE '^hook: ' "$err" | tail -20 || true
+    jq -r 'select(.type=="error" or .type=="turn.failed") | tostring' "$ev" 2>/dev/null | tail -5 || true
+  fi
+  echo "--- final message ($fin) ---"
+  cat "$fin" 2>/dev/null && echo || echo "(none)"
+  return "$rc"
+}
+
+summarize_usage() {
+  jq -rs '
+    [ .[] | select(.type=="turn.completed") | .usage ] as $u
+    | [ .[] | select(.type=="item.completed" and .item.type=="command_execution") ] as $c
+    | "usage:  \($u | map(.input_tokens) | add // 0) in (\($u | map(.cached_input_tokens) | add // 0) cached), \($u | map(.output_tokens) | add // 0) out, \($c | length) commands"
+  ' "$1" 2>/dev/null || true
+}
+
+cmd_run() {
+  local name="run" effort="high" cwd="$PWD" pfile=""
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --name) name="$2"; shift 2 ;;
+      --effort) effort="$2"; shift 2 ;;
+      --cd) cwd="$(cd "$2" && pwd)"; shift 2 ;;
+      --prompt-file) pfile="$2"; shift 2 ;;
+      *) die "unknown arg: $1" ;;
+    esac
+  done
+  check_effort "$effort"
+  name="$(echo "$name" | tr -cs 'A-Za-z0-9._-' '-' | sed 's/^-//;s/-$//')"
+  local run_dir="$RUNS_DIR/$(date +%Y%m%d-%H%M%S)-$name"
+  mkdir -p "$run_dir"
+  { cat "$SKILL_DIR/preamble.md"; printf '\n\n---\n\n'; read_prompt "$pfile"; } >"$run_dir/prompt.1.md"
+  printf 'cwd=%q\nmodel=%q\n' "$cwd" "$MODEL" >"$run_dir/meta.env"
+  exec_turn "$run_dir" 1 "$effort" "$cwd"
+}
+
+cmd_resume() {
+  local target="" effort="high" pfile=""
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --effort) effort="$2"; shift 2 ;;
+      --prompt-file) pfile="$2"; shift 2 ;;
+      -*) die "unknown arg: $1" ;;
+      *) target="$1"; shift ;;
+    esac
+  done
+  check_effort "$effort"
+  local run_dir; run_dir="$(resolve_run "$target")"
+  [[ ! -e "$run_dir/pid" ]] || die "run is still in progress: $run_dir"
+  local thread; thread="$(cat "$run_dir/thread_id" 2>/dev/null)"
+  [[ -n "$thread" ]] || die "no thread id recorded in $run_dir"
+  # shellcheck disable=SC1091
+  local cwd; cwd="$(source "$run_dir/meta.env" && echo "$cwd")"
+  local turn=$(( $(last_turn "$run_dir") + 1 ))
+  read_prompt "$pfile" >"$run_dir/prompt.$turn.md"
+  exec_turn "$run_dir" "$turn" "$effort" "$cwd" "$thread"
+}
+
+cmd_status() {
+  local run_dir; run_dir="$(resolve_run "${1:-}")"
+  local turn; turn="$(last_turn "$run_dir")"
+  local ev="$run_dir/events.$turn.jsonl"
+  local state="done (exit $(cat "$run_dir/exit.$turn" 2>/dev/null || echo '?'))"
+  if [[ -e "$run_dir/pid" ]] && kill -0 "$(cat "$run_dir/pid")" 2>/dev/null; then
+    state="running"
+  elif [[ -e "$run_dir/pid" ]]; then
+    state="dead (wrapper exited without finishing)"
+  fi
+  local start end
+  start="$(cat "$run_dir/started.$turn" 2>/dev/null || date +%s)"
+  end="$(cat "$run_dir/ended.$turn" 2>/dev/null || date +%s)"
+  echo "run:    $run_dir"
+  echo "turn:   $turn   state: $state   elapsed: $(( (end - start) / 60 ))m$(( (end - start) % 60 ))s"
+  summarize_usage "$ev"
+  echo "--- recent commands ---"
+  jq -r 'select(.type=="item.started" and .item.type=="command_execution") | .item.command' "$ev" 2>/dev/null \
+    | tail -8 | cut -c1-180 | sed 's/^/  /'
+  echo "--- latest message ---"
+  jq -r 'select(.type=="item.completed" and .item.type=="agent_message") | .item.text' "$ev" 2>/dev/null \
+    | tail -c 1200
+  echo
+}
+
+cmd_list() {
+  local n="${1:-10}" d turn
+  ls -1dt "$RUNS_DIR"/*/ 2>/dev/null | head -"$n" | while read -r d; do
+    d="${d%/}"; turn="$(last_turn "$d")"
+    local s="exit $(cat "$d/exit.$turn" 2>/dev/null || echo '?')"
+    [[ -e "$d/pid" ]] && s="running"
+    echo "$(basename "$d")  turns=$turn  $s"
+  done
+}
+
+case "${1:-}" in
+  run) shift; cmd_run "$@" ;;
+  resume) shift; cmd_resume "$@" ;;
+  status) shift; cmd_status "$@" ;;
+  list) shift; cmd_list "$@" ;;
+  *) sed -n '2,10p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; exit 1 ;;
+esac

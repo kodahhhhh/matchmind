@@ -1,0 +1,6 @@
+interface:
+  display_name: "TasteCode Design Mode"
+  short_description: "Full TasteCode design workflow for Coline UI"
+  default_prompt: "Use $tastecode-design to build or refine the requested Coline interface."
+policy:
+  allow_implicit_invocation: false
